@@ -3,5 +3,9 @@ RPGproject/RPGproject/Debug/
 *.gitattributes
 RPGproject/.vs/
 RPGproject/Debug/
+<<<<<<< HEAD
+*.sdf
+=======
 RPGproject/x64/
 RPGproject/RPGproject/x64/
+>>>>>>> 05fd4943b90cf7a5e7e456fe11453b4bbd815aea
