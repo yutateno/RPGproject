@@ -7,7 +7,6 @@ Dungeon::Dungeon() {
 	this->startCount = 0;
 	this->endCount = 0;
 
-
 }
 Dungeon::~Dungeon() {
 
