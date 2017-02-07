@@ -1,10 +1,16 @@
 #pragma once
 #include "Manager.h"
 
+enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY };	// コマンド状態
+
 // 戦闘画面
 class Battle : public SuperScene {
 private:
-	int Gr_Back;	// 背景
+	int Gr_Back;		// 背景
+
+	Command command;	// コマンド状態	
+
+	int cursorX, cursorY;			// カーソルの座標
 
 public:
 	Battle();
