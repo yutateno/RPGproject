@@ -144,8 +144,8 @@ void Dungeon::Draw_Main() {
 }
 
 void Dungeon::Draw_End() {
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (startCount * 1));
-	DrawRotaGraph(320, 240, 1.0, startCount * 1, Gr_Back, FALSE);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 1));
+	DrawRotaGraph(320, 240, 1.0, endCount * 1, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	//DrawStringToHandle(0, 0, "ƒ_ƒ“ƒWƒ‡ƒ“‰æ–Ê", WHITE, Font::Get(eFont::SELECT));
 	//DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "I—¹‰æ–Ê%d", this->endCount);
