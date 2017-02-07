@@ -3,6 +3,10 @@
 
 class Title : public SuperScene {
 private:
+	int Icon_x;		// ボタンのx座標
+	int Icon_y;		// ボタンのy座標
+	bool Icon_area;	// ボタンの操作位置
+	
 	int Gr_Back;	// 背景
 
 public:

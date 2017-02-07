@@ -1,9 +1,9 @@
 #include "Manager.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	//ChangeWindowMode(TRUE);
-	SetGraphMode(1920, 1080, 32);
-	//SetGraphMode(640, 480, 32);
+	ChangeWindowMode(TRUE);
+	//SetGraphMode(1920, 1080, 32);
+	SetGraphMode(640, 480, 32);
 	// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‰Šú‰»ˆ—
 	if (DxLib_Init() == -1)
 	{
