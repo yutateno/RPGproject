@@ -7,6 +7,12 @@ Field::Field() {
 	this->startCount = 0;
 	this->endCount = 0;
 
+	// 画像読み込み
+	Gr_Back = LoadGraph("img\\field_background.png");
+	mapchip1 = LoadGraph("img\\mapchip1.png");
+
+	// マップデータ読み込み
+	ReadMapData();
 }
 Field::~Field() {
 
@@ -80,6 +86,28 @@ void Field::Draw_Start() {
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
 }
 void Field::Draw_Main() {
+	// 背景
+	DrawGraph(0, 0, Gr_Back, true);
+
+	// マップチップ
+	for (int i = 0,n = mapdata.size();i < n;i++)
+	{
+		for (int j = 0, m = mapdata.at(i).size();j < m;j++)
+		{
+			switch (mapdata.at(i).at(j))
+			{
+			case 0:		// 何もなし
+				break;
+
+			case 1:		// マップチップ1
+				DrawGraph(j * 32, i * 32, mapchip1, true);
+				break;
+
+			default:	// 改行時に来るエラーではない
+				break;
+			}
+		}
+	}
 	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 200, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
@@ -89,4 +117,33 @@ void Field::Draw_Main() {
 void Field::Draw_End() {
 	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
+}
+
+void Field::ReadMapData()
+{
+	ifstream ifs("mapdata.txt");
+	// マップデータ読み込み失敗
+	if (!ifs)
+	{
+		endFlag = true;
+	}
+
+	string str;
+	int count = 0;
+	int count2 = 0;
+	while (getline(ifs, str)) {
+		string token;
+		istringstream stream(str);
+
+		mapdata.resize(count + 1);
+
+		//1行のうち、文字列とコンマを分割する
+		while (getline(stream, token, ',')) {
+			//すべて文字列として読み込まれるため
+			//数値は変換が必要
+			mapdata.at(count).push_back(stof(token)); //stof(string str) : stringをfloatに変換
+			count2++;
+		}
+		count++;
+	}
 }
