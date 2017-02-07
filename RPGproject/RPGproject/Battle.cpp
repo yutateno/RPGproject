@@ -70,7 +70,6 @@ void Battle::UpDate_Main() {
 			}
 			else{					// 逃げる選択時
 				command = RUN_AWAY;
-				step = eStep::End;	// 戦闘終了
 			}
 			break;
 
@@ -88,6 +87,7 @@ void Battle::UpDate_Main() {
 				step = eStep::End;	// 戦闘終了
 			}
 			else {					// 戻る選択時
+				cursorY = 0;		// カーソルをもとの位置に戻す
 				command = NEUTRAL;
 			}
 			break;
@@ -106,12 +106,13 @@ void Battle::UpDate_Main() {
 				step = eStep::End;	// 戦闘終了
 			}
 			else {					// 戻る選択時
+				cursorY = 0;		// カーソルをもとの位置に戻す
 				command = NEUTRAL;
 			}
 			break;
-			break;
 
 		case RUN_AWAY:	// 逃げる
+			step = eStep::End;	// 戦闘終了
 			break;
 
 		default:		// 在り得ない。エラー
