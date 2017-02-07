@@ -1,10 +1,16 @@
 #pragma once
 #include "Manager.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <deque>
 
 // ダンジョン
 class Dungeon : public SuperScene {
 private:
 	int Gr_Back;	// 背景
+	int Gr_Player;	//プレイヤー
+	int Gr_Wall;	//キャラ
 
 public:
 	Dungeon();

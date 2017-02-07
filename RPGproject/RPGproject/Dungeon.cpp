@@ -1,39 +1,45 @@
 #include "Manager.h"
+#include "Dungeon.h"
 
 Dungeon::Dungeon() {
-	this->endFlag = false;
-	this->nextScene = eScene::S_End;
-	this->step = eStep::Start;
-	this->startCount = 0;
-	this->endCount = 0;
+	endFlag = false;
+	nextScene = eScene::S_End;
+	step = eStep::Start;
+	startCount = 0;
+	endCount = 0;
 
+	Gr_Back = LoadGraph("Dungeon\\Dungeon_Back.png");
+	Gr_Wall = LoadGraph("Dungeon\\wall.png");
+	Gr_Player = LoadGraph("Dungeon\\player.png");
 }
+
 Dungeon::~Dungeon() {
 
 }
 
 void Dungeon::UpDate() {
-	switch (this->step) {
+	switch (step) {
 	case eStep::Start:	// 開始画面
-		this->UpDate_Start();
+		UpDate_Start();
 		break;
 	case eStep::Main:	// メイン処理画面
-		this->UpDate_Main();
+		UpDate_Main();
 		break;
 	case eStep::End:	// 終了画面
-		this->UpDate_End();
+		UpDate_End();
 		break;
 	default:
-		this->endFlag = true;	// エラー終了
+		endFlag = true;	// エラー終了
 		break;
 	}
 }
 void Dungeon::UpDate_Start() {
-	this->startCount++;
+	startCount++;
 
-	if (this->startCount < 50) return;	// 50フレームで開始画面終了
-	this->step = eStep::Main;
+	if (startCount < 50) return;	// 50フレームで開始画面終了
+	step = eStep::Main;
 }
+
 void Dungeon::UpDate_Main() {
 
 	// Zキーで戦闘画面に
@@ -51,35 +57,38 @@ void Dungeon::UpDate_Main() {
 		this->nextScene = eScene::S_GameClear;
 		this->step = eStep::End;
 	}
-
-
 }
 void Dungeon::UpDate_End() {
-	this->endCount++;
+	endCount++;
 
-	if (this->endCount < 50) return;	// 50フレームで終了画面終了
-	this->endFlag = true;
+	if (endCount < 50) return;	// 50フレームで終了画面終了
+	endFlag = true;
 }
 void Dungeon::Draw() {
-	switch (this->step) {
+	switch (step) {
 	case eStep::Start:	// 開始画面
-		this->Draw_Start();
+		Draw_Start();
 		break;
 	case eStep::Main:	// メイン処理画面
-		this->Draw_Main();
+		Draw_Main();
 		break;
 	case eStep::End:	// 終了画面
-		this->Draw_End();
+		Draw_End();
 		break;
 	default:
-		this->endFlag = true;	// エラー終了
+		endFlag = true;	// エラー終了
 		break;
 	}
 }
+
 void Dungeon::Draw_Start() {
-	DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, startCount * 1);
+	DrawRotaGraph(320, 240, 1.0, startCount * 1, Gr_Back, FALSE);	//回転角度 1  遊んでる"だけ"
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	//DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
+	//DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
 }
+
 void Dungeon::Draw_Main() {
 	DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
@@ -87,6 +96,7 @@ void Dungeon::Draw_Main() {
 	DrawStringToHandle(0, 300, "Xキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 400, "Cキーでゲームクリア画面へ", WHITE, Font::Get(eFont::SELECT));
 }
+
 void Dungeon::Draw_End() {
 	DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
