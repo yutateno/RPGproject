@@ -7,6 +7,15 @@ Battle::Battle() {
 	this->startCount = 0;
 	this->endCount = 0;
 
+	// 画像
+	Gr_Back = LoadGraph("img\\battle_background.png");		// 背景
+
+	// コマンド状態
+	command = NEUTRAL;
+
+	// カーソル座標
+	cursorX = 0;
+	cursorY = 0;
 }
 Battle::~Battle() {
 
@@ -36,16 +45,80 @@ void Battle::UpDate_Start() {
 }
 void Battle::UpDate_Main() {
 
-	// Zキーで戦闘終了　一つ前の画面へ
-	if (KeyData::Get(KEY_INPUT_Z) == 1) {
-		this->step = eStep::End;
+	// カーソル移動
+	if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY>0)
+	{
+		cursorY -= 100;
 	}
-	// Xキーで死亡画面に
-	if (KeyData::Get(KEY_INPUT_X) == 1) {
-		this->nextScene = eScene::S_GameOver;
-		this->step = eStep::End;
+	if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY<200)
+	{
+		cursorY += 100;
 	}
 
+	// Zキーで決定
+	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+		switch (command)
+		{
+		case NEUTRAL:	// 初期
+			if (cursorY == 0)		// 攻撃選択時
+			{
+				command = ATTACK;
+			}
+			else if (cursorY == 100)// 魔法選択時
+			{
+				command = MAGIC;
+			}
+			else{					// 逃げる選択時
+				command = RUN_AWAY;
+				step = eStep::End;	// 戦闘終了
+			}
+			break;
+
+		case ATTACK:	// 攻撃メニュー
+			if (cursorY == 0)		// 弱攻撃選択時
+			{
+				// ここに戦闘処理を書く
+
+				step = eStep::End;	// 戦闘終了
+			}
+			else if (cursorY == 100)// 強攻撃選択時
+			{
+				// ここに戦闘処理を書く
+
+				step = eStep::End;	// 戦闘終了
+			}
+			else {					// 戻る選択時
+				command = NEUTRAL;
+			}
+			break;
+
+		case MAGIC:		// 魔法メニュー
+			if (cursorY == 0)		// 弱魔法選択時
+			{
+				// ここに戦闘処理を書く
+
+				step = eStep::End;	// 戦闘終了
+			}
+			else if (cursorY == 100)// 強魔法選択時
+			{
+				// ここに戦闘処理を書く
+
+				step = eStep::End;	// 戦闘終了
+			}
+			else {					// 戻る選択時
+				command = NEUTRAL;
+			}
+			break;
+			break;
+
+		case RUN_AWAY:	// 逃げる
+			break;
+
+		default:		// 在り得ない。エラー
+			endFlag = true;
+			break;
+		}
+	}
 }
 void Battle::UpDate_End() {
 	this->endCount++;
@@ -74,10 +147,41 @@ void Battle::Draw_Start() {
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
 }
 void Battle::Draw_Main() {
-	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 200, "Zキーで戦闘終了　一つ前の画面へ", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 300, "Xキーでゲームオーバー画面へ", WHITE, Font::Get(eFont::SELECT));
+	// 背景
+	DrawGraph(0, 0, Gr_Back, true);
+
+	// コマンド状態に応じて表示を変化
+	switch (command)
+	{
+	case NEUTRAL:	// 初期
+		DrawStringToHandle(0, 0, "  攻撃", WHITE, Font::Get(eFont::SELECT));
+		DrawStringToHandle(0, 100, "  魔法", WHITE, Font::Get(eFont::SELECT));
+		DrawStringToHandle(0, 200, "  逃げる", WHITE, Font::Get(eFont::SELECT));
+		break;
+
+	case ATTACK:	// 攻撃メニュー
+		DrawStringToHandle(0, 0, "  弱攻撃", WHITE, Font::Get(eFont::SELECT));
+		DrawStringToHandle(0, 100, "  強攻撃", WHITE, Font::Get(eFont::SELECT));
+		DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
+		break;
+
+	case MAGIC:		// 魔法メニュー
+		DrawStringToHandle(0, 0, "  弱魔法", WHITE, Font::Get(eFont::SELECT));
+		DrawStringToHandle(0, 100, "  強魔法", WHITE, Font::Get(eFont::SELECT));
+		DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
+		break;
+
+	case RUN_AWAY:	// 逃げる
+		//DrawStringToHandle(0, 0, "  あなたは逃げ出した・・・", WHITE, Font::Get(eFont::SELECT));
+		break;
+
+	default:		// 在り得ない。エラー
+		endFlag = true;
+		break;
+	}
+	
+	// カーソル
+	DrawStringToHandle(cursorX, cursorY, "▲", WHITE, Font::Get(eFont::SELECT));
 }
 void Battle::Draw_End() {
 	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
