@@ -27,6 +27,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 	delete manager;
 
+	InitGraph();
+
 	DxLib_End(); // DXƒ‰ƒCƒuƒ‰ƒŠI—¹ˆ—
 	return 0;
 }
