@@ -6,15 +6,37 @@ Player::Player()
 	mp = 10;			// –‚—Í
 	x = y = 0;		// À•W
 	attack = 1;		// UŒ‚—Í
+
+	graph = LoadGraph("img\\player.png");
 }
 Player::~Player()
 {
-	//DeleteGraph();
+	DeleteGraph(graph);
 }
 
-void Player::Draw()
+void Player::aaaDraw()
 {
-	//DrawGraph();
+	DrawGraph(x, y, graph, true);
+}
+
+void Player::Move()
+{
+	if (KeyData::Get(KEY_INPUT_UP) > 0)
+	{
+		y--;
+	}
+	else if (KeyData::Get(KEY_INPUT_DOWN) > 0)
+	{
+		y++;
+	}
+	else if (KeyData::Get(KEY_INPUT_LEFT) > 0)
+	{
+		x--;
+	}
+	else if (KeyData::Get(KEY_INPUT_RIGHT) > 0)
+	{
+		x++;
+	}
 }
 
 void Player::SetX(int x)
@@ -32,4 +54,28 @@ void Player::SetY(int y)
 int Player::GetY()
 {
 	return y;
+}
+void Player::SetHP(int hp)
+{
+	this->hp = hp;
+}
+int Player::GetHP()
+{
+	return hp;
+}
+void Player::SetMP(int mp)
+{
+	this->mp = mp;
+}
+int Player::GetMP()
+{
+	return mp;
+}
+void Player::SetATK(int attack)
+{
+	this->attack = attack;
+}
+int Player::GetATK()
+{
+	return attack;
 }

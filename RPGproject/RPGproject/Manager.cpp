@@ -1,13 +1,14 @@
 #include "Manager.h"
 
 Manager::Manager() {
+
+	player = new Player();
 	this->endFlag = false;
 	this->NowScene = eScene::S_Title;
-
 	this->title = new Title();
 }
 Manager::~Manager() {
-
+	delete player;
 }
 
 void Manager::UpDate() {
@@ -64,6 +65,7 @@ void Manager::UpDate() {
 		break;
 	case eScene::S_Field:// フィールド画面
 		this->field->UpDate();
+		player->Move();
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle->UpDate();
@@ -88,7 +90,7 @@ void Manager::UpDate() {
 
 // タイトル画面からのシーン移行
 void Manager::ChengeScene_Title() {
-	InitGraph();	// 全グラフィック削除
+	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
 	this->NowScene = this->title->GetNextScene();
@@ -292,6 +294,7 @@ void Manager::Draw() {
 		break;
 	case eScene::S_Field:// フィールド画面
 		this->field->Draw();
+		player->aaaDraw();
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle->Draw();

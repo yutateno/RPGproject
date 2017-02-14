@@ -1,4 +1,5 @@
 #pragma once
+
 #include "DxLib.h"
 
 #include "Input.h"
@@ -6,6 +7,7 @@
 #include "Scene.h"
 
 #include "Title.h"
+#include "player.h"
 #include "Field.h"
 #include "Battle.h"
 #include "GameOver.h"
@@ -13,6 +15,7 @@
 #include "GameClear.h"
 #include "Dungeon.h"
 
+class Player;
 
 class Manager :public SuperScene {
 private:
@@ -20,6 +23,7 @@ private:
 
 	// ŠeƒV[ƒ“‚ÌÀ‘Ì
 	Title* title;
+	Player* player;
 	Field* field;
 	Battle* battle;
 	SafeArea* safeArea;
