@@ -66,6 +66,13 @@ void Manager::UpDate() {
 	case eScene::S_Field:// フィールド画面
 		this->field->UpDate();
 		player->Move();
+
+		// 位置修正
+		if (field->GetMapData(player->GetX(), player->GetY()) == 1)
+		{
+			player->MoveReset();
+		}
+
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle->UpDate();
@@ -76,6 +83,11 @@ void Manager::UpDate() {
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->UpDate();
 		player->Move();
+		// 位置修正
+		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 10)
+		{
+			player->MoveReset();
+		}
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->UpDate();
@@ -99,6 +111,11 @@ void Manager::ChengeScene_Title() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
+
+		// プレイヤーの初期位置移動
+		player->SetX(200);
+		player->SetY(200);
+
 		delete this->title;	// タイトル実体削除
 		break;
 	case eScene::S_End://ゲーム終了
@@ -131,8 +148,8 @@ void Manager::ChengeScene_Field() {
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon = new Dungeon();
-		player->SetX(0);
-		player->SetY(0);
+		player->SetX(50);
+		player->SetY(50);
 		delete this->field;
 		break;
 	case eScene::S_End://ゲーム終了

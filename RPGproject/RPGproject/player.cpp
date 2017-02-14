@@ -4,7 +4,7 @@ Player::Player()
 {
 	hp = 10;			// 体力
 	mp = 10;			// 魔力
-	x = y = 0;		// 座標
+	x = y = preX = preY = 0;		// 座標
 	attack = 1;		// 攻撃力
 
 	graph = LoadGraph("img\\player.png");
@@ -21,6 +21,11 @@ void Player::aaaDraw()
 
 void Player::Move()
 {
+	// 直前の座標保存
+	preX = x;
+	preY = y;
+
+	// 移動
 	if (KeyData::Get(KEY_INPUT_UP) > 0)
 	{
 		y--;
@@ -37,6 +42,12 @@ void Player::Move()
 	{
 		x++;
 	}
+}
+
+void Player::MoveReset()
+{
+	x = preX;
+	y = preY;
 }
 
 void Player::SetX(int x)
