@@ -75,6 +75,7 @@ void Manager::UpDate() {
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->UpDate();
+		player->Move();
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->UpDate();
@@ -113,7 +114,7 @@ void Manager::ChengeScene_Title() {
 
 // フィールド画面からのシーン移行
 void Manager::ChengeScene_Field() {
-	InitGraph();	// 全グラフィック削除
+	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
 	this->NowScene = this->field->GetNextScene();
@@ -130,6 +131,8 @@ void Manager::ChengeScene_Field() {
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon = new Dungeon();
+		player->SetX(0);
+		player->SetY(0);
 		delete this->field;
 		break;
 	case eScene::S_End://ゲーム終了
@@ -304,6 +307,7 @@ void Manager::Draw() {
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->Draw();
+		player->aaaDraw();
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->Draw();

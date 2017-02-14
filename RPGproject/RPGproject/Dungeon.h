@@ -9,7 +9,6 @@
 class Dungeon : public SuperScene {
 private:
 	int Gr_Back;	// 背景
-	int Gr_Player;
 	int Gr_Wall;
 
 	vector<vector<string>> map;
@@ -35,4 +34,10 @@ public:
 	void Draw_End();	// 終了画面描画
 
 	void MapDate();
+
+	// ゲッターセッター
+	void SetX(int x);
+	int GetX();
+	void SetY(int y);
+	int GetY();
 };

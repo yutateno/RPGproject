@@ -10,7 +10,6 @@ Dungeon::Dungeon() {
 
 	Gr_Back = LoadGraph("Dungeon\\Dungeon_Back.png");
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
-	Gr_Player = LoadGraph("Dungeon\\player.png");
 
 	player_x = 0;
 	player_y = 0;
@@ -89,8 +88,6 @@ void Dungeon::Draw_Start() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, startCount * 3);
 	DrawGraph(0, 0, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
-	//DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
 }
 
 void Dungeon::Draw_Main() {
@@ -118,17 +115,6 @@ void Dungeon::Draw_Main() {
 						break;
 					}
 					break;
-				case 3:
-					switch (stoi(map[i][j]) % 10) {
-					case 0:
-						DrawGraph(j * 28 + player_x, i * 28 + player_y, Gr_Player, false);
-						break;
-
-					default:
-						break;
-					}
-
-					break;
 				default:
 					break;
 				}
@@ -136,8 +122,6 @@ void Dungeon::Draw_Main() {
 		}
 	}
 
-	//DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
-	//DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 200, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 300, "Xキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 400, "Cキーでゲームクリア画面へ", WHITE, Font::Get(eFont::SELECT));
@@ -147,8 +131,6 @@ void Dungeon::Draw_End() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 1));
 	DrawRotaGraph(320, 240, 1.0, endCount * 1, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
-	//DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
 }
 
 void Dungeon::MapDate() {
@@ -161,4 +143,20 @@ void Dungeon::MapDate() {
 		}
 		read_count++;	// 次の行に
 	}
+}
+
+void Dungeon::SetX(int x) {
+	player_x = x;
+}
+
+int Dungeon::GetX() {
+	return player_x;
+}
+
+void Dungeon::SetY(int y) {
+
+}
+
+int Dungeon::GetY() {
+	return 0;
 }
