@@ -34,6 +34,24 @@ void Field::UpDate() {
 		break;
 	}
 }
+void Field::UpData(int playerX, int playerY)
+{
+	switch (this->step) {
+	case eStep::Start:	// 開始画面
+		this->UpDate_Start();
+		break;
+	case eStep::Main:	// メイン処理画面
+		this->UpDate_Main();
+		break;
+	case eStep::End:	// 終了画面
+		this->UpDate_End();
+		break;
+	default:
+		this->endFlag = true;	// エラー終了
+		break;
+	}
+}
+
 void Field::UpDate_Start() {
 	this->startCount++;
 
@@ -146,4 +164,9 @@ void Field::ReadMapData()
 		}
 		count++;
 	}
+}
+
+int Field::GetMapData(int x, int y)
+{
+	return mapdata[(int)(y / 32)][(int)(x / 32)];
 }
