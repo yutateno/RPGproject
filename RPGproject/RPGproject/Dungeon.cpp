@@ -16,7 +16,8 @@ Dungeon::Dungeon() {
 }
 
 Dungeon::~Dungeon() {
-
+	DeleteGraph(Gr_Back);
+	DeleteGraph(Gr_Wall);
 }
 
 void Dungeon::UpDate() {
@@ -98,8 +99,8 @@ void Dungeon::Draw_Main() {
 	for (int i = 0, n = (int)map.size(); i < n; i++) {
 		for (int j = 0, m = (int)map[i].size(); j < m; j++) {
 			// 画面内なら描画　playerの位置を左上として右下までの範囲です
-			if (j * 28 + x >= -28 && j * 28 + x <= 640 &&
-				i * 28 + y >= -28 && i * 28 + y <= 480) {
+			if (j * 32 + x >= -32 && j * 32 + x <= 640 &&
+				i * 32 + y >= -32 && i * 32 + y <= 480) {
 				//stoi で文字を数値に変換
 				switch ((int)(stoi(map[i][j]) * 0.1)) {
 				case 0:	//00
@@ -108,7 +109,7 @@ void Dungeon::Draw_Main() {
 				case 1:	//壁
 					switch (stoi(map[i][j]) % 10) {
 					case 0:	//10
-						DrawGraph(j * 28 + x, i * 28 + y, Gr_Wall, false);
+						DrawGraph(j * 32 + x, i * 32 + y, Gr_Wall, false);
 						break;
 
 					default:
@@ -146,7 +147,7 @@ void Dungeon::MapData() {
 }
 
 int Dungeon::GetMapData(int x, int y) {
-	return stoi(map[(int)(y / 32)][(int)(x / 32)]);
+	return stoi(map[(int)(y / 32)][(int)(x / 32)]);	//28に調整
 }
 
 void Dungeon::SetX(int x) {
