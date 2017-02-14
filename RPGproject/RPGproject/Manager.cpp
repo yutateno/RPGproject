@@ -1,6 +1,9 @@
 #include "Manager.h"
 
 Manager::Manager() {
+	playerX = 0;
+	playerY = 0;
+	probability = 1000;
 
 	player = new Player();
 	this->endFlag = false;
@@ -8,6 +11,33 @@ Manager::Manager() {
 	this->title = new Title();
 }
 Manager::~Manager() {
+	switch (NowScene)
+	{
+	case eScene::S_Title://タイトル画面
+		delete title;
+		break;
+	case eScene::S_Field:// フィールド画面
+		delete field;
+		break;
+	case eScene::S_Battle:// 戦闘画面
+		delete battle;
+		break;
+	case eScene::S_SafeArea:// 拠点画面
+		delete safeArea;
+		break;
+	case eScene::S_Dungeon://ダンジョン画面
+		delete dungeon;
+		break;
+	case eScene::S_GameOver://ゲームオーバー画面
+		delete gameOver;
+		break;
+	case eScene::S_GameClear://ゲームクリア画面
+		delete gameClear;
+		break;
+	default:	//Error
+		break;
+	}
+
 	delete player;
 }
 
@@ -64,19 +94,72 @@ void Manager::UpDate() {
 		this->title->UpDate();
 		break;
 	case eScene::S_Field:// フィールド画面
-		this->field->UpDate();
-		player->Move();
+		this->field->UpDate(player->GetX(), player->GetY());
 
-		// 位置修正
-		if (field->GetMapData(player->GetX(), player->GetY()) == 1)
+		// エンカウント用
+		playerX = player->GetX();
+		playerY = player->GetY();
+
+		if (field->GetStep() == eStep::Main)
 		{
-			player->MoveReset();
+			player->Move();
+		}
+		// エンカウント
+		if (player->GetX() != playerX || player->GetY() != playerY)
+		{
+			if (GetRand(probability) == 0)
+			{
+				field->SetNextScene(eScene::S_Battle);
+				field->SetStep(eStep::End);
+			}
 		}
 
+		// マップとの当たり判定
+		switch (field->GetMapData(player->GetX(), player->GetY()))
+		{
+		case 0:			// 無
+			break;
+		case 1:			// 壁
+			player->MoveReset();
+			break;
+		default:
+			// 基本的に来ない
+			break;
+		}
 		break;
+
 	case eScene::S_Battle:// 戦闘画面
 		this->battle->UpDate();
+		switch (battle->GetCommand())
+		{
+		case NEUTRAL:		// 何でもないとき
+			break;
+		case ATTACK:		// 何でもないとき
+			break;
+		case DATTACK:		// 攻撃する時
+			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
+			battle->SetCommand(NEUTRAL);
+			break;
+		case MAGIC:			// 何でもないとき
+			break;
+		case DMAGIC:		// 魔法攻撃するとき
+			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
+			battle->SetCommand(NEUTRAL);
+			break;
+		case RUN_AWAY:		// 何でもないとき
+			break;
+		default:
+			// 通常来ない
+			break;
+		}
+
+		// 戦闘終了
+		if (enemy->GetHP() < 0 || player->GetHP() < 0)
+		{
+			battle->SetStep(eStep::End);
+		}
 		break;
+
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea->UpDate();
 		break;
@@ -139,6 +222,7 @@ void Manager::ChengeScene_Field() {
 	switch (this->NowScene) {
 	case eScene::S_Battle:// 戦闘画面
 		this->battle = new Battle();
+		enemy = new Enemy();
 		// フィールド画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Field);
 		break;
@@ -165,7 +249,7 @@ void Manager::ChengeScene_Field() {
 
 // 戦闘画面からのシーン移行
 void Manager::ChengeScene_Battle() {
-	InitGraph();	// 全グラフィック削除
+	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
 	this->NowScene = this->battle->GetNextScene();
@@ -196,11 +280,14 @@ void Manager::ChengeScene_Battle() {
 		delete this->battle;
 		break;
 	}
+
+	// 敵削除
+	delete enemy;
 }
 
 // 拠点画面からのシーン移行
 void Manager::ChengeScene_SafeArea() {
-	InitGraph();	// 全グラフィック削除
+	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
 	this->NowScene = this->safeArea->GetNextScene();
@@ -229,7 +316,7 @@ void Manager::ChengeScene_SafeArea() {
 
 // ダンジョン画面からのシーン移行
 void Manager::ChengeScene_Dungeon() {
-	InitGraph();	// 全グラフィック削除
+	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
 	this->NowScene = this->dungeon->GetNextScene();
@@ -262,7 +349,7 @@ void Manager::ChengeScene_Dungeon() {
 
 // ゲームオーバー画面からのシーン移行
 void Manager::ChengeScene_GameOver() {
-	InitGraph();	// 全グラフィック削除
+	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
 	this->NowScene = this->gameOver->GetNextScene();
@@ -285,7 +372,7 @@ void Manager::ChengeScene_GameOver() {
 
 // ゲームクリア画面からのシーン移行
 void Manager::ChengeScene_GameClear() {
-	InitGraph();	// 全グラフィック削除
+	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
 	this->NowScene = this->gameClear->GetNextScene();
@@ -314,10 +401,19 @@ void Manager::Draw() {
 		break;
 	case eScene::S_Field:// フィールド画面
 		this->field->Draw();
-		player->aaaDraw();
+
+		if (field->GetStep() == eStep::Main)
+		{
+			player->aaaDraw();
+		}
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle->Draw();
+
+		// Debug------------------------------------------------------------
+		DrawFormatString(0, 400, (0, 0, 200), "%d", enemy->GetHP());
+		// -----------------------------------------------------------------
+
 		break;
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea->Draw();
