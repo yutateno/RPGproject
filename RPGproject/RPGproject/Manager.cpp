@@ -173,6 +173,8 @@ void Manager::UpDate() {
 		{
 			player->MoveReset();
 		}
+		dungeon->SetX(player->GetX()-320);
+		dungeon->SetY(player->GetY()-240);
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->UpDate();
@@ -423,6 +425,8 @@ void Manager::Draw() {
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->Draw();
 		player->aaaDraw();
+		dungeon->SetX(player->GetX());
+		dungeon->SetY(player->GetY());
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->Draw();

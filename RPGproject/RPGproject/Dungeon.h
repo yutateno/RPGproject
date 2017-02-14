@@ -30,7 +30,7 @@ public:
 
 	void Draw();	// •`‰æ
 	void Draw_Start();	// ŠJn‰æ–Ê•`‰æ
-	void Draw_Main();	// ƒƒCƒ“‰æ–Ê•`‰æ
+	void Draw_Main(int x, int y);	// ƒƒCƒ“‰æ–Ê•`‰æ
 	void Draw_End();	// I—¹‰æ–Ê•`‰æ
 
 	void MapData();

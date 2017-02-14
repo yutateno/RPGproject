@@ -74,7 +74,7 @@ void Dungeon::Draw() {
 		Draw_Start();
 		break;
 	case eStep::Main:	// メイン処理画面
-		Draw_Main();
+		Draw_Main(GetX(), GetY());
 		break;
 	case eStep::End:	// 終了画面
 		Draw_End();
@@ -91,34 +91,30 @@ void Dungeon::Draw_Start() {
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void Dungeon::Draw_Main() {
+void Dungeon::Draw_Main(int x, int y) {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
 	DrawGraph(0, 0, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	for (int i = 0, n = (int)map.size(); i < n; i++) {
 		for (int j = 0, m = (int)map[i].size(); j < m; j++) {
-			// 画面内なら描画　playerの位置を左上として右下までの範囲です
-			if (j * 32 + x >= -32 && j * 32 + x <= 640 &&
-				i * 32 + y >= -32 && i * 32 + y <= 480) {
 				//stoi で文字を数値に変換
-				switch ((int)(stoi(map[i][j]) * 0.1)) {
-				case 0:	//00
+			switch ((int)(stoi(map[i][j]) * 0.1)) {
+			case 0:	//00
+				break;
+
+			case 1:	//壁
+				switch (stoi(map[i][j]) % 10) {
+				case 0:	//10
+					DrawGraph(j * 32 - x, i * 32 - y, Gr_Wall, false);
 					break;
 
-				case 1:	//壁
-					switch (stoi(map[i][j]) % 10) {
-					case 0:	//10
-						DrawGraph(j * 32 + x, i * 32 + y, Gr_Wall, false);
-						break;
-
-					default:
-						break;
-					}
-					break;
 				default:
 					break;
 				}
+				break;
+			default:
+				break;
 			}
 		}
 	}
