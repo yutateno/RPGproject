@@ -10,10 +10,9 @@ Dungeon::Dungeon() {
 
 	Gr_Back = LoadGraph("Dungeon\\Dungeon_Back.png");
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
-	Gr_Player = LoadGraph("Dungeon\\player.png");
 
-	player_x = 0;
-	player_y = 0;
+	x = 0;
+	y = 0;
 }
 
 Dungeon::~Dungeon() {
@@ -35,7 +34,7 @@ void Dungeon::UpDate() {
 		endFlag = true;	// エラー終了
 		break;
 	}
-	MapDate();
+	MapData();
 }
 void Dungeon::UpDate_Start() {
 	startCount++;
@@ -89,8 +88,6 @@ void Dungeon::Draw_Start() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, startCount * 3);
 	DrawGraph(0, 0, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
-	//DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
 }
 
 void Dungeon::Draw_Main() {
@@ -101,8 +98,8 @@ void Dungeon::Draw_Main() {
 	for (int i = 0, n = (int)map.size(); i < n; i++) {
 		for (int j = 0, m = (int)map[i].size(); j < m; j++) {
 			// 画面内なら描画　playerの位置を左上として右下までの範囲です
-			if (j * 28 + player_x >= -28 && j * 28 + player_x <= 640 &&
-				i * 28 + player_y >= -28 && i * 28 + player_y <= 480) {
+			if (j * 28 + x >= -28 && j * 28 + x <= 640 &&
+				i * 28 + y >= -28 && i * 28 + y <= 480) {
 				//stoi で文字を数値に変換
 				switch ((int)(stoi(map[i][j]) * 0.1)) {
 				case 0:	//00
@@ -111,23 +108,12 @@ void Dungeon::Draw_Main() {
 				case 1:	//壁
 					switch (stoi(map[i][j]) % 10) {
 					case 0:	//10
-						DrawGraph(j * 28 + player_x, i * 28 + player_y, Gr_Wall, false);
+						DrawGraph(j * 28 + x, i * 28 + y, Gr_Wall, false);
 						break;
 
 					default:
 						break;
 					}
-					break;
-				case 3:
-					switch (stoi(map[i][j]) % 10) {
-					case 0:
-						DrawGraph(j * 28 + player_x, i * 28 + player_y, Gr_Player, false);
-						break;
-
-					default:
-						break;
-					}
-
 					break;
 				default:
 					break;
@@ -136,8 +122,6 @@ void Dungeon::Draw_Main() {
 		}
 	}
 
-	//DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
-	//DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 200, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 300, "Xキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 400, "Cキーでゲームクリア画面へ", WHITE, Font::Get(eFont::SELECT));
@@ -147,11 +131,9 @@ void Dungeon::Draw_End() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 1));
 	DrawRotaGraph(320, 240, 1.0, endCount * 1, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//DrawStringToHandle(0, 0, "ダンジョン画面", WHITE, Font::Get(eFont::SELECT));
-	//DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
 }
 
-void Dungeon::MapDate() {
+void Dungeon::MapData() {
 	read_file.open("Dungeon\\DungeonMap.txt");
 	read_count = 0;
 	while (getline(read_file, read_line)) {	// 一行ずつ読み込み
@@ -161,4 +143,24 @@ void Dungeon::MapDate() {
 		}
 		read_count++;	// 次の行に
 	}
+}
+
+int Dungeon::GetMapData(int x, int y) {
+	return stoi(map[(int)(y / 32)][(int)(x / 32)]);
+}
+
+void Dungeon::SetX(int x) {
+	this->x = x;
+}
+
+int Dungeon::GetX() {
+	return this->x;
+}
+
+void Dungeon::SetY(int y) {
+	this->y = y;
+}
+
+int Dungeon::GetY() {
+	return this->y;
 }

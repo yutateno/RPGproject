@@ -9,7 +9,6 @@
 class Dungeon : public SuperScene {
 private:
 	int Gr_Back;	// 背景
-	int Gr_Player;
 	int Gr_Wall;
 
 	vector<vector<string>> map;
@@ -17,8 +16,8 @@ private:
 	ifstream read_file;		// 読み込むファイル
 	string read_line;		// 読み込んだ行（1行）
 	int read_count;
-	int player_x;
-	int player_y;
+	int x;
+	int y;
 
 public:
 	Dungeon();
@@ -34,5 +33,12 @@ public:
 	void Draw_Main();	// メイン画面描画
 	void Draw_End();	// 終了画面描画
 
-	void MapDate();
+	void MapData();
+
+	// ゲッターセッター
+	int GetMapData(int x, int y);
+	void SetX(int x);
+	int GetX();
+	void SetY(int y);
+	int GetY();
 };
