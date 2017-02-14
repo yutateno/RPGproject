@@ -14,6 +14,9 @@ Field::Field() {
 
 	// マップデータ読み込み
 	ReadMapData();
+
+	cameraX = 0;
+	cameraY = 0;
 }
 Field::~Field() {
 	DeleteGraph(Gr_Back);
@@ -128,21 +131,21 @@ void Field::Draw_Main() {
 	DrawGraph(0, 0, Gr_Back, true);
 
 	// マップチップ
-	for (int i = 0,n = mapdata.size();i < n;i++)
+	for (int i = 0, n = mapdata.size();i < n;i++)
 	{
-		for (int j = 0, m = mapdata.at(i).size();j < m;j++)
+		for (int j = 0, m = mapdata[i].size();j < m;j++)
 		{
-			switch (mapdata.at(i).at(j))
+			switch (mapdata[i][j])
 			{
 			case 0:		// 何もなし
 				break;
 
 			case 1:		// マップチップ1
-				DrawGraph(j * 32, i * 32, mapchip1, true);
+				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip1, true);
 				break;
 
 			case 2:
-				DrawGraph(j * 32, i * 32, mapchip2, true);
+				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip2, true);
 				break;
 
 			default:	// 改行時に来るエラーではない
@@ -209,4 +212,9 @@ eStep Field::GetStep()
 void Field::SetNextScene(eScene nextScene)
 {
 	this->nextScene = nextScene;
+}
+void Field::SetCamera(int x, int y)
+{
+	cameraX = x;
+	cameraY = y;
 }

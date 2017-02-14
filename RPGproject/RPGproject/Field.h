@@ -18,6 +18,9 @@ private:
 
 	vector<vector<int> > mapdata;	// マップデータ本体
 
+	int cameraX;
+	int cameraY;
+
 public:
 	Field();
 	~Field();
@@ -41,4 +44,5 @@ public:
 	void SetStep(eStep step);
 	eStep GetStep();
 	void SetNextScene(eScene nextScene);
+	void SetCamera(int x, int y);
 };

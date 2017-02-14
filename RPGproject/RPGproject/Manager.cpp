@@ -3,7 +3,7 @@
 Manager::Manager() {
 	playerX = 0;
 	playerY = 0;
-	probability = 1000;
+	probability = 50000;
 
 	player = new Player();
 	this->endFlag = false;
@@ -113,6 +113,8 @@ void Manager::UpDate() {
 				field->SetStep(eStep::End);
 			}
 		}
+
+		field->SetCamera(player->GetX() - (320 - 16), player->GetY() - (240 - 16));
 
 		// ƒ}ƒbƒv‚Æ‚Ì“–‚½‚è”»’è
 		switch (field->GetMapData(player->GetX(), player->GetY()))
