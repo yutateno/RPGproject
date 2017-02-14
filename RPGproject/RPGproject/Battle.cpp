@@ -112,13 +112,18 @@ void Battle::UpDate_Main() {
 			break;
 
 		case RUN_AWAY:	// 逃げる
-			step = eStep::End;	// 戦闘終了
 			break;
 
 		default:		// 在り得ない。エラー
 			endFlag = true;
 			break;
 		}
+	}
+
+	// 逃げたら
+	if (command == RUN_AWAY)
+	{
+		step = eStep::End;	// 戦闘終了
 	}
 }
 void Battle::UpDate_End() {

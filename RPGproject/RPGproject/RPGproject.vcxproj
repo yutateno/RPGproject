@@ -163,6 +163,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="SafeArea.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Title.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="SafeArea.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Title.h" />
