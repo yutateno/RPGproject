@@ -10,12 +10,15 @@ Field::Field() {
 	// 画像読み込み
 	Gr_Back = LoadGraph("img\\field_background.png");
 	mapchip1 = LoadGraph("img\\mapchip1.png");
+	mapchip2 = LoadGraph("img\\mapchip2.png");
 
 	// マップデータ読み込み
 	ReadMapData();
 }
 Field::~Field() {
-
+	DeleteGraph(Gr_Back);
+	DeleteGraph(mapchip1);
+	DeleteGraph(mapchip2);
 }
 
 void Field::UpDate() {
@@ -34,14 +37,14 @@ void Field::UpDate() {
 		break;
 	}
 }
-void Field::UpData(int playerX, int playerY)
+void Field::UpDate(int playerX, int playerY)
 {
 	switch (this->step) {
 	case eStep::Start:	// 開始画面
 		this->UpDate_Start();
 		break;
 	case eStep::Main:	// メイン処理画面
-		this->UpDate_Main();
+		this->UpDate_Main(playerX, playerY);
 		break;
 	case eStep::End:	// 終了画面
 		this->UpDate_End();
@@ -75,7 +78,24 @@ void Field::UpDate_Main() {
 		this->nextScene = eScene::S_Dungeon;
 		this->step = eStep::End;
 	}
+}
+void Field::UpDate_Main(int playerX, int playerY) {
 
+	// Zキーで戦闘画面に
+	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+		this->nextScene = eScene::S_Battle;
+		this->step = eStep::End;
+	}
+	// Xキーで拠点画面に
+	if (KeyData::Get(KEY_INPUT_X) == 1) {
+		this->nextScene = eScene::S_SafeArea;
+		this->step = eStep::End;
+	}
+	// Cキーでダンジョン画面に
+	if (KeyData::Get(KEY_INPUT_C) == 1) {
+		this->nextScene = eScene::S_Dungeon;
+		this->step = eStep::End;
+	}
 }
 void Field::UpDate_End() {
 	this->endCount++;
@@ -119,6 +139,10 @@ void Field::Draw_Main() {
 
 			case 1:		// マップチップ1
 				DrawGraph(j * 32, i * 32, mapchip1, true);
+				break;
+
+			case 2:
+				DrawGraph(j * 32, i * 32, mapchip2, true);
 				break;
 
 			default:	// 改行時に来るエラーではない
@@ -166,7 +190,23 @@ void Field::ReadMapData()
 	}
 }
 
+void Field::SetMapData(int x, int y, int data)
+{
+	mapdata[(int)(y / 32)][(int)(x / 32)] = data;
+}
 int Field::GetMapData(int x, int y)
 {
 	return mapdata[(int)(y / 32)][(int)(x / 32)];
+}
+void Field::SetStep(eStep step)
+{
+	this->step = step;
+}
+eStep Field::GetStep()
+{
+	return step;
+}
+void Field::SetNextScene(eScene nextScene)
+{
+	this->nextScene = nextScene;
 }

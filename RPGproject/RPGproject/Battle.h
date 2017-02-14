@@ -1,7 +1,8 @@
 #pragma once
 #include "Manager.h"
 
-enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY };	// コマンド状態
+enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY,
+						DATTACK,DMAGIC};	// コマンド状態
 
 // 戦闘画面
 class Battle : public SuperScene {
@@ -27,5 +28,11 @@ public:
 	void Draw_End();	// 終了画面描画
 	
 	// どの画面から戦闘画面に移行したか（戦闘終了時にその画面に戻る)
-	void SetReturnScene(eScene scene);	
+	void SetReturnScene(eScene scene);
+
+	// セッターゲッター
+	void SetCommand(Command command);
+	Command GetCommand();
+	void SetStep(eStep step);
+	eStep GetStep();
 };

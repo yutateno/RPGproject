@@ -12,7 +12,7 @@ Title::Title() {
 	Gr_Back = LoadGraph("Title.png");
 }
 Title::~Title() {
-	
+	DeleteGraph(Gr_Back);
 }
 
 void Title::UpDate() {

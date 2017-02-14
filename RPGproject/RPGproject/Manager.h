@@ -9,6 +9,7 @@
 #include "Title.h"
 #include "player.h"
 #include "Field.h"
+#include "Enemy.h"
 #include "Battle.h"
 #include "GameOver.h"
 #include "SafeArea.h"
@@ -16,6 +17,7 @@
 #include "Dungeon.h"
 
 class Player;
+class Enemy;
 
 class Manager :public SuperScene {
 private:
@@ -25,6 +27,7 @@ private:
 	Title* title;
 	Player* player;
 	Field* field;
+	Enemy* enemy;
 	Battle* battle;
 	SafeArea* safeArea;
 	Dungeon* dungeon;
@@ -40,7 +43,9 @@ private:
 	void ChengeScene_GameOver();
 	void ChengeScene_GameClear();
 
-
+	int playerX;
+	int playerY;
+	int probability;
 public:
 	Manager();
 	~Manager();

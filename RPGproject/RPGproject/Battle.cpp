@@ -18,7 +18,7 @@ Battle::Battle() {
 	cursorY = 0;
 }
 Battle::~Battle() {
-
+	DeleteGraph(Gr_Back);
 }
 
 void Battle::UpDate() {
@@ -77,14 +77,12 @@ void Battle::UpDate_Main() {
 			if (cursorY == 0)		// 弱攻撃選択時
 			{
 				// ここに戦闘処理を書く
-
-				step = eStep::End;	// 戦闘終了
+				command = DATTACK;
 			}
 			else if (cursorY == 100)// 強攻撃選択時
 			{
 				// ここに戦闘処理を書く
-
-				step = eStep::End;	// 戦闘終了
+				command = DATTACK;
 			}
 			else {					// 戻る選択時
 				cursorY = 0;		// カーソルをもとの位置に戻す
@@ -92,23 +90,27 @@ void Battle::UpDate_Main() {
 			}
 			break;
 
+		case DATTACK:	// Managerに処理させてる
+			break;
+
 		case MAGIC:		// 魔法メニュー
 			if (cursorY == 0)		// 弱魔法選択時
 			{
 				// ここに戦闘処理を書く
-
-				step = eStep::End;	// 戦闘終了
+				command = DMAGIC;
 			}
 			else if (cursorY == 100)// 強魔法選択時
 			{
 				// ここに戦闘処理を書く
-
-				step = eStep::End;	// 戦闘終了
+				command = DMAGIC;
 			}
 			else {					// 戻る選択時
 				cursorY = 0;		// カーソルをもとの位置に戻す
 				command = NEUTRAL;
 			}
+			break;
+
+		case DMAGIC:	// Managerに処理させてる
 			break;
 
 		case RUN_AWAY:	// 逃げる
@@ -194,8 +196,20 @@ void Battle::Draw_End() {
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
 }
 
-
 // どの画面から戦闘画面に移行したか（戦闘終了時にその画面に戻る)
 void Battle::SetReturnScene(eScene scene) {
 	this->nextScene = scene;
+}
+
+void Battle::SetCommand(Command command)
+{
+	this->command = command;
+}
+Command Battle::GetCommand()
+{
+	return command;
+}
+void Battle::SetStep(eStep step)
+{
+	this->step = step;
 }
