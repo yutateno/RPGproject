@@ -94,17 +94,21 @@ void Manager::UpDate() {
 		this->title->UpDate();
 		break;
 	case eScene::S_Field:// フィールド画面
+
+		// このシーンのプロセス
 		this->field->UpDate(player->GetX(), player->GetY());
 
-		// エンカウント用
+		// プレイヤーが動いたかどうかを判断するために直前の座標を保存
 		playerX = player->GetX();
 		playerY = player->GetY();
 
+		// フィールドのメインプロセスが動いてる間プレイヤーのプロセスを呼び出す
 		if (field->GetStep() == eStep::Main)
 		{
 			player->Move();
 		}
-		// エンカウント
+
+		// 敵とのエンカウント
 		if (player->GetX() != playerX || player->GetY() != playerY)
 		{
 			if (GetRand(probability) == 0)
@@ -114,7 +118,32 @@ void Manager::UpDate() {
 			}
 		}
 
-		field->SetCamera(player->GetX() - (320 - 16), player->GetY() - (240 - 16));
+		// カメラの位置をプレイヤーの座標から計算して代入
+		if (player->GetX() < (320 - 16))		// 左端
+		{
+			field->SetCameraX(0);
+		}
+		else if (player->GetX() > ((field->GetMapWidth() - 1) * 32) - (320 - 16))		// 右端
+		{
+			field->SetCameraX((field->GetMapWidth() * 32) - 640);
+		}
+		else		// それ以外
+		{
+			field->SetCameraX(player->GetX() - (320 - 16));
+		}
+
+		if (player->GetY() < (240 - 16))		// 上端
+		{
+			field->SetCameraY(0);
+		}
+		else if (player->GetY() > ((field->GetMapHeight() - 1) * 32) - (240 - 16))		// 下端
+		{
+			field->SetCameraY((field->GetMapHeight() * 32) - 480);
+		}
+		else		// それ以外
+		{
+			field->SetCameraY(player->GetY() - (240 - 16));
+		}
 
 		// マップとの当たり判定
 		switch (field->GetMapData(player->GetX(), player->GetY()))
@@ -122,7 +151,7 @@ void Manager::UpDate() {
 		case 0:			// 無
 			break;
 		case 1:			// 壁
-			player->MoveReset();
+			player->MoveReset();		// プレイヤーの座標を直前のものに戻す
 			break;
 		default:
 			// 基本的に来ない
@@ -209,8 +238,8 @@ void Manager::ChengeScene_Title() {
 		this->field = new Field();
 
 		// プレイヤーの初期位置移動
-		player->SetX(200);
-		player->SetY(200);
+		player->SetX(320 - 16);
+		player->SetY(240 - 16);
 
 		delete this->title;	// タイトル実体削除
 		break;
@@ -420,8 +449,13 @@ void Manager::Draw() {
 
 		if (field->GetStep() == eStep::Main)
 		{
-			player->aaaDraw();
+			player->aaaDraw(field->GetMapWidth(), field->GetMapHeight());
 		}
+
+		// Debug------------------------------------------------------------
+		DrawFormatString(0, 400, (0, 0, 200), "%d", field->GetMapWidth());
+		// -----------------------------------------------------------------
+
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle->Draw();

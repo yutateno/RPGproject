@@ -9,17 +9,21 @@ Field::Field() {
 
 	// 画像読み込み
 	Gr_Back = LoadGraph("img\\field_background.png");
+	mapchip0 = LoadGraph("img\\mapchip0.png");
 	mapchip1 = LoadGraph("img\\mapchip1.png");
 	mapchip2 = LoadGraph("img\\mapchip2.png");
 
 	// マップデータ読み込み
 	ReadMapData();
 
+	// カメラの一応の初期化。0は使われない
 	cameraX = 0;
 	cameraY = 0;
 }
 Field::~Field() {
+	// 画像データ座駆除
 	DeleteGraph(Gr_Back);
+	DeleteGraph(mapchip0);
 	DeleteGraph(mapchip1);
 	DeleteGraph(mapchip2);
 }
@@ -137,14 +141,15 @@ void Field::Draw_Main() {
 		{
 			switch (mapdata[i][j])
 			{
-			case 0:		// 何もなし
+			case 0:		// マップチップ0
+				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip0, true);
 				break;
 
 			case 1:		// マップチップ1
 				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip1, true);
 				break;
 
-			case 2:
+			case 2:		// マップチップ2
 				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip2, true);
 				break;
 
@@ -173,9 +178,11 @@ void Field::ReadMapData()
 		endFlag = true;
 	}
 
+	// マップをテキストから読み込むための仮置きの変数
 	string str;
 	int count = 0;
 	int count2 = 0;
+
 	while (getline(ifs, str)) {
 		string token;
 		istringstream stream(str);
@@ -201,6 +208,14 @@ int Field::GetMapData(int x, int y)
 {
 	return mapdata[(int)(y / 32)][(int)(x / 32)];
 }
+int Field::GetMapWidth()
+{
+	return mapdata[0].size();
+}
+int Field::GetMapHeight()
+{
+	return mapdata.size();
+}
 void Field::SetStep(eStep step)
 {
 	this->step = step;
@@ -216,5 +231,13 @@ void Field::SetNextScene(eScene nextScene)
 void Field::SetCamera(int x, int y)
 {
 	cameraX = x;
+	cameraY = y;
+}
+void Field::SetCameraX(int x)
+{
+	cameraX = x;
+}
+void Field::SetCameraY(int y)
+{
 	cameraY = y;
 }
