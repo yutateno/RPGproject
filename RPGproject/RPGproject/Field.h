@@ -13,12 +13,13 @@ class Field : public SuperScene {
 private:
 	// 画像
 	int Gr_Back;					// 背景
-	int mapchip1;					// マップチップ
+	int mapchip0;					// マップチップ
+	int mapchip1;					
 	int mapchip2;
 
 	vector<vector<int> > mapdata;	// マップデータ本体
 
-	int cameraX;
+	int cameraX;					// カメラの座標
 	int cameraY;
 
 public:
@@ -39,10 +40,16 @@ public:
 
 	void ReadMapData();	//マップデータをテキストファイルから読み込む関数
 
+
+	// ゲッターセッター
 	void SetMapData(int x, int y, int data);
-	int GetMapData(int x, int y);		// マップデータのゲッター
+	int GetMapData(int x, int y);
+	int GetMapWidth();
+	int GetMapHeight();
 	void SetStep(eStep step);
 	eStep GetStep();
 	void SetNextScene(eScene nextScene);
 	void SetCamera(int x, int y);
+	void SetCameraX(int x);
+	void SetCameraY(int y);
 };

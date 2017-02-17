@@ -4,32 +4,58 @@ Player::Player()
 {
 	hp = 10;			// 体力
 	mp = 10;			// 魔力
-<<<<<<< HEAD
 	x = 320 - 16;		// 座標
 	preX = x;
+	drawX = x;
 	y = 240 - 16;
 	preY = y;
-=======
-	//x = y = preX = preY = 0;		// 座標
-	x = preX = 320;
-	y = preY = 240;
->>>>>>> baa1353da0efc11ce53f5532cd2d74a888a89407
+	drawY = y;
 	attack = 1;		// 攻撃力
 
+	// 画像読み込み
 	graph = LoadGraph("img\\player.png");
 }
 Player::~Player()
 {
+	// 画像のデータ削除
 	DeleteGraph(graph);
 }
 
 void Player::aaaDraw()
 {
-<<<<<<< HEAD
+	// プレイヤー本体
 	DrawGraph(320 - 16, 240 - 16, graph, true);
-=======
-	DrawGraph(320, 240, graph, true);
->>>>>>> baa1353da0efc11ce53f5532cd2d74a888a89407
+}
+void Player::aaaDraw(int mapwidth, int mapheight)
+{
+	if (x < 320 - 16)
+	{
+		drawX = x;
+	}
+	else if (x > (mapwidth * 32 - 32) - (320 - 16))
+	{
+		drawX = x - (mapwidth * 32 - 640);
+	}
+	else
+	{
+		drawX = 320 - 16;
+	}
+
+	if (y < 240 - 16)
+	{
+		drawY = y;
+	}
+	else if (y >(mapheight * 32 - 32) - (240 - 16))
+	{
+		drawY = y - (mapheight * 32 - 480);
+	}
+	else
+	{
+		drawY = 240 - 16;
+	}
+
+	// プレイヤー本体
+	DrawGraph(drawX, drawY, graph, true);
 }
 
 void Player::Move()
