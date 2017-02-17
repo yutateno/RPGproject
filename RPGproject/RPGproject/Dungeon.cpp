@@ -13,6 +13,8 @@ Dungeon::Dungeon() {
 
 	x = 0;
 	y = 0;
+	fieldflag = false;
+	battleflag = false;
 }
 
 Dungeon::~Dungeon() {
@@ -46,13 +48,23 @@ void Dungeon::UpDate_Start() {
 
 void Dungeon::UpDate_Main() {
 
-	// Zキーで戦闘画面に
+	// Zキーで戦闘画面に------------------------------------------------何も変えてませんがエラー起きる----
 	if (KeyData::Get(KEY_INPUT_Z) == 1) {
 		this->nextScene = eScene::S_Battle;
 		this->step = eStep::End;
 	}
-	// Xキーでフィールド画面に
+	// ボスチップに当たったら戦闘画面
+	if (Dungeon::GetBattle() == true) {
+		this->nextScene = eScene::S_Battle;
+		this->step = eStep::End;
+	}
+	/*// Xキーでフィールド画面に
 	if (KeyData::Get(KEY_INPUT_X) == 1) {
+		this->nextScene = eScene::S_Field;
+		this->step = eStep::End;
+	}*/
+	// 特定の場所行ったらフィールド画面へ
+	if (Dungeon::GetField() == true) {
 		this->nextScene = eScene::S_Field;
 		this->step = eStep::End;
 	}
@@ -106,21 +118,44 @@ void Dungeon::Draw_Main(int x, int y) {
 			case 1:	//壁
 				switch (stoi(map[i][j]) % 10) {
 				case 0:	//10
-					DrawGraph(j * 32 - x, i * 32 - y, Gr_Wall, false);
+					DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Wall, false);
 					break;
 
 				default:
 					break;
 				}
 				break;
+
+			case 2:
+				switch (stoi(map[i][j]) % 10) {
+				case 0:
+					DrawBox(j * 32 - x - 32, i * 32 - y - 32, j * 32 - x, i * 32 - y, BLUE, TRUE);
+					break;
+
+				default:
+					break;
+				}
+				break;
+
+			case 3:
+				switch (stoi(map[i][j]) % 10) {
+				case 0:
+					DrawBox(j * 32 - x - 32, i * 32 - y - 32, j * 32 - x, i * 32 - y, BLACK, TRUE);
+					break;
+
+				default:
+					break;
+				}
+				break;
+
 			default:
 				break;
 			}
 		}
 	}
 
-	DrawStringToHandle(0, 200, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 300, "Xキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
+	DrawStringToHandle(0, 300, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
+	//DrawStringToHandle(0, 300, "Xキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 400, "Cキーでゲームクリア画面へ", WHITE, Font::Get(eFont::SELECT));
 }
 
@@ -160,4 +195,35 @@ void Dungeon::SetY(int y) {
 
 int Dungeon::GetY() {
 	return this->y;
+}
+
+void Dungeon::SetField(bool flag) {
+	fieldflag = flag;
+}
+
+bool Dungeon::GetField() {
+	if (fieldflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void Dungeon::SetBattle(bool flag) {
+	battleflag = flag;
+}
+
+bool Dungeon::GetBattle() {
+	if (battleflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+eStep Dungeon::GetStep()
+{
+	return step;
 }

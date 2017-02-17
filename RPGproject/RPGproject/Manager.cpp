@@ -167,14 +167,23 @@ void Manager::UpDate() {
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->UpDate();
-		player->Move();
-		// 位置修正
-		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 10)
+		if (dungeon->GetStep() == eStep::Main)
 		{
+			player->Move();
+		}
+		// 位置修正
+		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 10) {
 			player->MoveReset();
 		}
-		dungeon->SetX(player->GetX()-320);
-		dungeon->SetY(player->GetY()-240);
+		//フィールドへの出口に移動したら
+		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 20) {
+			dungeon->SetField(true);
+		}
+		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 30) {
+			dungeon->SetBattle(true);
+		}
+		dungeon->SetX(player->GetX()-320-16);
+		dungeon->SetY(player->GetY()-240-16);
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->UpDate();
@@ -236,8 +245,8 @@ void Manager::ChengeScene_Field() {
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon = new Dungeon();
-		player->SetX(50);
-		player->SetY(50);
+		player->SetX(464);
+		player->SetY(864);
 		delete this->field;
 		break;
 	case eScene::S_End://ゲーム終了
@@ -328,6 +337,9 @@ void Manager::ChengeScene_Dungeon() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
+		// プレイヤーの初期位置移動(エリア外だった時のための処置
+		player->SetX(200);
+		player->SetY(200);
 		delete this->dungeon;	// ダンジョン画面実体削除
 		break;
 	case eScene::S_Battle:// 戦闘画面

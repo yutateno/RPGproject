@@ -4,16 +4,10 @@ Player::Player()
 {
 	hp = 10;			// ‘Ì—Í
 	mp = 10;			// –‚—Í
-<<<<<<< HEAD
 	x = 320 - 16;		// À•W
 	preX = x;
 	y = 240 - 16;
 	preY = y;
-=======
-	//x = y = preX = preY = 0;		// À•W
-	x = preX = 320;
-	y = preY = 240;
->>>>>>> baa1353da0efc11ce53f5532cd2d74a888a89407
 	attack = 1;		// UŒ‚—Í
 
 	graph = LoadGraph("img\\player.png");
@@ -25,11 +19,7 @@ Player::~Player()
 
 void Player::aaaDraw()
 {
-<<<<<<< HEAD
 	DrawGraph(320 - 16, 240 - 16, graph, true);
-=======
-	DrawGraph(320, 240, graph, true);
->>>>>>> baa1353da0efc11ce53f5532cd2d74a888a89407
 }
 
 void Player::Move()

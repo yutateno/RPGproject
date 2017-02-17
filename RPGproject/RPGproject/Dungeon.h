@@ -18,6 +18,8 @@ private:
 	int read_count;
 	int x;
 	int y;
+	bool fieldflag;
+	bool battleflag;
 
 public:
 	Dungeon();
@@ -41,4 +43,9 @@ public:
 	int GetX();
 	void SetY(int y);
 	int GetY();
+	void SetField(bool flag);	// 出口にいるかどうか
+	bool GetField();
+	void SetBattle(bool flag);	// 戦闘行くかどうか
+	bool GetBattle();
+	eStep GetStep();	// 今のステップ状況
 };
