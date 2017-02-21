@@ -9,18 +9,19 @@
 class Dungeon : public SuperScene {
 private:
 	int Gr_Back;	// 背景
-	int Gr_Wall;
+	int Gr_Wall;	// 壁
 
+	// マップ
 	vector<vector<string>> map;
 
 	ifstream read_file;		// 読み込むファイル
 	string read_line;		// 読み込んだ行（1行）
-	int read_count;
-	int x;
-	int y;
-	bool fieldflag;
-	bool battleflag;
-	bool bossflag;
+	int read_count;			// 読み込む列
+	int x;					// 画面表示のｘ座標
+	int y;					// 画面表示のｘ座標
+	bool fieldflag;			// フィールド画面へ行くかどうか
+	bool battleflag;		// 戦闘画面へ行くかどうか
+	bool bossflag;			// ボス戦闘へ行くかどうか
 
 public:
 	Dungeon();

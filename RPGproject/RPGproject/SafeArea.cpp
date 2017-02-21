@@ -16,7 +16,6 @@ SafeArea::SafeArea() {
 }
 SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Wall);
-	read_file.close();
 }
 
 void SafeArea::UpDate() {
@@ -127,6 +126,7 @@ void SafeArea::MapData() {
 		}
 		read_count++;	// Ÿ‚Ìs‚É
 	}
+	read_file.close();
 }
 
 int SafeArea::GetMapData(int x, int y) {
