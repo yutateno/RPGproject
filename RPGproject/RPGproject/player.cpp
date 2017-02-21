@@ -9,10 +9,7 @@ Player::Player()
 	drawX = x;
 	y = 240 - 16;
 	preY = y;
-<<<<<<< HEAD
-=======
 	drawY = y;
->>>>>>> 011c9e571536a1b6b557a6613f8081a0badffb1b
 	attack = 1;		// 攻撃力
 
 	// 画像読み込み
@@ -26,9 +23,6 @@ Player::~Player()
 
 void Player::aaaDraw()
 {
-<<<<<<< HEAD
-	DrawGraph(320 - 16, 240 - 16, graph, true);
-=======
 	// プレイヤー本体
 	DrawGraph(320 - 16, 240 - 16, graph, true);
 }
@@ -62,7 +56,6 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 
 	// プレイヤー本体
 	DrawGraph(drawX, drawY, graph, true);
->>>>>>> 011c9e571536a1b6b557a6613f8081a0badffb1b
 }
 
 void Player::Move()

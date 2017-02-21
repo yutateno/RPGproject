@@ -299,6 +299,11 @@ void Manager::ChengeScene_Battle() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
+
+		// プレイヤーの初期位置移動
+		player->SetX(320 - 16);
+		player->SetY(240 - 16);
+
 		delete this->battle;	// 戦闘画面実体削除
 		break;
 	case eScene::S_SafeArea:// 拠点画面
@@ -337,6 +342,11 @@ void Manager::ChengeScene_SafeArea() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
+
+		// プレイヤーの初期位置移動
+		player->SetX(320 - 16);
+		player->SetY(240 - 16);
+
 		delete this->safeArea;	// 拠点画面実体削除
 		break;
 	case eScene::S_Battle:// 戦闘画面
@@ -366,9 +376,11 @@ void Manager::ChengeScene_Dungeon() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
-		// プレイヤーの初期位置移動(エリア外だった時のための処置
-		player->SetX(200);
-		player->SetY(200);
+
+		// プレイヤーの初期位置移動
+		player->SetX(320 - 16);
+		player->SetY(240 - 16);
+
 		delete this->dungeon;	// ダンジョン画面実体削除
 		break;
 	case eScene::S_Battle:// 戦闘画面
