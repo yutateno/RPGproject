@@ -407,11 +407,7 @@ void Manager::ChengeScene_Dungeon() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
-<<<<<<< HEAD
 		// プレイヤーの初期位置移動
-=======
-		// プレイヤーの初期位置移動(エリア外だった時のための処置
->>>>>>> cad3dfab5ae5970991f0a7bc5b14b0ea8b4b5284
 		player->SetX(320 - 16);
 		player->SetY(240 - 16);
 		delete this->dungeon;	// ダンジョン画面実体削除
