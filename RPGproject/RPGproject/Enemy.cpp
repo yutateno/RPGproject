@@ -2,11 +2,21 @@
 
 Enemy::Enemy()
 {
+	name = "default_chang!";
 	hp = 10;			// ‘Ì—Í
 	mp = 10;			// –‚—Í
-	attack = 1;		// UŒ‚—Í
+	attack = 1;			// UŒ‚—Í
 
 	graph = LoadGraph("img\\enemy.png");
+}
+Enemy::Enemy(string name, int hp, int mp, int attack, int graph)
+{
+	this->name = name;
+	this->hp = hp;			// ‘Ì—Í
+	this->mp = mp;			// –‚—Í
+	this->attack = attack;			// UŒ‚—Í
+
+	this->graph = graph;
 }
 Enemy::~Enemy()
 {
@@ -18,6 +28,20 @@ void Enemy::aaaDraw()
 	DrawGraph(0, 0, graph, true);
 }
 
+int Enemy::AttackProcess()
+{
+	// ‰¼ˆ—
+	return attack;
+}
+
+void Enemy::SetName(string name)
+{
+	this->name = name;
+}
+string Enemy::GetName()
+{
+	return name;
+}
 void Enemy::SetHP(int hp)
 {
 	this->hp = hp;

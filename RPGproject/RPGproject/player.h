@@ -2,9 +2,15 @@
 
 #include "Manager.h"
 
+#include <string>
+
+using std::string;
+
 class Player
 {
 private:
+	string name;		// 名前
+	int lv;				// レベル
 	int hp;				// 体力
 	int mp;				// 魔力
 	int x, y;			// 座標
@@ -25,6 +31,10 @@ public:
 	void MoveReset();		// 直前の動きをリセット
 
 	// ゲッターセッターたち
+	void SetName(string name);
+	string GetName();
+	void SetLV(int lv);
+	int GetLV();
 	void SetX(int x);
 	int GetX();
 	void SetY(int y);
