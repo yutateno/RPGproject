@@ -21,7 +21,6 @@ Dungeon::Dungeon() {
 Dungeon::~Dungeon() {
 	DeleteGraph(Gr_Back);
 	DeleteGraph(Gr_Wall);
-	read_file.close();
 }
 
 void Dungeon::UpDate() {
@@ -164,6 +163,7 @@ void Dungeon::MapData() {
 		}
 		read_count++;	// éüÇÃçsÇ…
 	}
+	read_file.close();
 }
 
 int Dungeon::GetMapData(int x, int y) {

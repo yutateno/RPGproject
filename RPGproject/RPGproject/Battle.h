@@ -7,9 +7,10 @@ enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY,
 // 戦闘画面
 class Battle : public SuperScene {
 private:
-	int Gr_Back;		// 背景
+	int Gr_Back;			// 背景
 
-	Command command;	// コマンド状態	
+	Command command;		// コマンド状態	
+	Command preCommand;		// 直前のコマンド
 
 	int cursorX, cursorY;			// カーソルの座標
 
@@ -37,5 +38,6 @@ public:
 	void SetCommand(Command command);
 	Command GetCommand();
 	void SetStep(eStep step);
+	eStep GetStep();
 	void SetNextScene(eScene nextScene);
 };
