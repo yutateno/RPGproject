@@ -98,69 +98,7 @@ void Manager::UpDate() {
 		this->title->UpDate();
 		break;
 	case eScene::S_Field:// フィールド画面
-
-		// このシーンのプロセス
-		this->field->UpDate(player->GetX(), player->GetY());
-
-		// プレイヤーが動いたかどうかを判断するために直前の座標を保存
-		playerX = player->GetX();
-		playerY = player->GetY();
-
-		// フィールドのメインプロセスが動いてる間プレイヤーのプロセスを呼び出す
-		if (field->GetStep() == eStep::Main)
-		{
-			player->Move();
-		}
-
-		// 敵とのエンカウント
-		if (player->GetX() != playerX || player->GetY() != playerY)
-		{
-			if (GetRand(probability) == 0)
-			{
-				field->SetNextScene(eScene::S_Battle);
-				field->SetStep(eStep::End);
-			}
-		}
-
-		// カメラの位置をプレイヤーの座標から計算して代入
-		if (player->GetX() < (320 - 16))		// 左端
-		{
-			field->SetCameraX(0);
-		}
-		else if (player->GetX() > ((field->GetMapWidth() - 1) * 32) - (320 - 16))		// 右端
-		{
-			field->SetCameraX((field->GetMapWidth() * 32) - 640);
-		}
-		else		// それ以外
-		{
-			field->SetCameraX(player->GetX() - (320 - 16));
-		}
-
-		if (player->GetY() < (240 - 16))		// 上端
-		{
-			field->SetCameraY(0);
-		}
-		else if (player->GetY() > ((field->GetMapHeight() - 1) * 32) - (240 - 16))		// 下端
-		{
-			field->SetCameraY((field->GetMapHeight() * 32) - 480);
-		}
-		else		// それ以外
-		{
-			field->SetCameraY(player->GetY() - (240 - 16));
-		}
-
-		// マップとの当たり判定
-		switch (field->GetMapData(player->GetX(), player->GetY()))
-		{
-		case 0:			// 無
-			break;
-		case 1:			// 壁
-			player->MoveReset();		// プレイヤーの座標を直前のものに戻す
-			break;
-		default:
-			// 基本的に来ない
-			break;
-		}
+		FieldProcess();
 		break;
 
 	case eScene::S_Battle:// 戦闘画面
@@ -551,6 +489,79 @@ void Manager::Draw() {
 		this->endFlag = true;
 		break;
 	}
+}
+
+void Manager::FieldProcess()
+{
+	// このシーンのプロセス
+	this->field->UpDate(player->GetX(), player->GetY());
+
+	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
+	playerX = player->GetX();
+	playerY = player->GetY();
+
+	// フィールドのメインプロセスが動いてる間プレイヤーのプロセスを呼び出す
+	if (field->GetStep() == eStep::Main)
+	{
+		player->Process();
+	}
+
+	// 敵とのエンカウント
+	if (player->GetX() != playerX || player->GetY() != playerY)
+	{
+		if (GetRand(probability) == 0)
+		{
+			field->SetNextScene(eScene::S_Battle);
+			field->SetStep(eStep::End);
+		}
+	}
+
+	// カメラの位置をプレイヤーの座標から計算して代入
+	if (player->GetX() < (320 - 16))		// 左端
+	{
+		field->SetCameraX(0);
+	}
+	else if (player->GetX() > ((field->GetMapWidth() - 1) * 32) - (320 - 16))		// 右端
+	{
+		field->SetCameraX((field->GetMapWidth() * 32) - 640);
+	}
+	else		// それ以外
+	{
+		field->SetCameraX(player->GetX() - (320 - 16));
+	}
+
+	if (player->GetY() < (240 - 16))		// 上端
+	{
+		field->SetCameraY(0);
+	}
+	else if (player->GetY() > ((field->GetMapHeight() - 1) * 32) - (240 - 16))		// 下端
+	{
+		field->SetCameraY((field->GetMapHeight() * 32) - 480);
+	}
+	else		// それ以外
+	{
+		field->SetCameraY(player->GetY() - (240 - 16));
+	}
+
+	// マップとの当たり判定----------------------------------
+	for (int i = 0;i < 2;i++)
+	{
+		for (int j = 0;j < 2;j++)
+		{
+			switch (field->GetMapData(player->GetX() + (i * (32 - 1)), player->GetY() + (j * (32 - 1))))
+			{
+			case 0:			// 無
+				break;
+			case 1:			// 壁
+				player->MoveReset();		// プレイヤーの座標を直前のものに戻す
+				break;
+			default:
+				// 基本的に来ない
+				break;
+			}
+		}
+	}
+	// --------------------------------------------------
 }
 
 void Manager::BattleProcess()
