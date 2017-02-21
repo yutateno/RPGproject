@@ -208,11 +208,39 @@ void Manager::UpDate() {
 		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 20) {
 			dungeon->SetField(true);
 		}
+		//ボスチップに当たったら
 		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 30) {
 			dungeon->SetBattle(true);
+			dungeon->SetBoss(true);
 		}
-		dungeon->SetX(player->GetX()-320-16);
-		dungeon->SetY(player->GetY()-240-16);
+		//dungeon->SetX(player->GetX()-320-16);
+		//dungeon->SetY(player->GetY()-240-16);
+		// カメラの位置をプレイヤーの座標から計算して代入
+		if (player->GetX() < (320 - 16))		// 左端
+		{
+			dungeon->SetX(-32);
+		}
+		else if (player->GetX() > (dungeon->GetMapWidth() * 32 - 32) - (320 - 16))		// 右端
+		{
+			dungeon->SetX((dungeon->GetMapWidth() * 32) - 640 - 32);
+		}
+		else		// それ以外
+		{
+			dungeon->SetX(player->GetX() - (320 - 16) - 32);
+		}
+
+		if (player->GetY() < (240 - 16))		// 上端
+		{
+			dungeon->SetY(-32);
+		}
+		else if (player->GetY() > (dungeon->GetMapHeight() * 32 - 32) - (240 - 16))		// 下端
+		{
+			dungeon->SetY((dungeon->GetMapHeight() * 32) - 480 - 32);
+		}
+		else		// それ以外
+		{
+			dungeon->SetY(player->GetY() - (240 - 16) - 32);
+		}
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->UpDate();
@@ -367,14 +395,21 @@ void Manager::ChengeScene_Dungeon() {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
 		// プレイヤーの初期位置移動(エリア外だった時のための処置
-		player->SetX(200);
-		player->SetY(200);
+		player->SetX(320 - 16);
+		player->SetY(240 - 16);
 		delete this->dungeon;	// ダンジョン画面実体削除
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle = new Battle();
+		enemy = new Enemy();
 		// ダンジョン画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Dungeon);
+		/* ボス戦のとき(応急処置(左上のみ当たり判定用)、これをしないと無限ループ
+		   battleにも同じような関数を入れればクリア画面に行くようにすることができるはず*/
+		if (dungeon->GetBoss() == true) {
+			player->SetY(player->GetY() + 16);
+			player->SetX(player->GetX() + 16);
+		}
 		delete this->dungeon;
 		break;
 	case eScene::S_GameClear://ゲームクリア画面
@@ -470,9 +505,15 @@ void Manager::Draw() {
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->Draw();
-		player->aaaDraw();
-		dungeon->SetX(player->GetX());
-		dungeon->SetY(player->GetY());
+		/*if (dungeon->GetStep() == eStep::Main) {
+			player->aaaDraw();
+		}*/
+		//マップチップの当たり判定はしっかりしてるが少しプレイヤーの挙動が早くてずれてる
+		if (dungeon->GetStep() == eStep::Main) {
+			player->aaaDraw(dungeon->GetMapWidth(), dungeon->GetMapHeight());
+		}
+		//dungeon->SetX(player->GetX());
+		//dungeon->SetY(player->GetY());
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->Draw();

@@ -20,6 +20,7 @@ private:
 	int y;
 	bool fieldflag;
 	bool battleflag;
+	bool bossflag;
 
 public:
 	Dungeon();
@@ -39,6 +40,8 @@ public:
 
 	// ゲッターセッター
 	int GetMapData(int x, int y);
+	int GetMapWidth();
+	int GetMapHeight();
 	void SetX(int x);
 	int GetX();
 	void SetY(int y);
@@ -47,5 +50,7 @@ public:
 	bool GetField();
 	void SetBattle(bool flag);	// 戦闘行くかどうか
 	bool GetBattle();
+	void SetBoss(bool flag);	//ボス戦闘に行くかどうか
+	bool GetBoss();
 	eStep GetStep();	// 今のステップ状況
 };

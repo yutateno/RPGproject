@@ -48,11 +48,11 @@ void Dungeon::UpDate_Start() {
 
 void Dungeon::UpDate_Main() {
 
-	// Zキーで戦闘画面に------------------------------------------------何も変えてませんがエラー起きる----
+	/*// Zキーで戦闘画面に
 	if (KeyData::Get(KEY_INPUT_Z) == 1) {
 		this->nextScene = eScene::S_Battle;
 		this->step = eStep::End;
-	}
+	}*/
 	// ボスチップに当たったら戦闘画面
 	if (Dungeon::GetBattle() == true) {
 		this->nextScene = eScene::S_Battle;
@@ -154,14 +154,14 @@ void Dungeon::Draw_Main(int x, int y) {
 		}
 	}
 
-	DrawStringToHandle(0, 300, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
+	//DrawStringToHandle(0, 300, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
 	//DrawStringToHandle(0, 300, "Xキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 400, "Cキーでゲームクリア画面へ", WHITE, Font::Get(eFont::SELECT));
 }
 
 void Dungeon::Draw_End() {
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 1));
-	DrawRotaGraph(320, 240, 1.0, endCount * 1, Gr_Back, FALSE);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 3));
+	DrawRotaGraph(320, 240, 1.0, endCount, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
@@ -179,6 +179,13 @@ void Dungeon::MapData() {
 
 int Dungeon::GetMapData(int x, int y) {
 	return stoi(map[(int)(y / 32)][(int)(x / 32)]);	//28に調整
+}
+
+int Dungeon::GetMapWidth(){
+	return (int)map[0].size();
+}
+int Dungeon::GetMapHeight(){
+	return (int)map.size();
 }
 
 void Dungeon::SetX(int x) {
@@ -216,6 +223,19 @@ void Dungeon::SetBattle(bool flag) {
 
 bool Dungeon::GetBattle() {
 	if (battleflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void Dungeon::SetBoss(bool flag) {
+	bossflag = flag;
+}
+
+bool Dungeon::GetBoss() {
+	if (bossflag == true) {
 		return true;
 	}
 	else {
