@@ -64,5 +64,6 @@ public:
 	void Draw_End() {}		// 終了画面描画
 
 	// 可読性を考慮して長すぎる記述をUpDateから逃がすため作成
+	void FieldProcess();
 	void BattleProcess();
 };

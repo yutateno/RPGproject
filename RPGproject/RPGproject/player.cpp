@@ -2,17 +2,20 @@
 
 Player::Player()
 {
+	// ステータスたち
 	name = "pine";
 	lv = 1;
-	hp = 10;			// 体力
-	mp = 10;			// 魔力
-	x = 320 - 16;		// 座標
+	hp = 10;
+	mp = 10;
+	x = 320 - 16;
 	preX = x;
 	drawX = x;
 	y = 240 - 16;
 	preY = y;
 	drawY = y;
-	attack = 1;		// 攻撃力
+	attack = 1;
+	direction = DOWN;
+	speed = 2;
 
 	// 画像読み込み
 	graph = LoadGraph("img\\player.png");
@@ -60,31 +63,49 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 	DrawGraph(drawX, drawY, graph, true);
 }
 
+void Player::Process()
+{
+
+
+	Move();		// 移動
+}
+
 void Player::Move()
 {
 	// 直前の座標保存
 	preX = x;
 	preY = y;
 
-	// 移動
-	if (KeyData::Get(KEY_INPUT_UP) > 0)
+	// 一応の保険
+	if (speed > 30)
 	{
-		y--;
+		name = "スピードがマップチップの大きさを超えています";
 	}
-	else if (KeyData::Get(KEY_INPUT_DOWN) > 0)
+	else
 	{
-		y++;
-	}
-	else if (KeyData::Get(KEY_INPUT_LEFT) > 0)
-	{
-		x--;
-	}
-	else if (KeyData::Get(KEY_INPUT_RIGHT) > 0)
-	{
-		x++;
+		// 移動
+		if (KeyData::Get(KEY_INPUT_UP) > 0)
+		{
+			y -= speed;
+			direction = UP;
+		}
+		else if (KeyData::Get(KEY_INPUT_DOWN) > 0)
+		{
+			y += speed;
+			direction = DOWN;
+		}
+		else if (KeyData::Get(KEY_INPUT_LEFT) > 0)
+		{
+			x -= speed;
+			direction = LEFT;
+		}
+		else if (KeyData::Get(KEY_INPUT_RIGHT) > 0)
+		{
+			x += speed;
+			direction = RIGHT;
+		}
 	}
 }
-
 void Player::MoveReset()
 {
 	x = preX;
@@ -146,4 +167,12 @@ void Player::SetATK(int attack)
 int Player::GetATK()
 {
 	return attack;
+}
+void Player::SetDirection(Direction direction)
+{
+	this->direction = direction;
+}
+Direction Player::GetDirection()
+{
+	return direction;
 }
