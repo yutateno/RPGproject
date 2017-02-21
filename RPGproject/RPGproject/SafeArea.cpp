@@ -94,6 +94,22 @@ void SafeArea::Draw_Main(int x, int y) {
 					DrawGraph(j * 32 - x, i * 32 - y, Gr_Wall, false);
 					break;
 
+				case 1:
+					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, BLUE, TRUE);	// èoå˚
+					break;
+
+				case 2:
+					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, WHITE, TRUE);	// àƒì‡êl
+					break;
+
+				case 3:
+					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, YELLOW, TRUE);	// ìπãÔâÆ
+					break;
+
+				case 4:
+					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, RED, TRUE);	// ñ¸Çµ
+					break;
+
 				default:
 					break;
 				}
