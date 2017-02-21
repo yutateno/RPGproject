@@ -2,6 +2,8 @@
 
 Player::Player()
 {
+	name = "pine";
+	lv = 1;
 	hp = 10;			// 体力
 	mp = 10;			// 魔力
 	x = 320 - 16;		// 座標
@@ -23,10 +25,6 @@ Player::~Player()
 
 void Player::aaaDraw()
 {
-<<<<<<< HEAD
-	// プレイヤー本体
-=======
->>>>>>> 0d88ed79b4c14203cb30cd01a964d1b3acec62cc
 	DrawGraph(320 - 16, 240 - 16, graph, true);
 }
 void Player::aaaDraw(int mapwidth, int mapheight)
@@ -92,6 +90,22 @@ void Player::MoveReset()
 	y = preY;
 }
 
+void Player::SetName(string name)
+{
+	this->name = name;
+}
+string Player::GetName()
+{
+	return name;
+}
+void Player::SetLV(int lv)
+{
+	this->lv = lv;
+}
+int Player::GetLV()
+{
+	return lv;
+}
 void Player::SetX(int x)
 {
 	this->x = x;

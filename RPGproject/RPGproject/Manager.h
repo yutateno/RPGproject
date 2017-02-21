@@ -43,9 +43,13 @@ private:
 	void ChengeScene_GameOver();
 	void ChengeScene_GameClear();
 
-	int playerX;
-	int playerY;
-	int probability;
+	int playerX;			// プレイヤーが動いたかどうかを判定する変数
+	int playerY;			// プレイヤーが動いたかどうかを判定する変数
+	int probability;		// エンカウントする確率 : 1/probability
+
+	// 戦闘関連
+	bool turn;				// こちらのターンか相手のターンか
+	int count;				// ログを表示する時間
 public:
 	Manager();
 	~Manager();
@@ -58,4 +62,7 @@ public:
 	void Draw_Start() {}		// 開始画面描画
 	void Draw_Main() {}		// メイン画面描画
 	void Draw_End() {}		// 終了画面描画
+
+	// 可読性を考慮して長すぎる記述をUpDateから逃がすため作成
+	void BattleProcess();
 };

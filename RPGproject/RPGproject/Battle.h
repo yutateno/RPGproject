@@ -13,6 +13,8 @@ private:
 
 	int cursorX, cursorY;			// カーソルの座標
 
+	bool textFlag;					// テキストを表示するかどうかのフラグ
+
 public:
 	Battle();
 	~Battle();
@@ -22,7 +24,8 @@ public:
 	void UpDate_Main();	// メイン画面アップデート
 	void UpDate_End();	// 終了画面アップデート
 
-	void Draw();	// 描画
+	void Draw();		// 描画
+	void Draw(bool flag);		// 基本的にこっちが呼ばれる
 	void Draw_Start();	// 開始画面描画
 	void Draw_Main();	// メイン画面描画
 	void Draw_End();	// 終了画面描画
@@ -34,5 +37,5 @@ public:
 	void SetCommand(Command command);
 	Command GetCommand();
 	void SetStep(eStep step);
-	eStep GetStep();
+	void SetNextScene(eScene nextScene);
 };

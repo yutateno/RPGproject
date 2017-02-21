@@ -5,6 +5,10 @@ Manager::Manager() {
 	playerY = 0;
 	probability = 50000;
 
+	// 戦闘関連
+	turn = true;		// true : プレイヤーのターン
+	count = 0;
+
 	player = new Player();
 	this->endFlag = false;
 	this->NowScene = eScene::S_Title;
@@ -160,37 +164,9 @@ void Manager::UpDate() {
 		break;
 
 	case eScene::S_Battle:// 戦闘画面
-		this->battle->UpDate();
-		switch (battle->GetCommand())
-		{
-		case NEUTRAL:		// 何でもないとき
-			break;
-		case ATTACK:		// 何でもないとき
-			break;
-		case DATTACK:		// 攻撃する時
-			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
-			battle->SetCommand(NEUTRAL);
-			break;
-		case MAGIC:			// 何でもないとき
-			break;
-		case DMAGIC:		// 魔法攻撃するとき
-			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
-			battle->SetCommand(NEUTRAL);
-			break;
-		case RUN_AWAY:		// 何でもないとき
-			break;
-		default:
-			// 通常来ない
-			break;
-		}
-
-		// 戦闘終了
-		if (enemy->GetHP() < 0 || player->GetHP() < 0)
-		{
-			battle->SetStep(eStep::End);
-		}
+		BattleProcess();
 		break;
-
+		
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea->UpDate();
 		break;
@@ -404,17 +380,9 @@ void Manager::ChengeScene_Dungeon() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
-<<<<<<< HEAD
-
-		// プレイヤーの初期位置移動
-		player->SetX(320 - 16);
-		player->SetY(240 - 16);
-
-=======
 		// プレイヤーの初期位置移動(エリア外だった時のための処置
 		player->SetX(320 - 16);
 		player->SetY(240 - 16);
->>>>>>> 0d88ed79b4c14203cb30cd01a964d1b3acec62cc
 		delete this->dungeon;	// ダンジョン画面実体削除
 		break;
 	case eScene::S_Battle:// 戦闘画面
@@ -505,19 +473,35 @@ void Manager::Draw() {
 			player->aaaDraw(field->GetMapWidth(), field->GetMapHeight());
 		}
 
-		// Debug------------------------------------------------------------
-		DrawFormatString(0, 400, (0, 0, 200), "%d", field->GetMapWidth());
-		// -----------------------------------------------------------------
-
 		break;
 	case eScene::S_Battle:// 戦闘画面
-		this->battle->Draw();
+		// コマンドを表示するかどうか
+		if (count != 0)
+		{
+			this->battle->Draw(false);
+			if (turn)
+			{
+				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", player->GetName().c_str(), enemy->GetName().c_str(), player->GetATK());
+			}
+			else
+			{
+				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", enemy->GetName().c_str(), player->GetName().c_str(), enemy->GetATK());
+			}
+		}
+		else
+		{
+			this->battle->Draw(true);
+		}
 
-		// Debug------------------------------------------------------------
-		DrawFormatString(0, 400, (0, 0, 200), "%d", enemy->GetHP());
-		// -----------------------------------------------------------------
+		// プレイヤーのステータス
+		DrawFormatString(0, 0, WHITE, "%s\nHP:%d\nMP:%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMP(), player->GetLV());
 
+		// debug-------------------------------------------------------------------------------------
+		// 敵のステータス
+		DrawFormatString(300, 0, WHITE, "%s\nHP:%d\nMP:%d", enemy->GetName().c_str(), enemy->GetHP(), enemy->GetMP());
+		// -----------------------------------------------------------------------------------------
 		break;
+
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea->Draw();
 		break;
@@ -542,5 +526,103 @@ void Manager::Draw() {
 	default:	//Error
 		this->endFlag = true;
 		break;
+	}
+}
+
+void Manager::BattleProcess()
+{
+	// ログの表示中は入力を受け付けない
+	if (count == 0)
+	{
+		this->battle->UpDate();
+	}
+	else
+	{
+		// アニメーションとかしたければここかな
+	}
+
+	// 戦闘勝利
+	if (enemy->GetHP() <= 0)
+	{
+		battle->SetStep(eStep::End);
+		return;
+	}
+
+	// 戦闘敗北
+	if (player->GetHP() <= 0)
+	{
+		battle->SetNextScene(eScene::S_GameOver);
+		return;
+	}
+
+	if (turn)		// プレイヤーのターン
+	{
+		switch (battle->GetCommand())
+		{
+		case NEUTRAL:		// 何でもないとき
+			break;
+		case ATTACK:		// 何でもないとき
+			break;
+		case DATTACK:		// 攻撃する時
+
+							// 文字の表示時間
+			if (count < 50)
+			{
+				count++;
+				break;
+			}
+			else
+			{
+				count = 0;
+			}
+
+			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
+			battle->SetCommand(NEUTRAL);							// コマンドを初期状態に	
+			turn = false;											// ターンを相手に渡す
+
+			break;
+		case MAGIC:			// 何でもないとき
+			break;
+		case DMAGIC:		// 魔法攻撃するとき
+							// 文字の表示時間
+			if (count < 50)
+			{
+				count++;
+				break;
+			}
+			else
+			{
+				count = 0;
+			}
+
+			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
+			battle->SetCommand(NEUTRAL);							// コマンドを初期状態に
+			turn = false;											// ターンを相手に渡す
+			break;
+
+		case RUN_AWAY:		// 何でもないとき
+			break;
+		default:
+			// 通常来ない
+			break;
+		}
+	}
+	else // 相手のターン
+	{
+		// ここに敵の処理を書く
+
+		// 文字の表示時間
+		if (count < 50)
+		{
+			count++;
+			return;
+		}
+		else
+		{
+			count = 0;
+		}
+
+		player->SetHP(player->GetHP() - enemy->GetATK());			// ダメージを与える
+		turn = true;												// ターンをプレイヤーに渡す
 	}
 }

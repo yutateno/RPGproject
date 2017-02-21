@@ -193,7 +193,7 @@ void Field::ReadMapData()
 		while (getline(stream, token, ',')) {
 			//‚·‚×‚Ä•¶š—ñ‚Æ‚µ‚Ä“Ç‚İ‚Ü‚ê‚é‚½‚ß
 			//”’l‚Í•ÏŠ·‚ª•K—v
-			mapdata.at(count).push_back(stof(token)); //stof(string str) : string‚ğfloat‚É•ÏŠ·
+			mapdata.at(count).push_back((int)stof(token)); //stof(string str) : string‚ğfloat‚É•ÏŠ·
 			count2++;
 		}
 		count++;

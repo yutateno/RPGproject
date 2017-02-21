@@ -13,6 +13,8 @@ Battle::Battle() {
 	// コマンド状態
 	command = NEUTRAL;
 
+	textFlag = true;
+
 	// カーソル座標
 	cursorX = 0;
 	cursorY = 0;
@@ -48,11 +50,11 @@ void Battle::UpDate_Main() {
 	// カーソル移動
 	if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY>0)
 	{
-		cursorY -= 100;
+		cursorY--;
 	}
-	if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY<200)
+	if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY<2)
 	{
-		cursorY += 100;
+		cursorY++;
 	}
 
 	// Zキーで決定
@@ -150,6 +152,25 @@ void Battle::Draw() {
 		break;
 	}
 }
+void Battle::Draw(bool flag) {
+	// 進行状態を受け取り表示するかどうかを決める
+	textFlag = flag;
+
+	switch (this->step) {
+	case eStep::Start:	// 開始画面
+		this->Draw_Start();
+		break;
+	case eStep::Main:	// メイン処理画面
+		this->Draw_Main();
+		break;
+	case eStep::End:	// 終了画面
+		this->Draw_End();
+		break;
+	default:
+		this->endFlag = true;	// エラー終了
+		break;
+	}
+}
 void Battle::Draw_Start() {
 	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
@@ -158,38 +179,58 @@ void Battle::Draw_Main() {
 	// 背景
 	DrawGraph(0, 0, Gr_Back, true);
 
-	// コマンド状態に応じて表示を変化
-	switch (command)
+	if (textFlag)
 	{
-	case NEUTRAL:	// 初期
-		DrawStringToHandle(0, 0, "  攻撃", WHITE, Font::Get(eFont::SELECT));
-		DrawStringToHandle(0, 100, "  魔法", WHITE, Font::Get(eFont::SELECT));
-		DrawStringToHandle(0, 200, "  逃げる", WHITE, Font::Get(eFont::SELECT));
-		break;
+		// コマンド状態に応じて表示を変化
+		switch (command)
+		{
+		case NEUTRAL:	// 初期
+						/*
+						DrawStringToHandle(0, 0, "  攻撃", WHITE, Font::Get(eFont::SELECT));
+						DrawStringToHandle(0, 100, "  魔法", WHITE, Font::Get(eFont::SELECT));
+						DrawStringToHandle(0, 200, "  逃げる", WHITE, Font::Get(eFont::SELECT));
+						*/
+			DrawFormatString(0, 384, WHITE, "  攻撃");
+			DrawFormatString(0, 416, WHITE, "  魔法");
+			DrawFormatString(0, 448, WHITE, "  逃げる");
 
-	case ATTACK:	// 攻撃メニュー
-		DrawStringToHandle(0, 0, "  弱攻撃", WHITE, Font::Get(eFont::SELECT));
-		DrawStringToHandle(0, 100, "  強攻撃", WHITE, Font::Get(eFont::SELECT));
-		DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
-		break;
+			break;
 
-	case MAGIC:		// 魔法メニュー
-		DrawStringToHandle(0, 0, "  弱魔法", WHITE, Font::Get(eFont::SELECT));
-		DrawStringToHandle(0, 100, "  強魔法", WHITE, Font::Get(eFont::SELECT));
-		DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
-		break;
+		case ATTACK:	// 攻撃メニュー
+						/*
+						DrawStringToHandle(0, 0, "  弱攻撃", WHITE, Font::Get(eFont::SELECT));
+						DrawStringToHandle(0, 100, "  強攻撃", WHITE, Font::Get(eFont::SELECT));
+						DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
+						*/
+			DrawFormatString(0, 384, WHITE, "  弱攻撃");
+			DrawFormatString(0, 416, WHITE, "  強攻撃");
+			DrawFormatString(0, 448, WHITE, "  戻る");
+			break;
 
-	case RUN_AWAY:	// 逃げる
-		//DrawStringToHandle(0, 0, "  あなたは逃げ出した・・・", WHITE, Font::Get(eFont::SELECT));
-		break;
+		case MAGIC:		// 魔法メニュー
+						/*
+						DrawStringToHandle(0, 0, "  弱魔法", WHITE, Font::Get(eFont::SELECT));
+						DrawStringToHandle(0, 100, "  強魔法", WHITE, Font::Get(eFont::SELECT));
+						DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
+						*/
+			DrawFormatString(0, 384, WHITE, "  弱魔法");
+			DrawFormatString(0, 416, WHITE, "  強魔法");
+			DrawFormatString(0, 448, WHITE, "  戻る");
+			break;
 
-	default:		// 在り得ない。エラー
-		endFlag = true;
-		break;
+		case RUN_AWAY:	// 逃げる
+						//DrawStringToHandle(0, 0, "  あなたは逃げ出した・・・", WHITE, Font::Get(eFont::SELECT));
+			break;
+
+		default:		// 在り得ない。エラー
+			endFlag = true;
+			break;
+		}
+
+		// カーソル
+		//DrawStringToHandle(cursorX, 400 + (cursorY * 32), "▲", WHITE, Font::Get(eFont::SELECT));
+		DrawFormatString(cursorX, 384 + (cursorY * 32), WHITE, "▲");
 	}
-	
-	// カーソル
-	DrawStringToHandle(cursorX, cursorY, "▲", WHITE, Font::Get(eFont::SELECT));
 }
 void Battle::Draw_End() {
 	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
@@ -212,4 +253,8 @@ Command Battle::GetCommand()
 void Battle::SetStep(eStep step)
 {
 	this->step = step;
+}
+void Battle::SetNextScene(eScene nextScene)
+{
+	this->nextScene = nextScene;
 }
