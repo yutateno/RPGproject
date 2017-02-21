@@ -9,6 +9,8 @@ using std::string;
 // 向き
 enum Direction { UP, DOWN, LEFT, RIGHT };
 
+class Item;
+
 class Player
 {
 private:
@@ -22,6 +24,14 @@ private:
 	int attack;				// 攻撃力
 	Direction direction;	// 向いている方向
 	int speed;				// 移動スピード。戦闘ステータスではない
+	int itemMax;			// アイテムの最大所持量
+	Item *item[9];			// アイテム
+
+	bool menuFlag;			// メニュー画面を開いているかどうかのフラグ
+	int cursorX, cursorY;	// カーソルの座標
+	int listNum;			// メニューの項目がいくつあるか
+	bool mItemFlag;			// アイテム画面を開いているかどうかのフラグ
+	bool mStatusFlag;		// ステータス画面を開いているかのフラグ
 
 	int graph;			// 画像
 
@@ -34,6 +44,7 @@ public:
 
 	void Process();			// ほかの処理を内包する関数
 
+	void Menu();			// メニュー
 	void Move();			// 移動
 	void MoveReset();		// 直前の動きをリセット
 

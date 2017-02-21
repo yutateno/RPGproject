@@ -16,6 +16,18 @@ Player::Player()
 	attack = 1;
 	direction = DOWN;
 	speed = 2;
+	itemMax = 9;
+	for (int i = 0;i < itemMax;i++)
+	{
+		item[i] = new Item();
+	}
+
+	menuFlag = false;
+	cursorX = 0;
+	cursorY = 0;
+	listNum = 0;
+	mItemFlag = false;
+	mStatusFlag = false;
 
 	// 画像読み込み
 	graph = LoadGraph("img\\player.png");
@@ -33,6 +45,7 @@ void Player::aaaDraw()
 }
 void Player::aaaDraw(int mapwidth, int mapheight)
 {
+	// プレイヤー本体とマップの兼ね合いを考えた描画パターン
 	if (x < 320 - 16)
 	{
 		drawX = x;
@@ -58,18 +71,123 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 	{
 		drawY = 240 - 16;
 	}
+	DrawGraph(drawX, drawY, graph, true);		// プレイヤー本体
 
-	// プレイヤー本体
-	DrawGraph(drawX, drawY, graph, true);
+	// メニュー画面
+	if (menuFlag)
+	{
+		// プレイヤーのステータス
+		DrawFormatString(0, 384, BLACK, "%s\nHP:%d\nMP:%d\nLV:%d", name.c_str(), hp, mp, lv);
+
+		// 項目
+		DrawFormatString(0, 0, BLACK, "　アイテム\n　ステータス");
+
+		// カーソル
+		DrawFormatString(cursorX * 160, cursorY * 16, BLACK, "▲");
+
+		// アイテム画面
+		if (mItemFlag)
+		{
+			for (int i = 0;i < itemMax;i++)
+			{
+				DrawFormatString(160, i * 16, BLACK, "・%s", item[i]->GetName().c_str());
+			}
+		}
+		else if (mStatusFlag)
+		{
+			DrawFormatString(160, 0, BLACK, "　%s\n　HP:%d\n　MP:%d\n　LV:%d\n", name.c_str(), hp, mp, lv);
+		}
+	}
 }
 
 void Player::Process()
 {
+	// メニュー開閉
+	if (KeyData::Get(KEY_INPUT_Q) == 1)
+	{
+		if (menuFlag)
+		{
+			if (cursorX == 0)
+			{
+				mItemFlag = false;
+				mStatusFlag = false;
+				menuFlag = false;
+				listNum = 0;
+			}
+			else
+			{
+				mItemFlag = false;
+				mStatusFlag = false;
+			}
+		}
+		else
+		{
+			menuFlag = true;
+			listNum = 2;
+		}
 
+		cursorX = 0;
+		cursorY = 0;
+	}
 
-	Move();		// 移動
+	if (menuFlag) // メニューを開いているかどうかで処理を分ける
+	{
+		Menu();		// メニュー画面
+	}
+	else          // メニューを開いてないとき
+	{
+		Move();		// 移動
+	}
 }
 
+void Player::Menu()
+{
+	// カーソルの移動
+	if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY > 0)
+	{
+		cursorY--;
+	}
+	else if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY < (listNum - 1))
+	{
+		cursorY++;
+	}
+
+	// 決定
+	if (KeyData::Get(KEY_INPUT_Z) == 1)
+	{
+		if (cursorX == 0)
+		{
+			cursorX++;
+			if (cursorY == 0)
+			{
+				listNum = itemMax;
+				mItemFlag = true;
+			}
+			else if (cursorY == 1)
+			{
+				mStatusFlag = true;
+				listNum = 0;
+			}
+			else
+			{
+				// エラー
+				name = "メニュー画面でのバグ";
+			}
+		}
+		else if (cursorX == 1)
+		{
+			// ここにアイテムとかステータスのことを書く
+		}
+		else
+		{
+			// エラー
+			name = "メニュー画面でのバグ";
+		}
+
+		// 一番上に戻す
+		cursorY = 0;
+	}
+}
 void Player::Move()
 {
 	// 直前の座標保存
@@ -79,6 +197,7 @@ void Player::Move()
 	// 一応の保険
 	if (speed > 30)
 	{
+		// エラー
 		name = "スピードがマップチップの大きさを超えています";
 	}
 	else

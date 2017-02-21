@@ -89,10 +89,12 @@ void Field::UpDate_Main() {
 void Field::UpDate_Main(int playerX, int playerY) {
 
 	// Zキーで戦闘画面に
+	/*
 	if (KeyData::Get(KEY_INPUT_Z) == 1) {
 		this->nextScene = eScene::S_Battle;
 		this->step = eStep::End;
 	}
+	*/
 	// Xキーで拠点画面に
 	if (KeyData::Get(KEY_INPUT_X) == 1) {
 		this->nextScene = eScene::S_SafeArea;
@@ -158,11 +160,14 @@ void Field::Draw_Main() {
 			}
 		}
 	}
+	/*
 	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 200, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 300, "Xキーで拠点画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 400, "Cキーでダンジョン画面へ", WHITE, Font::Get(eFont::SELECT));
+	*/
+	DrawFormatString(420, 360, BLACK, "フィールド画面\nメイン処理画面\nXキーで拠点画面へ\nCキーでダンジョン画面へ\n");
 }
 void Field::Draw_End() {
 	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
