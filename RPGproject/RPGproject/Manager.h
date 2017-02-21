@@ -66,4 +66,5 @@ public:
 	// ‰Â“Ç«‚ğl—¶‚µ‚Ä’·‚·‚¬‚é‹Lq‚ğUpDate‚©‚ç“¦‚ª‚·‚½‚ßì¬
 	void FieldProcess();
 	void BattleProcess();
+	void DungeonProcess();
 };
