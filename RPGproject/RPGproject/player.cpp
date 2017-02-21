@@ -23,10 +23,7 @@ Player::~Player()
 
 void Player::aaaDraw()
 {
-<<<<<<< HEAD
 	// プレイヤー本体
-=======
->>>>>>> 0d88ed79b4c14203cb30cd01a964d1b3acec62cc
 	DrawGraph(320 - 16, 240 - 16, graph, true);
 }
 void Player::aaaDraw(int mapwidth, int mapheight)

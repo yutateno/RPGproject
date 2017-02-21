@@ -10,6 +10,7 @@ Dungeon::Dungeon() {
 
 	Gr_Back = LoadGraph("Dungeon\\Dungeon_Back.png");
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
+	MapData();
 
 	x = 0;
 	y = 0;
@@ -20,6 +21,7 @@ Dungeon::Dungeon() {
 Dungeon::~Dungeon() {
 	DeleteGraph(Gr_Back);
 	DeleteGraph(Gr_Wall);
+	read_file.close();
 }
 
 void Dungeon::UpDate() {
@@ -37,7 +39,6 @@ void Dungeon::UpDate() {
 		endFlag = true;	// エラー終了
 		break;
 	}
-	MapData();
 }
 void Dungeon::UpDate_Start() {
 	startCount++;
@@ -48,21 +49,11 @@ void Dungeon::UpDate_Start() {
 
 void Dungeon::UpDate_Main() {
 
-	/*// Zキーで戦闘画面に
-	if (KeyData::Get(KEY_INPUT_Z) == 1) {
-		this->nextScene = eScene::S_Battle;
-		this->step = eStep::End;
-	}*/
 	// ボスチップに当たったら戦闘画面
 	if (Dungeon::GetBattle() == true) {
 		this->nextScene = eScene::S_Battle;
 		this->step = eStep::End;
 	}
-	/*// Xキーでフィールド画面に
-	if (KeyData::Get(KEY_INPUT_X) == 1) {
-		this->nextScene = eScene::S_Field;
-		this->step = eStep::End;
-	}*/
 	// 特定の場所行ったらフィールド画面へ
 	if (Dungeon::GetField() == true) {
 		this->nextScene = eScene::S_Field;
@@ -154,8 +145,6 @@ void Dungeon::Draw_Main(int x, int y) {
 		}
 	}
 
-	//DrawStringToHandle(0, 300, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
-	//DrawStringToHandle(0, 300, "Xキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
 	DrawStringToHandle(0, 400, "Cキーでゲームクリア画面へ", WHITE, Font::Get(eFont::SELECT));
 }
 
@@ -178,7 +167,7 @@ void Dungeon::MapData() {
 }
 
 int Dungeon::GetMapData(int x, int y) {
-	return stoi(map[(int)(y / 32)][(int)(x / 32)]);	//28に調整
+	return stoi(map[(int)(y / 32)][(int)(x / 32)]);
 }
 
 int Dungeon::GetMapWidth(){
@@ -243,7 +232,6 @@ bool Dungeon::GetBoss() {
 	}
 }
 
-eStep Dungeon::GetStep()
-{
+eStep Dungeon::GetStep(){
 	return step;
 }

@@ -193,6 +193,14 @@ void Manager::UpDate() {
 
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea->UpDate();
+		if (safeArea->GetStep() == eStep::Main)
+		{
+			player->Move();
+		}
+		// 位置修正
+		if (safeArea->GetMapData(player->GetX(), player->GetY()) == 10) {
+			player->MoveReset();
+		}
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->UpDate();
@@ -208,13 +216,29 @@ void Manager::UpDate() {
 		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 20) {
 			dungeon->SetField(true);
 		}
-		//ボスチップに当たったら
-		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 30) {
-			dungeon->SetBattle(true);
-			dungeon->SetBoss(true);
+		//ボスチップにものすごく近い状態だったら
+		if (dungeon->GetMapData(player->GetX(), player->GetY() - 1) == 30) {
+			if (KeyData::Get(KEY_INPUT_Z) == 1) {
+				dungeon->SetBattle(true);
+				dungeon->SetBoss(true);
+			}
 		}
-		//dungeon->SetX(player->GetX()-320-16);
-		//dungeon->SetY(player->GetY()-240-16);
+		//ボスチップに当たり続けたら
+		if (dungeon->GetMapData(player->GetX(), player->GetY()) == 30) {
+			player->MoveReset();
+			if (KeyData::Get(KEY_INPUT_Z) == 1) {
+				dungeon->SetBattle(true);
+				dungeon->SetBoss(true);
+			}
+		}
+		// 敵とのエンカウント
+		if (player->GetX() != playerX || player->GetY() != playerY)
+		{
+			if (GetRand(probability) == 0)
+			{
+				dungeon->SetBattle(true);
+			}
+		}
 		// カメラの位置をプレイヤーの座標から計算して代入
 		if (player->GetX() < (320 - 16))		// 左端
 		{
@@ -298,6 +322,9 @@ void Manager::ChengeScene_Field() {
 		break;
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea = new SafeArea();
+		// プレイヤーの初期位置移動
+		player->SetX(320 - 16);
+		player->SetY(480 - 64);
 		delete this->field;	// フィールド画面実体削除
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
@@ -404,17 +431,9 @@ void Manager::ChengeScene_Dungeon() {
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
-<<<<<<< HEAD
-
 		// プレイヤーの初期位置移動
 		player->SetX(320 - 16);
 		player->SetY(240 - 16);
-
-=======
-		// プレイヤーの初期位置移動(エリア外だった時のための処置
-		player->SetX(320 - 16);
-		player->SetY(240 - 16);
->>>>>>> 0d88ed79b4c14203cb30cd01a964d1b3acec62cc
 		delete this->dungeon;	// ダンジョン画面実体削除
 		break;
 	case eScene::S_Battle:// 戦闘画面
@@ -422,12 +441,6 @@ void Manager::ChengeScene_Dungeon() {
 		enemy = new Enemy();
 		// ダンジョン画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Dungeon);
-		/* ボス戦のとき(応急処置(左上のみ当たり判定用)、これをしないと無限ループ
-		   battleにも同じような関数を入れればクリア画面に行くようにすることができるはず*/
-		if (dungeon->GetBoss() == true) {
-			player->SetY(player->GetY() + 16);
-			player->SetX(player->GetX() + 16);
-		}
 		delete this->dungeon;
 		break;
 	case eScene::S_GameClear://ゲームクリア画面
@@ -520,18 +533,17 @@ void Manager::Draw() {
 		break;
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea->Draw();
+		//マップチップの当たり判定
+		if (safeArea->GetStep() == eStep::Main) {
+			player->aaaDraw(safeArea->GetMapWidth(), safeArea->GetMapHeight());
+		}
 		break;
 	case eScene::S_Dungeon://ダンジョン画面
 		this->dungeon->Draw();
-		/*if (dungeon->GetStep() == eStep::Main) {
-			player->aaaDraw();
-		}*/
-		//マップチップの当たり判定はしっかりしてるが少しプレイヤーの挙動が早くてずれてる
+		//マップチップの当たり判定
 		if (dungeon->GetStep() == eStep::Main) {
 			player->aaaDraw(dungeon->GetMapWidth(), dungeon->GetMapHeight());
 		}
-		//dungeon->SetX(player->GetX());
-		//dungeon->SetY(player->GetY());
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->Draw();
