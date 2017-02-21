@@ -3,7 +3,7 @@
 Manager::Manager() {
 	playerX = 0;
 	playerY = 0;
-	probability = 50000;
+	probability = 500;
 
 	// 戦闘関連
 	turn = true;		// true : プレイヤーのターン

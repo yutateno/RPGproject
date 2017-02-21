@@ -162,6 +162,7 @@
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="player.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Field.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="SafeArea.h" />

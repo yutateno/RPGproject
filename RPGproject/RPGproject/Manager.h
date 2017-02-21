@@ -15,6 +15,7 @@
 #include "SafeArea.h"
 #include "GameClear.h"
 #include "Dungeon.h"
+#include "Item.h"
 
 class Player;
 class Enemy;
