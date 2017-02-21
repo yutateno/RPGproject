@@ -514,13 +514,17 @@ void Manager::Draw() {
 			this->battle->Draw(true);
 		}
 
-		// プレイヤーのステータス
-		DrawFormatString(0, 0, WHITE, "%s\nHP:%d\nMP:%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMP(), player->GetLV());
+		// ステータス表示
+		if (battle->GetStep() == eStep::Main)
+		{
+			// プレイヤーのステータス
+			DrawFormatString(0, 0, WHITE, "%s\nHP:%d\nMP:%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMP(), player->GetLV());
 
-		// debug-------------------------------------------------------------------------------------
-		// 敵のステータス
-		DrawFormatString(300, 0, WHITE, "%s\nHP:%d\nMP:%d", enemy->GetName().c_str(), enemy->GetHP(), enemy->GetMP());
-		// -----------------------------------------------------------------------------------------
+			// debug-------------------------------------------------------------------------------------
+			// 敵のステータス
+			DrawFormatString(300, 0, WHITE, "%s\nHP:%d\nMP:%d", enemy->GetName().c_str(), enemy->GetHP(), enemy->GetMP());
+			// -----------------------------------------------------------------------------------------
+		}
 		break;
 
 	case eScene::S_SafeArea:// 拠点画面
@@ -585,7 +589,7 @@ void Manager::BattleProcess()
 			break;
 		case DATTACK:		// 攻撃する時
 
-							// 文字の表示時間
+			// 文字の表示時間
 			if (count < 50)
 			{
 				count++;
@@ -604,7 +608,7 @@ void Manager::BattleProcess()
 		case MAGIC:			// 何でもないとき
 			break;
 		case DMAGIC:		// 魔法攻撃するとき
-							// 文字の表示時間
+			// 文字の表示時間
 			if (count < 50)
 			{
 				count++;
@@ -616,8 +620,9 @@ void Manager::BattleProcess()
 			}
 
 			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
-			battle->SetCommand(NEUTRAL);							// コマンドを初期状態に
+			battle->SetCommand(NEUTRAL);							// コマンドを初期状態に	
 			turn = false;											// ターンを相手に渡す
+
 			break;
 
 		case RUN_AWAY:		// 何でもないとき

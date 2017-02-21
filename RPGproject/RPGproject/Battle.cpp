@@ -12,6 +12,7 @@ Battle::Battle() {
 
 	// コマンド状態
 	command = NEUTRAL;
+	preCommand = command;
 
 	textFlag = true;
 
@@ -46,6 +47,8 @@ void Battle::UpDate_Start() {
 	this->step = eStep::Main;
 }
 void Battle::UpDate_Main() {
+	// 直前のコマンドを保存
+	preCommand = command;
 
 	// カーソル移動
 	if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY>0)
@@ -66,7 +69,7 @@ void Battle::UpDate_Main() {
 			{
 				command = ATTACK;
 			}
-			else if (cursorY == 100)// 魔法選択時
+			else if (cursorY == 1)// 魔法選択時
 			{
 				command = MAGIC;
 			}
@@ -81,13 +84,12 @@ void Battle::UpDate_Main() {
 				// ここに戦闘処理を書く
 				command = DATTACK;
 			}
-			else if (cursorY == 100)// 強攻撃選択時
+			else if (cursorY == 1)// 強攻撃選択時
 			{
 				// ここに戦闘処理を書く
 				command = DATTACK;
 			}
 			else {					// 戻る選択時
-				cursorY = 0;		// カーソルをもとの位置に戻す
 				command = NEUTRAL;
 			}
 			break;
@@ -101,13 +103,12 @@ void Battle::UpDate_Main() {
 				// ここに戦闘処理を書く
 				command = DMAGIC;
 			}
-			else if (cursorY == 100)// 強魔法選択時
+			else if (cursorY == 1)// 強魔法選択時
 			{
 				// ここに戦闘処理を書く
 				command = DMAGIC;
 			}
 			else {					// 戻る選択時
-				cursorY = 0;		// カーソルをもとの位置に戻す
 				command = NEUTRAL;
 			}
 			break;
@@ -122,6 +123,12 @@ void Battle::UpDate_Main() {
 			endFlag = true;
 			break;
 		}
+	}
+
+	// コマンドの変化からカーソルを補正
+	if (preCommand != command)
+	{
+		cursorY = 0;		// カーソルをもとの位置に戻す
 	}
 
 	// 逃げたら
@@ -253,6 +260,10 @@ Command Battle::GetCommand()
 void Battle::SetStep(eStep step)
 {
 	this->step = step;
+}
+eStep Battle::GetStep()
+{
+	return step;
 }
 void Battle::SetNextScene(eScene nextScene)
 {
