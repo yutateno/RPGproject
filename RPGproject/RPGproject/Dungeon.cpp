@@ -144,7 +144,7 @@ void Dungeon::Draw_Main(int x, int y) {
 		}
 	}
 
-	DrawStringToHandle(0, 400, "Cキーでゲームクリア画面へ", WHITE, Font::Get(eFont::SELECT));
+	DrawFormatString(320, 400, WHITE, "Cキーでゲームクリア画面へ");
 }
 
 void Dungeon::Draw_End() {

@@ -68,4 +68,5 @@ public:
 	void FieldProcess();
 	void BattleProcess();
 	void DungeonProcess();
+	void SafeAreaProcess();
 };

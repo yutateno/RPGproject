@@ -10,12 +10,15 @@ SafeArea::SafeArea() {
 	MapData();
 
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
+	Gr_Back = LoadGraph("img\\safearea_background.png");
 
 	x = 0;
 	y = 0;
+	fieldflag = false;
 }
 SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Wall);
+	DeleteGraph(Gr_Back);
 }
 
 void SafeArea::UpDate() {
@@ -34,22 +37,25 @@ void SafeArea::UpDate() {
 		break;
 	}
 }
+
 void SafeArea::UpDate_Start() {
 	this->startCount++;
 
 	if (this->startCount < 50) return;	// 50フレームで開始画面終了
 	this->step = eStep::Main;
 }
+
 void SafeArea::UpDate_Main() {
 
-	// Zキーでフィールド画面に
-	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+	//// Xキーで戦闘画面に
+	//if (KeyData::Get(KEY_INPUT_X) == 1) {
+	//	this->nextScene = eScene::S_Battle;
+	//	this->step = eStep::End;
+	//}
+
+	// 特定の場所行ったらフィールド画面へ
+	if (SafeArea::GetField() == true) {
 		this->nextScene = eScene::S_Field;
-		this->step = eStep::End;
-	}
-	// Xキーで戦闘画面に
-	if (KeyData::Get(KEY_INPUT_X) == 1) {
-		this->nextScene = eScene::S_Battle;
 		this->step = eStep::End;
 	}
 }
@@ -59,6 +65,7 @@ void SafeArea::UpDate_End() {
 	if (this->endCount < 50) return;	// 50フレームで終了画面終了
 	this->endFlag = true;
 }
+
 void SafeArea::Draw() {
 	switch (this->step) {
 	case eStep::Start:	// 開始画面
@@ -75,11 +82,15 @@ void SafeArea::Draw() {
 		break;
 	}
 }
+
 void SafeArea::Draw_Start() {
 	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
 }
+
 void SafeArea::Draw_Main(int x, int y) {
+
+	DrawGraph(0, 0, Gr_Back, false);
 
 	for (int i = 0, n = (int)map.size(); i < n; i++) {
 		for (int j = 0, m = (int)map[i].size(); j < m; j++) {
@@ -120,12 +131,8 @@ void SafeArea::Draw_Main(int x, int y) {
 			}
 		}
 	}
-
-	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 200, "Zキーでフィールド画面へ", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 300, "Xキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
 }
+
 void SafeArea::Draw_End() {
 	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
@@ -133,7 +140,6 @@ void SafeArea::Draw_End() {
 
 void SafeArea::MapData() {
 	read_file.open("SafeAreaMap.txt");
-	//read_file.open("Dungeon\\DungeonMap.txt");
 	read_count = 0;
 	while (getline(read_file, read_line)) {	// 一行ずつ読み込み
 		map.resize(read_count + 1);
@@ -170,6 +176,19 @@ void SafeArea::SetY(int y) {
 
 int SafeArea::GetY() {
 	return this->y;
+}
+
+void SafeArea::SetField(bool flag) {
+	fieldflag = flag;
+}
+
+bool SafeArea::GetField() {
+	if (fieldflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 eStep SafeArea::GetStep() {

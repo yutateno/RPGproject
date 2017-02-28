@@ -106,19 +106,13 @@ void Manager::UpDate() {
 		break;
 		
 	case eScene::S_SafeArea:// 拠点画面
-		this->safeArea->UpDate();
-		if (safeArea->GetStep() == eStep::Main)
-		{
-			player->Move();
-		}
-		// 位置修正
-		if (safeArea->GetMapData(player->GetX(), player->GetY()) == 10) {
-			player->MoveReset();
-		}
+		SafeAreaProcess();
 		break;
+
 	case eScene::S_Dungeon://ダンジョン画面
 		DungeonProcess();
 		break;
+
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->UpDate();
 		break;
@@ -405,19 +399,25 @@ void Manager::Draw() {
 		break;
 
 	case eScene::S_SafeArea:// 拠点画面
+
 		this->safeArea->Draw();
+
 		//マップチップの当たり判定
 		if (safeArea->GetStep() == eStep::Main) {
 			player->aaaDraw(safeArea->GetMapWidth(), safeArea->GetMapHeight());
 		}
 		break;
+
 	case eScene::S_Dungeon://ダンジョン画面
+		
 		this->dungeon->Draw();
+		
 		//マップチップの当たり判定
 		if (dungeon->GetStep() == eStep::Main) {
 			player->aaaDraw(dungeon->GetMapWidth(), dungeon->GetMapHeight());
 		}
 		break;
+
 	case eScene::S_GameOver://ゲームオーバー画面
 		this->gameOver->Draw();
 		break;
@@ -427,91 +427,6 @@ void Manager::Draw() {
 	default:	//Error
 		this->endFlag = true;
 		break;
-	}
-}
-
-void Manager::DungeonProcess() {
-	this->dungeon->UpDate();
-
-	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
-	/*playerX = player->GetX();
-	playerY = player->GetY();*/
-
-	if (dungeon->GetStep() == eStep::Main)
-	{
-		player->Move();
-	}
-	// 位置修正
-	for (int i = 0; i < 2; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-			switch (dungeon->GetMapData(player->GetX() + (i * (32 - 1)), player->GetY() + (j * (32 - 1))))
-			{
-			case 10:
-				player->MoveReset();		// プレイヤーの座標を直前のものに戻す
-				break;
-			case 20:
-				dungeon->SetField(true);
-				break;
-			case 30:
-				player->MoveReset();
-				playerX = player->GetX();
-				playerY = player->GetY();
-				dungeon->SetBoss(true);
-				break;
-			default:
-				// 基本的に来ない
-				break;
-			}
-		}
-	}
-	// ボスに触れたら
-	if (dungeon->GetBoss() == true) {
-		// 動いたらキャンセル
-		if (playerY != player->GetY() || playerX != player->GetX()) {
-			dungeon->SetBoss(false);
-		}
-		// そのままなら戦闘
-		else {
-			if (KeyData::Get(KEY_INPUT_Z) == 1) {
-				dungeon->SetBattle(true);
-			}
-		}
-	}
-	// 敵とのエンカウント
-	if (player->GetX() != playerX || player->GetY() != playerY)
-	{
-		if (GetRand(probability) == 0)
-		{
-			dungeon->SetBattle(true);
-		}
-	}
-	// カメラの位置をプレイヤーの座標から計算して代入
-	if (player->GetX() < (320 - 16))		// 左端
-	{
-		dungeon->SetX(-32);
-	}
-	else if (player->GetX() > (dungeon->GetMapWidth() * 32 - 32) - (320 - 16))		// 右端
-	{
-		dungeon->SetX((dungeon->GetMapWidth() * 32) - 640 - 32);
-	}
-	else		// それ以外
-	{
-		dungeon->SetX(player->GetX() - (320 - 16) - 32);
-	}
-
-	if (player->GetY() < (240 - 16))		// 上端
-	{
-		dungeon->SetY(-32);
-	}
-	else if (player->GetY() > (dungeon->GetMapHeight() * 32 - 32) - (240 - 16))		// 下端
-	{
-		dungeon->SetY((dungeon->GetMapHeight() * 32) - 480 - 32);
-	}
-	else		// それ以外
-	{
-		dungeon->SetY(player->GetY() - (240 - 16) - 32);
 	}
 }
 
@@ -684,5 +599,139 @@ void Manager::BattleProcess()
 
 		player->SetHP(player->GetHP() - enemy->GetATK());			// ダメージを与える
 		turn = true;												// ターンをプレイヤーに渡す
+	}
+}
+
+void Manager::DungeonProcess() {
+	this->dungeon->UpDate();
+
+	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
+	playerX = player->GetX();
+	playerY = player->GetY();
+
+	// ダンジョンのメインプロセスが動いてる間プレイヤーのプロセスを呼び出す
+	if (dungeon->GetStep() == eStep::Main)
+	{
+		player->Process();
+	}
+
+	// 位置修正
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			switch (dungeon->GetMapData(player->GetX() + (i * (32 - 1)), player->GetY() + (j * (32 - 1))))
+			{
+			case 10:
+				player->MoveReset();		// プレイヤーの座標を直前のものに戻す
+				break;
+			case 20:
+				dungeon->SetField(true);
+				break;
+			case 30:
+				player->MoveReset();
+				playerX = player->GetX();
+				playerY = player->GetY();
+				dungeon->SetBoss(true);
+				break;
+			default:
+				// 基本的に来ない
+				break;
+			}
+		}
+	}
+	// ボスに触れたら
+	if (dungeon->GetBoss() == true || player->GetmenuFlag() == false) {
+		// 動いたらキャンセル
+		if (playerY != player->GetY() || playerX != player->GetX()) {
+			dungeon->SetBoss(false);
+		}
+		// そのままなら戦闘
+		else {
+			if (KeyData::Get(KEY_INPUT_Z) == 1) {
+				dungeon->SetBattle(true);
+			}
+		}
+	}
+	// 敵とのエンカウント
+	if (player->GetX() != playerX || player->GetY() != playerY)
+	{
+		if (GetRand(probability) == 0)
+		{
+			dungeon->SetBattle(true);
+		}
+	}
+	// カメラの位置をプレイヤーの座標から計算して代入
+	if (player->GetX() < (320 - 16))		// 左端
+	{
+		dungeon->SetX(-32);
+	}
+	else if (player->GetX() > (dungeon->GetMapWidth() * 32 - 32) - (320 - 16))		// 右端
+	{
+		dungeon->SetX((dungeon->GetMapWidth() * 32) - 640 - 32);
+	}
+	else		// それ以外
+	{
+		dungeon->SetX(player->GetX() - (320 - 16) - 32);
+	}
+
+	if (player->GetY() < (240 - 16))		// 上端
+	{
+		dungeon->SetY(-32);
+	}
+	else if (player->GetY() > (dungeon->GetMapHeight() * 32 - 32) - (240 - 16))		// 下端
+	{
+		dungeon->SetY((dungeon->GetMapHeight() * 32) - 480 - 32);
+	}
+	else		// それ以外
+	{
+		dungeon->SetY(player->GetY() - (240 - 16) - 32);
+	}
+}
+
+void Manager::SafeAreaProcess() {
+	this->safeArea->UpDate();
+
+	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
+	playerX = player->GetX();
+	playerY = player->GetY();
+	
+	if (safeArea->GetStep() == eStep::Main)
+	{
+		player->Process();
+	}
+
+	// 位置修正
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			switch (safeArea->GetMapData(player->GetX() + (i * (32 - 1)), player->GetY() + (j * (32 - 1))))
+			{
+			case 10:	// 壁
+				player->MoveReset();
+				break;
+
+			case 11:	// 出口
+				safeArea->SetField(true);
+				break;
+
+			case 12:	// 案内人
+				player->MoveReset();
+				break;
+
+			case 13:	//道具
+				player->MoveReset();
+				break;
+
+			case 14:	// 癒し
+				player->MoveReset();
+				break;
+
+			default:
+				break;
+
+			}
+		}
 	}
 }

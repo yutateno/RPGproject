@@ -18,6 +18,7 @@ private:
 	int read_count;
 	int x;
 	int y;
+	bool fieldflag;
 
 public:
 	SafeArea();
@@ -43,5 +44,7 @@ public:
 	int GetX();
 	void SetY(int y);
 	int GetY();
+	void SetField(bool flag);	// 出口にいるかどうか
+	bool GetField();
 	eStep GetStep();	// 今のステップ状況
 };

@@ -48,6 +48,8 @@ public:
 	void Move();			// 移動
 	void MoveReset();		// 直前の動きをリセット
 
+	bool GetmenuFlag();		//メニュー画面を開いてるかどうか
+
 	// ゲッターセッターたち
 	void SetName(string name);
 	string GetName();

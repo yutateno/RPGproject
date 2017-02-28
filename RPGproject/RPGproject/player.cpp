@@ -231,6 +231,18 @@ void Player::MoveReset()
 	y = preY;
 }
 
+bool Player::GetmenuFlag()
+{
+	if (menuFlag == true)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void Player::SetName(string name)
 {
 	this->name = name;
