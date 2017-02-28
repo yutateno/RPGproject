@@ -8,6 +8,9 @@
 // 町とかの拠点
 class SafeArea : public SuperScene {
 private:
+	const int heal = 30;	// 回復の表示カウント
+	const int talkwait = 30;
+
 	int Gr_Back;	// 背景
 	int Gr_Wall;	// 壁
 
@@ -22,7 +25,10 @@ private:
 	bool peopleflag;		// 一般人に触れたら
 	bool itemflag;			// 道具屋に触れたら
 	bool healflag;			// 噴水に触れたら
-	int healcount;			// フレームカウント
+	bool talkflag;			// 会話中かどうか
+	bool waitflag;
+	int healcount;			// 回復のフレームカウント
+	int talkcount;			// 会話の
 
 public:
 	SafeArea();
@@ -57,5 +63,7 @@ public:
 	bool GetItem();
 	void SetHeal(bool flag);	// 噴水に触れたら
 	bool GetHeal();
+	void SetTalk(bool flag);	// 会話中かどうか
+	bool GetTalk();
 	eStep GetStep();	// 今のステップ状況
 };

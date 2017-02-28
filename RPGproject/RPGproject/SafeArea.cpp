@@ -15,7 +15,13 @@ SafeArea::SafeArea() {
 	x = 0;
 	y = 0;
 	fieldflag = false;
-	healcount = 15;
+	peopleflag = false;
+	itemflag = false;
+	healflag = false;
+	talkflag = false;
+	waitflag = false;
+	healcount = 0;
+	talkcount = 0;
 }
 SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Wall);
@@ -77,12 +83,40 @@ void SafeArea::UpDate_Main() {
 		this->step = eStep::End;
 	}
 
+	// ï¨êÖÇ…êGÇÍÇΩÇÁ
 	if (healflag == true) {
 		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			healcount = 0;
+			healcount = heal;
 		}
 	}
+
+	//// àÍî êlÇ…êGÇÍÇΩÇÁ
+	//if (peopleflag == true && waitflag == false) {
+	//	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+	//		waitflag = true;
+	//		talkcount = talkwait;
+	//	}
+	//}
+	//if (waitflag == true) {
+	//	if (talkcount < 0) {
+	//		talkcount--;
+	//	}
+	//	if (talkcount == 0) {
+	//		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+	//			peopleflag = false;
+	//		}
+	//	}
+	//}
+	//if (peopleflag == false && waitflag == true) {
+	//	talkcount++;
+	//	if (talkcount > talkwait) {
+	//		talkflag = false;
+	//		waitflag = false;
+	//		talkcount = 0;
+	//	}
+	//}
 }
+
 void SafeArea::UpDate_End() {
 	this->endCount++;
 
@@ -155,10 +189,16 @@ void SafeArea::Draw_Main(int x, int y) {
 			}
 		}
 	}
-	if (healcount < 15) {
+
+	if (healcount > 0) {
 		DrawFormatString(320, 240, BLACK, "âÒïúÇµÇ‹ÇµÇΩÅB");
-		healcount++;
+		healcount--;
 	}
+
+	/*if (peopleflag == true && talkflag == true) {
+		DrawFormatString(320, 240, BLACK, "Ç±Ç±ÇÕí¨Ç≈Ç∑ÅB");
+	}
+	DrawFormatString(0, 0, BLACK, "%d", talkcount);*/
 }
 
 void SafeArea::Draw_End() {
@@ -251,6 +291,19 @@ void SafeArea::SetHeal(bool flag) {
 
 bool SafeArea::GetHeal() {
 	if (healflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void SafeArea::SetTalk(bool flag) {
+	talkflag = flag;
+}
+
+bool SafeArea::GetTalk() {
+	if (talkflag == true) {
 		return true;
 	}
 	else {

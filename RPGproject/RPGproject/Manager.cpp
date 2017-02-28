@@ -695,7 +695,7 @@ void Manager::SafeAreaProcess() {
 	playerX = player->GetX();
 	playerY = player->GetY();
 	
-	if (safeArea->GetStep() == eStep::Main)
+	if (safeArea->GetStep() == eStep::Main && safeArea->GetTalk() == false)
 	{
 		player->Process();
 	}
@@ -763,6 +763,20 @@ void Manager::SafeAreaProcess() {
 			}
 		}
 	}
+
+	//// ˆê”Êl‚ÉG‚ê‚½‚ç
+	//if (safeArea->GetPeople() == true && player->GetmenuFlag() == false) {
+	//	// “®‚¢‚½‚çƒLƒƒƒ“ƒZƒ‹
+	//	if (playerY != player->GetY() || playerX != player->GetX()) {
+	//		safeArea->SetPeople(false);
+	//	}
+	//	// ‚»‚Ì‚Ü‚Ü‚È‚ç‰ï˜b
+	//	else {
+	//		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+	//			safeArea->SetTalk(true);
+	//		}
+	//	}
+	//}
 
 	// •¬…‚ÉG‚ê‚½‚ç
 	if (safeArea->GetHeal() == true && player->GetmenuFlag() == false) {
