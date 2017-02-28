@@ -603,7 +603,7 @@ void Manager::BattleProcess()
 }
 
 void Manager::DungeonProcess() {
-	this->dungeon->UpDate();
+	this->dungeon->UpDate(player->GetX(), player->GetY());
 
 	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
 	playerX = player->GetX();
@@ -630,8 +630,6 @@ void Manager::DungeonProcess() {
 				break;
 			case 30:
 				player->MoveReset();
-				playerX = player->GetX();
-				playerY = player->GetY();
 				dungeon->SetBoss(true);
 				break;
 			default:
@@ -640,8 +638,9 @@ void Manager::DungeonProcess() {
 			}
 		}
 	}
+
 	// ボスに触れたら
-	if (dungeon->GetBoss() == true || player->GetmenuFlag() == false) {
+	if (dungeon->GetBoss() == true && player->GetmenuFlag() == false) {
 		// 動いたらキャンセル
 		if (playerY != player->GetY() || playerX != player->GetX()) {
 			dungeon->SetBoss(false);
@@ -654,7 +653,7 @@ void Manager::DungeonProcess() {
 		}
 	}
 	// 敵とのエンカウント
-	if (player->GetX() != playerX || player->GetY() != playerY)
+	if ((player->GetX() != playerX || player->GetY() != playerY) && player->GetmenuFlag() == false)
 	{
 		if (GetRand(probability) == 0)
 		{
@@ -690,7 +689,7 @@ void Manager::DungeonProcess() {
 }
 
 void Manager::SafeAreaProcess() {
-	this->safeArea->UpDate();
+	this->safeArea->UpDate(player->GetX(), player->GetY());
 
 	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
 	playerX = player->GetX();
@@ -699,6 +698,33 @@ void Manager::SafeAreaProcess() {
 	if (safeArea->GetStep() == eStep::Main)
 	{
 		player->Process();
+	}
+
+	// カメラの位置をプレイヤーの座標から計算して代入
+	if (player->GetX() < (320 - 16))		// 左端
+	{
+		safeArea->SetX(0);
+	}
+	else if (player->GetX() > (safeArea->GetMapWidth() * 32 - 32) - (320 - 16))		// 右端
+	{
+		safeArea->SetX((safeArea->GetMapWidth() * 32) - 640);
+	}
+	else		// それ以外
+	{
+		safeArea->SetX(player->GetX() - (320 - 16));
+	}
+
+	if (player->GetY() < (240 - 16))		// 上端
+	{
+		safeArea->SetY(0);
+	}
+	else if (player->GetY() > (safeArea->GetMapHeight() * 32 - 32) - (240 - 16))		// 下端
+	{
+		safeArea->SetY((safeArea->GetMapHeight() * 32) - 480);
+	}
+	else		// それ以外
+	{
+		safeArea->SetY(player->GetY() - (240 - 16));
 	}
 
 	// 位置修正
@@ -718,19 +744,37 @@ void Manager::SafeAreaProcess() {
 
 			case 12:	// 案内人
 				player->MoveReset();
+				safeArea->SetPeople(true);
 				break;
 
 			case 13:	//道具
 				player->MoveReset();
+				safeArea->SetItem(true);
 				break;
 
 			case 14:	// 癒し
 				player->MoveReset();
+				safeArea->SetHeal(true);
 				break;
 
 			default:
 				break;
 
+			}
+		}
+	}
+
+	// 噴水に触れたら
+	if (safeArea->GetHeal() == true && player->GetmenuFlag() == false) {
+		// 動いたらキャンセル
+		if (playerY != player->GetY() || playerX != player->GetX()) {
+			safeArea->SetHeal(false);
+		}
+		// そのままなら回復
+		else {
+			if (KeyData::Get(KEY_INPUT_Z) == 1) {
+				player->SetHP(10);
+				player->SetMP(10);
 			}
 		}
 	}

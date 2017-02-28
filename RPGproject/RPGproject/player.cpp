@@ -73,6 +73,11 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 	}
 	DrawGraph(drawX, drawY, graph, true);		// プレイヤー本体
 
+	//-------------------------------デバッグ用------------------------------------------
+	// プレイヤーのステータス
+	DrawFormatString(0, 384, BLACK, "%s\nHP:%d\nMP:%d\nLV:%d", name.c_str(), hp, mp, lv);
+	//-----------------------------------------------------------------------------------
+
 	// メニュー画面
 	if (menuFlag)
 	{

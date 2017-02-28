@@ -15,6 +15,7 @@ SafeArea::SafeArea() {
 	x = 0;
 	y = 0;
 	fieldflag = false;
+	healcount = 15;
 }
 SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Wall);
@@ -22,6 +23,23 @@ SafeArea::~SafeArea() {
 }
 
 void SafeArea::UpDate() {
+	switch (this->step) {
+	case eStep::Start:	// 開始画面
+		this->UpDate_Start();
+		break;
+	case eStep::Main:	// メイン処理画面
+		this->UpDate_Main();
+		break;
+	case eStep::End:	// 終了画面
+		this->UpDate_End();
+		break;
+	default:
+		this->endFlag = true;	// エラー終了
+		break;
+	}
+}
+
+void SafeArea::UpDate(int playerX, int playerY) {
 	switch (this->step) {
 	case eStep::Start:	// 開始画面
 		this->UpDate_Start();
@@ -54,9 +72,15 @@ void SafeArea::UpDate_Main() {
 	//}
 
 	// 特定の場所行ったらフィールド画面へ
-	if (SafeArea::GetField() == true) {
+	if (fieldflag == true) {
 		this->nextScene = eScene::S_Field;
 		this->step = eStep::End;
+	}
+
+	if (healflag == true) {
+		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			healcount = 0;
+		}
 	}
 }
 void SafeArea::UpDate_End() {
@@ -131,6 +155,10 @@ void SafeArea::Draw_Main(int x, int y) {
 			}
 		}
 	}
+	if (healcount < 15) {
+		DrawFormatString(320, 240, BLACK, "回復しました。");
+		healcount++;
+	}
 }
 
 void SafeArea::Draw_End() {
@@ -184,6 +212,45 @@ void SafeArea::SetField(bool flag) {
 
 bool SafeArea::GetField() {
 	if (fieldflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void SafeArea::SetPeople(bool flag) {
+	peopleflag = flag;
+}
+
+bool SafeArea::GetPeople() {
+	if (peopleflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void SafeArea::SetItem(bool flag) {
+	itemflag = flag;
+}
+
+bool SafeArea::GetItem() {
+	if (itemflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void SafeArea::SetHeal(bool flag) {
+	healflag = flag;
+}
+
+bool SafeArea::GetHeal() {
+	if (healflag == true) {
 		return true;
 	}
 	else {

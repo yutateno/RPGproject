@@ -28,6 +28,7 @@ public:
 	~Dungeon();
 
 	void UpDate();		// アップデート
+	void UpDate(int playerX, int playerY);
 	void UpDate_Start();// 開始画面アップデート
 	void UpDate_Main();	// メイン画面アップデート
 	void UpDate_End();	// 終了画面アップデート

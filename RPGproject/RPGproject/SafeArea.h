@@ -18,13 +18,18 @@ private:
 	int read_count;
 	int x;
 	int y;
-	bool fieldflag;
+	bool fieldflag;			// 出口にいるかどうか
+	bool peopleflag;		// 一般人に触れたら
+	bool itemflag;			// 道具屋に触れたら
+	bool healflag;			// 噴水に触れたら
+	int healcount;			// フレームカウント
 
 public:
 	SafeArea();
 	~SafeArea();
 
 	void UpDate();		// アップデート
+	void UpDate(int playerX, int playerY);
 	void UpDate_Start();// 開始画面アップデート
 	void UpDate_Main();	// メイン画面アップデート
 	void UpDate_End();	// 終了画面アップデート
@@ -46,5 +51,11 @@ public:
 	int GetY();
 	void SetField(bool flag);	// 出口にいるかどうか
 	bool GetField();
+	void SetPeople(bool flag);	// 一般人に触れたら
+	bool GetPeople();
+	void SetItem(bool flag);	// 道具屋に触れたら
+	bool GetItem();
+	void SetHeal(bool flag);	// 噴水に触れたら
+	bool GetHeal();
 	eStep GetStep();	// 今のステップ状況
 };
