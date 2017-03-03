@@ -1,8 +1,7 @@
 #pragma once
 #include "Manager.h"
 
-enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY,
-						DATTACK,DMAGIC};	// コマンド状態
+enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY };			// コマンド状態
 
 // 戦闘画面
 class Battle : public SuperScene {
@@ -11,6 +10,9 @@ private:
 
 	Command command;		// コマンド状態	
 	Command preCommand;		// 直前のコマンド
+
+	bool damageFlag;		// ダメージを与える処理をおこなうかどうかのフラグ
+	int damageWidth;		// ダメージのブレ幅
 
 	int cursorX, cursorY;			// カーソルの座標
 
@@ -37,6 +39,9 @@ public:
 	// セッターゲッター
 	void SetCommand(Command command);
 	Command GetCommand();
+	void SetDamageFlag(bool damageFlag);
+	bool GetDamageFlag();
+	int GetDamageWidth();
 	void SetStep(eStep step);
 	eStep GetStep();
 	void SetNextScene(eScene nextScene);

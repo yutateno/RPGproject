@@ -6,14 +6,13 @@ Player::Player()
 	name = "pine";
 	lv = 1;
 	hp = 10;
-	mp = 10;
+	mp = 1;
 	x = 320 - 16;
 	preX = x;
 	drawX = x;
 	y = 240 - 16;
 	preY = y;
 	drawY = y;
-	attack = 1;
 	direction = DOWN;
 	speed = 2;
 	itemMax = 9;
@@ -21,6 +20,10 @@ Player::Player()
 	{
 		item[i] = new Item();
 	}
+
+	attack = new Attack();
+	attack->power = 1;
+	attack->width = 0;
 
 	menuFlag = false;
 	cursorX = 0;
@@ -296,13 +299,13 @@ int Player::GetMP()
 {
 	return mp;
 }
-void Player::SetATK(int attack)
+void Player::SetATK(int width)
 {
-	this->attack = attack;
+	attack->width = width;
 }
 int Player::GetATK()
 {
-	return attack;
+	return attack->power + GetRand(attack->width);
 }
 void Player::SetDirection(Direction direction)
 {

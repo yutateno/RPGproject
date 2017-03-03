@@ -11,6 +11,7 @@
 #include "Field.h"
 #include "Enemy.h"
 #include "Battle.h"
+#include "Attack.h"
 #include "GameOver.h"
 #include "SafeArea.h"
 #include "GameClear.h"
@@ -51,6 +52,7 @@ private:
 	// 戦闘関連
 	bool turn;				// こちらのターンか相手のターンか
 	int count;				// ログを表示する時間
+	int preHP;				// 直前のHP。ログ用
 public:
 	Manager();
 	~Manager();

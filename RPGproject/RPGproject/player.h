@@ -9,6 +9,7 @@ using std::string;
 // 向き
 enum Direction { UP, DOWN, LEFT, RIGHT };
 
+class Attack;
 class Item;
 
 class Player
@@ -21,11 +22,12 @@ private:
 	int x, y;				// 座標
 	int preX, preY;			// 直前の座標
 	int drawX, drawY;		// 描画用の座標
-	int attack;				// 攻撃力
 	Direction direction;	// 向いている方向
 	int speed;				// 移動スピード。戦闘ステータスではない
 	int itemMax;			// アイテムの最大所持量
 	Item *item[9];			// アイテム
+
+	Attack* attack;			// 攻撃クラス
 
 	bool menuFlag;			// メニュー画面を開いているかどうかのフラグ
 	int cursorX, cursorY;	// カーソルの座標
@@ -63,7 +65,7 @@ public:
 	int GetHP();
 	void SetMP(int mp);
 	int GetMP();
-	void SetATK(int attack);
+	void SetATK(int width);
 	int GetATK();
 	void SetDirection(Direction direction);
 	Direction GetDirection();

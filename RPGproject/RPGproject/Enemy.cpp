@@ -25,7 +25,7 @@ Enemy::~Enemy()
 
 void Enemy::aaaDraw()
 {
-	DrawGraph(0, 0, graph, true);
+	DrawGraph(320, 240, graph, true);
 }
 
 int Enemy::AttackProcess()

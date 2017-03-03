@@ -3,11 +3,12 @@
 Manager::Manager() {
 	playerX = 0;
 	playerY = 0;
-	probability = 500;
+	probability = 50;
 
 	// 戦闘関連
 	turn = true;		// true : プレイヤーのターン
 	count = 0;
+	preHP = 0;
 
 	player = new Player();
 	this->endFlag = false;
@@ -102,6 +103,19 @@ void Manager::UpDate() {
 		break;
 
 	case eScene::S_Battle:// 戦闘画面
+		// 直前のHPを保存
+		if (count == 0)
+		{
+			if (turn)
+			{
+				preHP = enemy->GetHP();
+			}
+			else
+			{
+				preHP = player->GetHP();
+			}
+		}
+
 		BattleProcess();
 		break;
 		
@@ -367,27 +381,45 @@ void Manager::Draw() {
 
 		break;
 	case eScene::S_Battle:// 戦闘画面
-		// コマンドを表示するかどうか
-		if (count != 0)
+		// コマンドの表示
+		if (turn&&count == 0)
 		{
-			this->battle->Draw(false);
-			if (turn)
-			{
-				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", player->GetName().c_str(), enemy->GetName().c_str(), player->GetATK());
-			}
-			else
-			{
-				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", enemy->GetName().c_str(), player->GetName().c_str(), enemy->GetATK());
-			}
+			battle->Draw(true);
 		}
 		else
 		{
-			this->battle->Draw(true);
+			battle->Draw(false);
 		}
 
-		// ステータス表示
+		// ログの表示
+		if (count != 0)
+		{
+			if (turn)
+			{
+				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", player->GetName().c_str(), enemy->GetName().c_str(), preHP - enemy->GetHP());
+			}
+			else
+			{
+				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", enemy->GetName().c_str(), player->GetName().c_str(), preHP - player->GetHP());
+			}
+		}
+
+		// メイン画面のみの描写
 		if (battle->GetStep() == eStep::Main)
 		{
+			// 敵の描写
+			if (turn)
+			{
+				if (count % 5 == 0)
+				{
+					enemy->aaaDraw();
+				}
+			}
+			else
+			{
+				enemy->aaaDraw();
+			}
+
 			// プレイヤーのステータス
 			DrawFormatString(0, 0, WHITE, "%s\nHP:%d\nMP:%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMP(), player->GetLV());
 
@@ -518,6 +550,7 @@ void Manager::BattleProcess()
 	// 戦闘勝利
 	if (enemy->GetHP() <= 0)
 	{
+		count = 0;
 		battle->SetStep(eStep::End);
 		return;
 	}
@@ -525,80 +558,79 @@ void Manager::BattleProcess()
 	// 戦闘敗北
 	if (player->GetHP() <= 0)
 	{
+		count = 0;
 		battle->SetNextScene(eScene::S_GameOver);
 		return;
 	}
 
-	if (turn)		// プレイヤーのターン
+	// 自分のターン
+	if (turn)
 	{
-		switch (battle->GetCommand())
+		if (battle->GetDamageFlag())		// battleからダメージを与える支持を受けたら
 		{
-		case NEUTRAL:		// 何でもないとき
-			break;
-		case ATTACK:		// 何でもないとき
-			break;
-		case DATTACK:		// 攻撃する時
+			if (count == 0)
+			{
+				switch (battle->GetCommand())
+				{
+				case NEUTRAL:			// 何もなし
+					break;
 
-			// 文字の表示時間
-			if (count < 50)
+				case ATTACK:
+					break;
+
+				case MAGIC:
+					// MP消費
+					if (player->GetMP() > 0)
+					{
+						player->SetMP(player->GetMP() - 1);
+					}
+					else
+					{
+						battle->SetDamageFlag(false);			// フラグを折る
+						battle->SetCommand(NEUTRAL);
+						count = 0;			// カウントを戻す
+						return;
+					}
+					break;
+
+				case RUN_AWAY:
+					break;
+
+				default:
+					break;
+				}
+				player->SetATK(battle->GetDamageWidth());			// 選択した行動を反映する
+				enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージ
+			}
+			if (count < 50)			// ログをXフレーム表示する
 			{
 				count++;
-				break;
 			}
 			else
 			{
-				count = 0;
+				battle->SetDamageFlag(false);			// フラグを折る
+				battle->SetCommand(NEUTRAL);
+				count = 0;			// カウントを戻す
+				turn = false;			// あいてにターンを渡す
 			}
-
-			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
-			battle->SetCommand(NEUTRAL);							// コマンドを初期状態に	
-			turn = false;											// ターンを相手に渡す
-
-			break;
-		case MAGIC:			// 何でもないとき
-			break;
-		case DMAGIC:		// 魔法攻撃するとき
-			// 文字の表示時間
-			if (count < 50)
-			{
-				count++;
-				break;
-			}
-			else
-			{
-				count = 0;
-			}
-
-			enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージを与える
-			battle->SetCommand(NEUTRAL);							// コマンドを初期状態に	
-			turn = false;											// ターンを相手に渡す
-
-			break;
-
-		case RUN_AWAY:		// 何でもないとき
-			break;
-		default:
-			// 通常来ない
-			break;
 		}
 	}
-	else // 相手のターン
+	// 相手のターン
+	else
 	{
-		// ここに敵の処理を書く
-
-		// 文字の表示時間
-		if (count < 50)
+		if (count == 0)
+		{
+			player->SetHP(player->GetHP() - enemy->GetATK());		// 攻撃力分だけダメージ
+		}
+		if (count < 50)			// ログをXフレーム表示する
 		{
 			count++;
-			return;
 		}
 		else
 		{
-			count = 0;
+			count = 0;			// カウントを戻す
+			turn = true;			// プレイヤーにターンを渡す
 		}
-
-		player->SetHP(player->GetHP() - enemy->GetATK());			// ダメージを与える
-		turn = true;												// ターンをプレイヤーに渡す
 	}
 }
 

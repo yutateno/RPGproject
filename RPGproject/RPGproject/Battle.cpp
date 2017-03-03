@@ -14,6 +14,9 @@ Battle::Battle() {
 	command = NEUTRAL;
 	preCommand = command;
 
+	damageFlag = false;
+	damageWidth = 0;
+
 	textFlag = true;
 
 	// カーソル座標
@@ -67,10 +70,18 @@ void Battle::UpDate_Main() {
 		case NEUTRAL:	// 初期
 			if (cursorY == 0)		// 攻撃選択時
 			{
+				// ここに攻撃力などを代入する式を追加する
+				damageWidth = 0;		// 振れ幅
+				damageFlag = true;		// Managerに、enemyにダメージを与えるよう指示する
+				command = NEUTRAL;		// commandをNEUTRALに戻す
 				command = ATTACK;
 			}
 			else if (cursorY == 1)// 魔法選択時
 			{
+				// ここに攻撃力などを代入する式を追加する
+				damageWidth = 3;		// 振れ幅
+				damageFlag = true;		// Managerに、enemyにダメージを与えるよう指示する
+				command = NEUTRAL;		// commandをNEUTRALに戻す
 				command = MAGIC;
 			}
 			else{					// 逃げる選択時
@@ -79,48 +90,15 @@ void Battle::UpDate_Main() {
 			break;
 
 		case ATTACK:	// 攻撃メニュー
-			if (cursorY == 0)		// 弱攻撃選択時
-			{
-				// ここに戦闘処理を書く
-				command = DATTACK;
-			}
-			else if (cursorY == 1)// 強攻撃選択時
-			{
-				// ここに戦闘処理を書く
-				command = DATTACK;
-			}
-			else {					// 戻る選択時
-				command = NEUTRAL;
-			}
-			break;
-
-		case DATTACK:	// Managerに処理させてる
 			break;
 
 		case MAGIC:		// 魔法メニュー
-			if (cursorY == 0)		// 弱魔法選択時
-			{
-				// ここに戦闘処理を書く
-				command = DMAGIC;
-			}
-			else if (cursorY == 1)// 強魔法選択時
-			{
-				// ここに戦闘処理を書く
-				command = DMAGIC;
-			}
-			else {					// 戻る選択時
-				command = NEUTRAL;
-			}
-			break;
-
-		case DMAGIC:	// Managerに処理させてる
 			break;
 
 		case RUN_AWAY:	// 逃げる
 			break;
 
 		default:		// 在り得ない。エラー
-			endFlag = true;
 			break;
 		}
 	}
@@ -192,45 +170,21 @@ void Battle::Draw_Main() {
 		switch (command)
 		{
 		case NEUTRAL:	// 初期
-						/*
-						DrawStringToHandle(0, 0, "  攻撃", WHITE, Font::Get(eFont::SELECT));
-						DrawStringToHandle(0, 100, "  魔法", WHITE, Font::Get(eFont::SELECT));
-						DrawStringToHandle(0, 200, "  逃げる", WHITE, Font::Get(eFont::SELECT));
-						*/
 			DrawFormatString(0, 384, WHITE, "  攻撃");
 			DrawFormatString(0, 416, WHITE, "  魔法");
 			DrawFormatString(0, 448, WHITE, "  逃げる");
-
 			break;
 
 		case ATTACK:	// 攻撃メニュー
-						/*
-						DrawStringToHandle(0, 0, "  弱攻撃", WHITE, Font::Get(eFont::SELECT));
-						DrawStringToHandle(0, 100, "  強攻撃", WHITE, Font::Get(eFont::SELECT));
-						DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
-						*/
-			DrawFormatString(0, 384, WHITE, "  弱攻撃");
-			DrawFormatString(0, 416, WHITE, "  強攻撃");
-			DrawFormatString(0, 448, WHITE, "  戻る");
 			break;
 
 		case MAGIC:		// 魔法メニュー
-						/*
-						DrawStringToHandle(0, 0, "  弱魔法", WHITE, Font::Get(eFont::SELECT));
-						DrawStringToHandle(0, 100, "  強魔法", WHITE, Font::Get(eFont::SELECT));
-						DrawStringToHandle(0, 200, "  戻る", WHITE, Font::Get(eFont::SELECT));
-						*/
-			DrawFormatString(0, 384, WHITE, "  弱魔法");
-			DrawFormatString(0, 416, WHITE, "  強魔法");
-			DrawFormatString(0, 448, WHITE, "  戻る");
 			break;
 
 		case RUN_AWAY:	// 逃げる
-						//DrawStringToHandle(0, 0, "  あなたは逃げ出した・・・", WHITE, Font::Get(eFont::SELECT));
 			break;
 
 		default:		// 在り得ない。エラー
-			endFlag = true;
 			break;
 		}
 
@@ -256,6 +210,18 @@ void Battle::SetCommand(Command command)
 Command Battle::GetCommand()
 {
 	return command;
+}
+void Battle::SetDamageFlag(bool damageFlag)
+{
+	this->damageFlag = damageFlag;
+}
+bool Battle::GetDamageFlag()
+{
+	return damageFlag;
+}
+int Battle::GetDamageWidth()
+{
+	return damageWidth;
 }
 void Battle::SetStep(eStep step)
 {
