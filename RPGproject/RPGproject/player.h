@@ -17,7 +17,9 @@ class Player
 private:
 	string name;			// 名前
 	int lv;					// レベル
+	int maxHP;				// 体力の最大値
 	int hp;					// 体力
+	int maxMP;				// MPの最大値
 	int mp;					// 魔力
 	int x, y;				// 座標
 	int preX, preY;			// 直前の座標
@@ -65,6 +67,10 @@ public:
 	int GetHP();
 	void SetMP(int mp);
 	int GetMP();
+	void SetMaxHP(int maxHP);
+	int GetMaxHP();
+	void SetMaxMP(int MaxMP);
+	int GetMaxMP();
 	void SetATK(int width);
 	int GetATK();
 	void SetDirection(Direction direction);

@@ -12,6 +12,7 @@ Field::Field() {
 	mapchip0 = LoadGraph("img\\mapchip0.png");
 	mapchip1 = LoadGraph("img\\mapchip1.png");
 	mapchip2 = LoadGraph("img\\mapchip2.png");
+	mapchip3 = LoadGraph("img\\mapchip3.png");
 
 	// マップデータ読み込み
 	ReadMapData();
@@ -96,14 +97,28 @@ void Field::UpDate_Main(int playerX, int playerY) {
 	}
 	*/
 	// Xキーで拠点画面に
+	/*
 	if (KeyData::Get(KEY_INPUT_X) == 1) {
 		this->nextScene = eScene::S_SafeArea;
 		this->step = eStep::End;
 	}
+	*/
+	if (mapdata[(int)(playerY / 32)][(int)(playerX / 32)] == 2)
+	{
+		nextScene = eScene::S_SafeArea;
+		step = eStep::End;
+	}
 	// Cキーでダンジョン画面に
+	/*
 	if (KeyData::Get(KEY_INPUT_C) == 1) {
 		this->nextScene = eScene::S_Dungeon;
 		this->step = eStep::End;
+	}
+	*/
+	if (mapdata[(int)(playerY / 32)][(int)(playerX / 32)] == 3)
+	{
+		nextScene = eScene::S_Dungeon;
+		step = eStep::End;
 	}
 }
 void Field::UpDate_End() {
@@ -153,6 +168,10 @@ void Field::Draw_Main() {
 
 			case 2:		// マップチップ2
 				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip2, true);
+				break;
+
+			case 3:		// マップチップ3
+				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip3, true);
 				break;
 
 			default:	// 改行時に来るエラーではない

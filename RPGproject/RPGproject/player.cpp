@@ -5,8 +5,10 @@ Player::Player()
 	// ステータスたち
 	name = "pine";
 	lv = 1;
+	maxHP = 10;
 	hp = 10;
-	mp = 1;
+	maxMP = 10;
+	mp = 10;
 	x = 320 - 16;
 	preX = x;
 	drawX = x;
@@ -85,7 +87,7 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 	if (menuFlag)
 	{
 		// プレイヤーのステータス
-		DrawFormatString(0, 384, BLACK, "%s\nHP:%d\nMP:%d\nLV:%d", name.c_str(), hp, mp, lv);
+		DrawFormatString(0, 384, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", name.c_str(), hp, maxHP, mp, maxMP, lv);
 
 		// 項目
 		DrawFormatString(0, 0, BLACK, "　アイテム\n　ステータス");
@@ -103,7 +105,7 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 		}
 		else if (mStatusFlag)
 		{
-			DrawFormatString(160, 0, BLACK, "　%s\n　HP:%d\n　MP:%d\n　LV:%d\n", name.c_str(), hp, mp, lv);
+			DrawFormatString(160, 0, BLACK, "　%s\n　HP:%d/%d\n　MP:%d/%d\n　LV:%d\n", name.c_str(), hp, maxHP, mp, maxMP, lv);
 		}
 	}
 }
@@ -282,6 +284,22 @@ void Player::SetY(int y)
 int Player::GetY()
 {
 	return y;
+}
+void Player::SetMaxHP(int MaxHP)
+{
+	this->maxHP = maxHP;
+}
+int Player::GetMaxHP()
+{
+	return maxHP;
+}
+void Player::SetMaxMP(int maxMP)
+{
+	this->maxMP = maxMP;
+}
+int Player::GetMaxMP()
+{
+	return maxMP;
 }
 void Player::SetHP(int hp)
 {

@@ -3,12 +3,13 @@
 Manager::Manager() {
 	playerX = 0;
 	playerY = 0;
-	probability = 50;
+	probability = 200;
 
 	// 戦闘関連
 	turn = true;		// true : プレイヤーのターン
 	count = 0;
 	preHP = 0;
+	lose = false;
 
 	player = new Player();
 	this->endFlag = false;
@@ -177,6 +178,7 @@ void Manager::ChengeScene_Field() {
 	switch (this->NowScene) {
 	case eScene::S_Battle:// 戦闘画面
 		this->battle = new Battle();
+		count = 0;
 		enemy = new Enemy();
 		// フィールド画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Field);
@@ -210,15 +212,22 @@ void Manager::ChengeScene_Battle() {
 	//InitGraph();	// 全グラフィック削除
 	InitSoundMem();	// 曲データ全削除
 
-	this->NowScene = this->battle->GetNextScene();
+	if (lose)
+	{
+		NowScene = eScene::S_GameOver;
+	}
+	else
+	{
+		this->NowScene = this->battle->GetNextScene();
+	}
 
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
 		this->field = new Field();
 
 		// プレイヤーの初期位置移動
-		player->SetX(320 - 16);
-		player->SetY(240 - 16);
+		player->SetX(playerX);
+		player->SetY(playerY);
 
 		delete this->battle;	// 戦闘画面実体削除
 		break;
@@ -267,6 +276,8 @@ void Manager::ChengeScene_SafeArea() {
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle = new Battle();
+		count = 0;
+		enemy = new Enemy();
 		// 拠点画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_SafeArea);
 		delete this->safeArea;
@@ -299,6 +310,7 @@ void Manager::ChengeScene_Dungeon() {
 		break;
 	case eScene::S_Battle:// 戦闘画面
 		this->battle = new Battle();
+		count = 0;
 		enemy = new Enemy();
 		// ダンジョン画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Dungeon);
@@ -394,13 +406,26 @@ void Manager::Draw() {
 		// ログの表示
 		if (count != 0)
 		{
-			if (turn)
+			// 勝利時
+			if (enemy->GetHP() <= 0)
 			{
-				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", player->GetName().c_str(), enemy->GetName().c_str(), preHP - enemy->GetHP());
+				DrawFormatString(0, 384, WHITE, "勝利");
+			}
+			// 敗北時
+			else if (player->GetHP() <= 0)
+			{
+				DrawFormatString(0, 384, WHITE, "敗北");
 			}
 			else
 			{
-				DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", enemy->GetName().c_str(), player->GetName().c_str(), preHP - player->GetHP());
+				if (turn)
+				{
+					DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", player->GetName().c_str(), enemy->GetName().c_str(), preHP - enemy->GetHP());
+				}
+				else
+				{
+					DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", enemy->GetName().c_str(), player->GetName().c_str(), preHP - player->GetHP());
+				}
 			}
 		}
 
@@ -410,7 +435,14 @@ void Manager::Draw() {
 			// 敵の描写
 			if (turn)
 			{
-				if (count % 5 == 0)
+				if (battle->GetDamageFlag())
+				{
+					if (count % 5 != 0)
+					{
+						enemy->aaaDraw();
+					}
+				}
+				else
 				{
 					enemy->aaaDraw();
 				}
@@ -421,7 +453,7 @@ void Manager::Draw() {
 			}
 
 			// プレイヤーのステータス
-			DrawFormatString(0, 0, WHITE, "%s\nHP:%d\nMP:%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMP(), player->GetLV());
+			DrawFormatString(0, 0, WHITE, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
 
 			// debug-------------------------------------------------------------------------------------
 			// 敵のステータス
@@ -538,7 +570,7 @@ void Manager::FieldProcess()
 void Manager::BattleProcess()
 {
 	// ログの表示中は入力を受け付けない
-	if (count == 0)
+	if (count == 0 || battle->GetStep() == eStep::End)
 	{
 		this->battle->UpDate();
 	}
@@ -550,57 +582,88 @@ void Manager::BattleProcess()
 	// 戦闘勝利
 	if (enemy->GetHP() <= 0)
 	{
-		count = 0;
-		battle->SetStep(eStep::End);
-		return;
+		if (count < 100)			// ログをXフレーム表示する
+		{
+			count++;
+		}
+		else
+		{
+			battle->SetStep(eStep::End);
+		}
 	}
-
 	// 戦闘敗北
-	if (player->GetHP() <= 0)
+	else if (player->GetHP() <= 0)
 	{
-		count = 0;
-		battle->SetNextScene(eScene::S_GameOver);
-		return;
+		if (count < 100)			// ログをXフレーム表示する
+		{
+			count++;
+		}
+		else
+		{
+			lose = true;
+			battle->SetStep(eStep::End);
+		}
 	}
-
-	// 自分のターン
-	if (turn)
+	else
 	{
-		if (battle->GetDamageFlag())		// battleからダメージを与える支持を受けたら
+		// 自分のターン
+		if (turn)
+		{
+			if (battle->GetDamageFlag())		// battleからダメージを与える支持を受けたら
+			{
+				if (count == 0)
+				{
+					switch (battle->GetCommand())
+					{
+					case NEUTRAL:			// 何もなし
+						break;
+
+					case ATTACK:
+						break;
+
+					case MAGIC:
+						// MP消費
+						if (player->GetMP() > 0)
+						{
+							player->SetMP(player->GetMP() - 1);
+						}
+						else
+						{
+							battle->SetDamageFlag(false);			// フラグを折る
+							battle->SetCommand(NEUTRAL);
+							count = 0;			// カウントを戻す
+							return;
+						}
+						break;
+
+					case RUN_AWAY:
+						break;
+
+					default:
+						break;
+					}
+					player->SetATK(battle->GetDamageWidth());			// 選択した行動を反映する
+					enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージ
+				}
+				if (count < 50)			// ログをXフレーム表示する
+				{
+					count++;
+				}
+				else
+				{
+					battle->SetDamageFlag(false);			// フラグを折る
+					battle->SetCommand(NEUTRAL);
+					count = 0;			// カウントを戻す
+					turn = false;			// あいてにターンを渡す
+				}
+			}
+		}
+		// 相手のターン
+		else
 		{
 			if (count == 0)
 			{
-				switch (battle->GetCommand())
-				{
-				case NEUTRAL:			// 何もなし
-					break;
-
-				case ATTACK:
-					break;
-
-				case MAGIC:
-					// MP消費
-					if (player->GetMP() > 0)
-					{
-						player->SetMP(player->GetMP() - 1);
-					}
-					else
-					{
-						battle->SetDamageFlag(false);			// フラグを折る
-						battle->SetCommand(NEUTRAL);
-						count = 0;			// カウントを戻す
-						return;
-					}
-					break;
-
-				case RUN_AWAY:
-					break;
-
-				default:
-					break;
-				}
-				player->SetATK(battle->GetDamageWidth());			// 選択した行動を反映する
-				enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージ
+				player->SetHP(player->GetHP() - enemy->GetATK());		// 攻撃力分だけダメージ
 			}
 			if (count < 50)			// ログをXフレーム表示する
 			{
@@ -608,28 +671,9 @@ void Manager::BattleProcess()
 			}
 			else
 			{
-				battle->SetDamageFlag(false);			// フラグを折る
-				battle->SetCommand(NEUTRAL);
 				count = 0;			// カウントを戻す
-				turn = false;			// あいてにターンを渡す
+				turn = true;			// プレイヤーにターンを渡す
 			}
-		}
-	}
-	// 相手のターン
-	else
-	{
-		if (count == 0)
-		{
-			player->SetHP(player->GetHP() - enemy->GetATK());		// 攻撃力分だけダメージ
-		}
-		if (count < 50)			// ログをXフレーム表示する
-		{
-			count++;
-		}
-		else
-		{
-			count = 0;			// カウントを戻す
-			turn = true;			// プレイヤーにターンを渡す
 		}
 	}
 }

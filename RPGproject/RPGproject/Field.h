@@ -16,6 +16,7 @@ private:
 	int mapchip0;					// マップチップ
 	int mapchip1;					
 	int mapchip2;
+	int mapchip3;
 
 	vector<vector<int> > mapdata;	// マップデータ本体
 
