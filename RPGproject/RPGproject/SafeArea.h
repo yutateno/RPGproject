@@ -24,11 +24,12 @@ private:
 	bool fieldflag;			// 出口にいるかどうか
 	bool peopleflag;		// 一般人に触れたら
 	bool itemflag;			// 道具屋に触れたら
+	bool shopflag;			// ショップ画面
 	bool healflag;			// 噴水に触れたら
 	bool talkflag;			// 会話中かどうか
-	bool waitflag;
 	int healcount;			// 回復のフレームカウント
-	int talkcount;			// 会話の
+	int shopmenu;			// ショップ画面
+	int shopmX, shopmY;		// ショップ画面でのカーソル
 
 public:
 	SafeArea();
@@ -61,6 +62,8 @@ public:
 	bool GetPeople();
 	void SetItem(bool flag);	// 道具屋に触れたら
 	bool GetItem();
+	void SetShop(bool flag);	// ショップ画面
+	bool GetShop();	
 	void SetHeal(bool flag);	// 噴水に触れたら
 	bool GetHeal();
 	void SetTalk(bool flag);	// 会話中かどうか

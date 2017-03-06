@@ -19,9 +19,11 @@ SafeArea::SafeArea() {
 	itemflag = false;
 	healflag = false;
 	talkflag = false;
-	waitflag = false;
+	shopflag = false;
 	healcount = 0;
-	talkcount = 0;
+	shopmenu = 0;
+	shopmX = 0;
+	shopmY = 0;
 }
 SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Wall);
@@ -90,31 +92,70 @@ void SafeArea::UpDate_Main() {
 		}
 	}
 
-	//// 一般人に触れたら
-	//if (peopleflag == true && waitflag == false) {
-	//	if (KeyData::Get(KEY_INPUT_Z) == 1) {
-	//		waitflag = true;
-	//		talkcount = talkwait;
-	//	}
-	//}
-	//if (waitflag == true) {
-	//	if (talkcount < 0) {
-	//		talkcount--;
-	//	}
-	//	if (talkcount == 0) {
-	//		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-	//			peopleflag = false;
-	//		}
-	//	}
-	//}
-	//if (peopleflag == false && waitflag == true) {
-	//	talkcount++;
-	//	if (talkcount > talkwait) {
-	//		talkflag = false;
-	//		waitflag = false;
-	//		talkcount = 0;
-	//	}
-	//}
+	// 一般人に触れたら
+	if (peopleflag == true) {
+		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			if (talkflag == false) {
+				talkflag = true;
+			}
+			else {
+				talkflag = false;
+			}
+		}
+	}
+	
+	// 道具屋に触れたら
+	if (itemflag == true) {
+		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			// 買う、売る、を開いたときのショップ画面(今ない
+			if (shopflag == true && shopmenu == 1) {
+				
+			}
+			else if (shopflag == true && shopmenu == 0) {
+				// 買うを押したとき
+				if (shopmY == 0) {
+					
+				}
+				// 売るを押したとき
+				else if (shopmY == 32) {
+					
+				}
+				// やめるを押したとき
+				else {
+					shopflag = false;
+				}
+			}
+			// 触れただけの時
+			else {
+				shopflag = true;
+			}
+		}
+	}
+	// ショップ画面でのカーソル移動
+	if (shopflag == true && itemflag == true) {
+		// 上を押した
+		if (KeyData::Get(KEY_INPUT_UP) == 1) {
+			// 一番上じゃなければ
+			if (shopmY > 0) {
+				shopmY -= 32;
+			}
+			// 一番上なら
+			else {
+				
+			}
+		}
+		// 下を押した
+		if (KeyData::Get(KEY_INPUT_DOWN) == 1) {
+			// 一番下じゃなければ
+			if (shopmY < 64) {
+				shopmY += 32;
+			}
+			// 一番下なら
+			else {
+
+			}
+		}
+	}
 }
 
 void SafeArea::UpDate_End() {
@@ -195,10 +236,22 @@ void SafeArea::Draw_Main(int x, int y) {
 		healcount--;
 	}
 
-	/*if (peopleflag == true && talkflag == true) {
+	if (peopleflag == true && talkflag == true) {
 		DrawFormatString(320, 240, BLACK, "ここは町です。");
 	}
-	DrawFormatString(0, 0, BLACK, "%d", talkcount);*/
+
+	if (itemflag == true && shopflag == true) {
+		if (shopmenu == 0) {
+			DrawFormatString(35, 0, BLACK, "買う");
+			DrawFormatString(35, 32, BLACK, "売る");
+			DrawFormatString(35, 64, BLACK, "やめる");
+			DrawBox(shopmX, shopmY, 32 + shopmX, 32 + shopmY, BLUE, true);
+		}
+		else {
+
+		}
+		DrawFormatString(320, 240, BLACK, "いらっしゃーい");
+	}
 }
 
 void SafeArea::Draw_End() {
@@ -278,6 +331,19 @@ void SafeArea::SetItem(bool flag) {
 
 bool SafeArea::GetItem() {
 	if (itemflag == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void SafeArea::SetShop(bool flag) {
+	shopflag = flag;
+}
+
+bool SafeArea::GetShop(){
+	if (shopflag == true) {
 		return true;
 	}
 	else {
