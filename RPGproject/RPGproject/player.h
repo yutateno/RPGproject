@@ -64,6 +64,7 @@ public:
 	void SetLV(int lv);
 	int GetLV();
 	void SetEXP(int exp);
+	int GetEXP();
 	void SetX(int x);
 	int GetX();
 	void SetY(int y);
