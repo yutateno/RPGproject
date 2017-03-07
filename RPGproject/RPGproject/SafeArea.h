@@ -5,31 +5,44 @@
 #include <string>
 #include <vector>
 
+class Item;
+
 // 町とかの拠点
 class SafeArea : public SuperScene {
 private:
 	const int heal = 30;	// 回復の表示カウント
 	const int cursor = 32;	// カーソルの移動距離
 
+	// 画像関連
 	int Gr_Back;	// 背景
 	int Gr_Wall;	// 壁
 
+	// マップ関連
 	vector<vector<string>> map;
-
 	ifstream read_file;		// 読み込むファイル
 	string read_line;		// 読み込んだ行（1行）
 	int read_count;
 	int x;
 	int y;
+
+
 	bool fieldflag;			// 出口にいるかどうか
 	bool peopleflag;		// 一般人に触れたら
 	bool itemflag;			// 道具屋に触れたら
 	bool shopflag;			// ショップ画面
 	bool healflag;			// 噴水に触れたら
 	bool talkflag;			// 会話中かどうか
+	bool buyflag;			// 買ったかどうか
+	bool sellflag;			// 売ったかどうか
 	int healcount;			// 回復のフレームカウント
 	int shopmenu;			// ショップ画面
-	int shopmY;		// ショップ画面でのカーソル
+	int shopmY;				// ショップ画面でのカーソル
+	int money;				// 値段
+
+	// アイテム関連
+	int ID;					// ID
+	int item[9];			// アイテム
+	Item *itemm;
 
 public:
 	SafeArea();
@@ -68,5 +81,12 @@ public:
 	bool GetHeal();
 	void SetTalk(bool flag);	// 会話中かどうか
 	bool GetTalk();
+	void SetBuy(bool flag);		// 買ったかどうか
+	bool GetBuy();
+	void SetSell(bool flag);	// 売ったかどうか
+	bool GetSell();
+	void SetID(int ID);
+	int GetID();
+	void SetnumID(int num, int ID);
 	eStep GetStep();	// 今のステップ状況
 };

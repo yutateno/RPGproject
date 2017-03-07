@@ -216,12 +216,7 @@ void Dungeon::SetField(bool flag) {
 }
 
 bool Dungeon::GetField() {
-	if (fieldflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return fieldflag;
 }
 
 void Dungeon::SetBattle(bool flag) {
@@ -229,12 +224,7 @@ void Dungeon::SetBattle(bool flag) {
 }
 
 bool Dungeon::GetBattle() {
-	if (battleflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return battleflag;
 }
 
 void Dungeon::SetBoss(bool flag) {
@@ -242,12 +232,7 @@ void Dungeon::SetBoss(bool flag) {
 }
 
 bool Dungeon::GetBoss() {
-	if (bossflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return bossflag;
 }
 
 eStep Dungeon::GetStep(){

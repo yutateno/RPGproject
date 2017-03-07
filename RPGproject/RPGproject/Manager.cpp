@@ -897,6 +897,14 @@ void Manager::SafeAreaProcess() {
 		}
 		// ‚»‚Ì‚Ü‚Ü‚È‚çƒVƒ‡ƒbƒv‰æ–Ê
 		else {
+			// ”ƒ‚Á‚½‚Æ‚«
+			if (safeArea->GetBuy() == true) {
+				player->BuyItem(safeArea->GetID());
+				safeArea->SetBuy(false);
+			}
+			for (int i = 0; i < 9; i++) {
+				safeArea->SetnumID(i, player->GetID(i));
+			}
 			// safearea ‚É‚Ä“®ì
 		}
 	}

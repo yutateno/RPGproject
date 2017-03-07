@@ -23,6 +23,7 @@ Player::Player()
 	{
 		item[i] = new Item();
 	}
+	ID = 0;
 
 	attack = new Attack();
 	attack->power = 1;
@@ -242,6 +243,18 @@ void Player::MoveReset()
 	y = preY;
 }
 
+void Player::BuyItem(int ID) 
+{
+	for (int i = 0; i < itemMax; i++)
+	{
+		if (item[i]->GetID() == 0) {
+			delete item[i];
+			item[i] = new Item(ID);
+			break;
+		}
+	}
+}
+
 bool Player::GetmenuFlag()
 {
 	if (menuFlag == true)
@@ -337,4 +350,9 @@ void Player::SetDirection(Direction direction)
 Direction Player::GetDirection()
 {
 	return direction;
+}
+
+int Player::GetID(int num)
+{
+	return item[num]->GetID();
 }

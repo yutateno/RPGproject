@@ -29,6 +29,7 @@ private:
 	int speed;				// 移動スピード。戦闘ステータスではない
 	int itemMax;			// アイテムの最大所持量
 	Item *item[9];			// アイテム
+	int ID;
 
 	Attack* attack;			// 攻撃クラス
 
@@ -55,6 +56,8 @@ public:
 
 	bool GetmenuFlag();		//メニュー画面を開いてるかどうか
 
+	void BuyItem(int ID);
+
 	// ゲッターセッターたち
 	void SetName(string name);
 	string GetName();
@@ -75,6 +78,7 @@ public:
 	int GetMaxMP();
 	void SetATK(int width);
 	int GetATK();
+	int GetID(int num);
 	void SetDirection(Direction direction);
 	Direction GetDirection();
 };

@@ -19,4 +19,5 @@ public:
 
 	// ゲッターセッター
 	string GetName();
+	int GetID();
 };

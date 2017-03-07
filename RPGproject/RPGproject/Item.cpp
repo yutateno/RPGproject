@@ -52,3 +52,8 @@ string Item::GetName()
 {
 	return name;
 }
+
+int Item::GetID()
+{
+	return ID;
+}

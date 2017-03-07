@@ -20,9 +20,17 @@ SafeArea::SafeArea() {
 	healflag = false;
 	talkflag = false;
 	shopflag = false;
+	buyflag = false;
+	sellflag = false;
 	healcount = 0;
 	shopmenu = 0;
 	shopmY = 0;
+	money = 0;
+	ID = 0;
+	for (int i = 0; i < 9; i++) {
+		item[i] = 0;
+	}
+	itemm = new Item();
 }
 SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Wall);
@@ -128,15 +136,23 @@ void SafeArea::UpDate_Main() {
 					switch (shopmY) {
 					case 0:
 						//str = "やく(にたちそうな)くさ";
+						ID = 2;
+						buyflag = true;
 						break;
 					case 1:
 						//str = "清らかな水";
+						ID = 3;
+						buyflag = true;
 						break;
 					case 2:
 						//str = "けむりダマ";
+						ID = 3;
+						buyflag = true;
 						break;
 					case 3:
 						//str = "世界樹のハ";
+						ID = 4;
+						buyflag = true;
 						break;
 					default:
 						shopmenu = 0;
@@ -170,6 +186,23 @@ void SafeArea::UpDate_Main() {
 			else {
 				shopflag = true;
 			}
+		}
+	}
+	// ショップの値段表示
+	if (shopmenu == 1) {
+		switch (shopmY) {
+		case 0:
+			money = 10;
+			break;
+		case 1:
+			money = 15;
+			break;
+		case 2:
+			money = 10;
+			break;
+		case 3:
+			money = 20;
+			break;
 		}
 	}
 	// ショップ画面でのカーソル移動
@@ -209,7 +242,7 @@ void SafeArea::UpDate_Main() {
 			}
 			else {
 				// 一番下じゃなければ
-				if (shopmY < 4) {
+				if (shopmY < 9) {
 					shopmY++;
 				}
 				// 一番下なら
@@ -319,15 +352,21 @@ void SafeArea::Draw_Main(int x, int y) {
 			DrawFormatString(35, cursor * 4, BLACK, "戻る");
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "何を買う？");
+			if (shopmY < 4) {
+				DrawFormatString(70, cursor * 6, BLACK, "%d円です。", money);
+			}
 		}
 		else {
-			DrawFormatString(35, cursor * 0, BLACK, "やく(にたちそうな)くさ");
-			DrawFormatString(35, cursor * 1, BLACK, "清らかな水");
-			DrawFormatString(35, cursor * 2, BLACK, "けむりダマ");
-			DrawFormatString(35, cursor * 3, BLACK, "世界樹のハ");
-			DrawFormatString(35, cursor * 4, BLACK, "戻る");
+			for (int i = 0; i < 9; i++)
+			{
+				DrawFormatString(35, cursor * i, BLACK, itemm->SearchName(item[i]).c_str());
+			}
+			DrawFormatString(35, cursor * 9, BLACK, "戻る");
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "何を売る？");
+			if (shopmY < 9) {
+				DrawFormatString(70, cursor * 11, BLACK, "%d円です。", money);
+			}
 		}
 	}
 }
@@ -382,12 +421,7 @@ void SafeArea::SetField(bool flag) {
 }
 
 bool SafeArea::GetField() {
-	if (fieldflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return fieldflag;
 }
 
 void SafeArea::SetPeople(bool flag) {
@@ -395,12 +429,7 @@ void SafeArea::SetPeople(bool flag) {
 }
 
 bool SafeArea::GetPeople() {
-	if (peopleflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return peopleflag;
 }
 
 void SafeArea::SetItem(bool flag) {
@@ -408,12 +437,7 @@ void SafeArea::SetItem(bool flag) {
 }
 
 bool SafeArea::GetItem() {
-	if (itemflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return itemflag;
 }
 
 void SafeArea::SetShop(bool flag) {
@@ -421,12 +445,7 @@ void SafeArea::SetShop(bool flag) {
 }
 
 bool SafeArea::GetShop(){
-	if (shopflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return shopflag;
 }
 
 void SafeArea::SetHeal(bool flag) {
@@ -434,12 +453,7 @@ void SafeArea::SetHeal(bool flag) {
 }
 
 bool SafeArea::GetHeal() {
-	if (healflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return healflag;
 }
 
 void SafeArea::SetTalk(bool flag) {
@@ -447,12 +461,35 @@ void SafeArea::SetTalk(bool flag) {
 }
 
 bool SafeArea::GetTalk() {
-	if (talkflag == true) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return talkflag;
+}
+
+void SafeArea::SetBuy(bool flag) {
+	buyflag = flag;
+}
+
+bool SafeArea::GetBuy() {
+	return buyflag;
+}
+
+void SafeArea::SetSell(bool flag) {
+	sellflag = flag;
+}
+
+bool SafeArea::GetSell() {
+	return sellflag;
+}
+
+void SafeArea::SetID(int ID) {
+	this->ID = ID;
+}
+
+int SafeArea::GetID() {
+	return ID;
+}
+
+void SafeArea::SetnumID(int num, int ID) {
+	item[num] = ID;
 }
 
 eStep SafeArea::GetStep() {
