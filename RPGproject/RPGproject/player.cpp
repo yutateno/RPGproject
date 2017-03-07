@@ -5,6 +5,7 @@ Player::Player()
 	// ステータスたち
 	name = "pine";
 	lv = 1;
+	exp = 0;
 	maxHP = 10;
 	hp = 10;
 	maxMP = 10;
@@ -268,6 +269,10 @@ void Player::SetLV(int lv)
 int Player::GetLV()
 {
 	return lv;
+}
+void Player::SetEXP(int exp)
+{
+	this->exp = exp;
 }
 void Player::SetX(int x)
 {

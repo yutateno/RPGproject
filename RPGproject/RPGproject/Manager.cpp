@@ -179,7 +179,7 @@ void Manager::ChengeScene_Field() {
 	case eScene::S_Battle:// 戦闘画面
 		this->battle = new Battle();
 		count = 0;
-		enemy = new Enemy();
+		enemy = new Enemy((int)GetRand(1));
 		// フィールド画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Field);
 		break;
@@ -218,6 +218,16 @@ void Manager::ChengeScene_Battle() {
 	}
 	else
 	{
+		// 経験値の処理の処理
+		player->SetEXP(enemy->GetEXP());
+
+
+		// レベルアップの処理
+		if (player->GetLV() * 20)
+		{
+			player->SetEXP(0);
+			player->SetLV(player->GetLV() + 1);
+		}
 		this->NowScene = this->battle->GetNextScene();
 	}
 
@@ -409,7 +419,7 @@ void Manager::Draw() {
 			// 勝利時
 			if (enemy->GetHP() <= 0)
 			{
-				DrawFormatString(0, 384, WHITE, "勝利");
+				DrawFormatString(0, 384, WHITE, "勝利\n %d の経験値を獲得！", enemy->GetEXP());
 			}
 			// 敗北時
 			else if (player->GetHP() <= 0)
