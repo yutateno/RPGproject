@@ -9,20 +9,28 @@ using std::string;
 class Enemy
 {
 private:
+	// 固有の情報
+	int ID;				// 通し番号
 	string name;		// 名前
+
+	// ステータス
 	int hp;				// 体力
 	int mp;				// 魔力
 	int attack;			// 攻撃力
+	int exp;			// 経験値
 
+	// 画像
 	int graph;			// 画像
 
 public:
 	Enemy();
-	Enemy(string name, int hp, int mp, int attack, int graph);	// オーバーロード基本的にこっちを使う
+	Enemy(int ID);					// オーバーロード基本的にこっちを使う
 	~Enemy();
 
-	void aaaDraw();			// 描画
+	void aaaDraw();					// 描画
 	int AttackProcess();			// 攻撃の処理
+
+	void SearchStatus();			// IDからステータスを取得する
 
 	// ゲッターセッターたち
 	void SetName(string name);
@@ -33,4 +41,5 @@ public:
 	int GetMP();
 	void SetATK(int attack);
 	int GetATK();
+	int GetEXP();
 };

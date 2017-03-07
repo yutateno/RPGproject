@@ -17,6 +17,7 @@ class Player
 private:
 	string name;			// 名前
 	int lv;					// レベル
+	int exp;				// 経験値
 	int maxHP;				// 体力の最大値
 	int hp;					// 体力
 	int maxMP;				// MPの最大値
@@ -59,6 +60,7 @@ public:
 	string GetName();
 	void SetLV(int lv);
 	int GetLV();
+	void SetEXP(int exp);
 	void SetX(int x);
 	int GetX();
 	void SetY(int y);

@@ -2,25 +2,49 @@
 
 Enemy::Enemy()
 {
-	name = "default_chang!";
-	hp = 10;			// 体力
-	mp = 10;			// 魔力
-	attack = 1;			// 攻撃力
-
-	graph = LoadGraph("img\\enemy.png");
+	// デフォルトコンストラクタは基本的に呼ばれない
+	ID = 0;		// 0:テスト用
+	
+	SearchStatus();		// IDからステータス取得
 }
-Enemy::Enemy(string name, int hp, int mp, int attack, int graph)
+Enemy::Enemy(int ID)
 {
-	this->name = name;
-	this->hp = hp;			// 体力
-	this->mp = mp;			// 魔力
-	this->attack = attack;			// 攻撃力
+	this->ID = ID;		// 0:テスト用
 
-	this->graph = graph;
+	SearchStatus();		// IDからステータス取得
 }
 Enemy::~Enemy()
 {
 	DeleteGraph(graph);
+}
+
+void Enemy::SearchStatus()
+{
+	switch (ID)
+	{
+	case 0:
+		name = "default_chang!";
+		hp = 10;			// 体力
+		mp = 10;			// 魔力
+		attack = 1;			// 攻撃力
+		exp = 10;			// 経験値
+
+		graph = LoadGraph("img\\enemy.png");
+		break;
+
+	case 1:
+		name = "mi!";
+		hp = 5;			// 体力
+		mp = 5;			// 魔力
+		attack = 2;		// 攻撃力
+		exp = 20;		// 経験値
+
+		graph = LoadGraph("img\\enemy.png");
+
+	default:
+		// エラー
+		break;
+	}
 }
 
 void Enemy::aaaDraw()
@@ -65,4 +89,8 @@ void Enemy::SetATK(int attack)
 int Enemy::GetATK()
 {
 	return attack;
+}
+int Enemy::GetEXP()
+{
+	return exp;
 }
