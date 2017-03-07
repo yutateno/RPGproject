@@ -79,10 +79,6 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 	}
 	DrawGraph(drawX, drawY, graph, true);		// プレイヤー本体
 
-	//-------------------------------デバッグ用------------------------------------------
-	// プレイヤーのステータス
-	DrawFormatString(0, 384, BLACK, "%s\nHP:%d\nMP:%d\nLV:%d", name.c_str(), hp, mp, lv);
-	//-----------------------------------------------------------------------------------
 
 	// メニュー画面
 	if (menuFlag)
@@ -244,14 +240,7 @@ void Player::MoveReset()
 
 bool Player::GetmenuFlag()
 {
-	if (menuFlag == true)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return menuFlag;
 }
 
 void Player::SetName(string name)
@@ -274,6 +263,10 @@ void Player::SetEXP(int exp)
 {
 	this->exp = exp;
 }
+int Player::GetEXP()
+{
+	return exp;
+}
 void Player::SetX(int x)
 {
 	this->x = x;
@@ -290,7 +283,7 @@ int Player::GetY()
 {
 	return y;
 }
-void Player::SetMaxHP(int MaxHP)
+void Player::SetMaxHP(int maxHP)
 {
 	this->maxHP = maxHP;
 }

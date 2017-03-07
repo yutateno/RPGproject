@@ -219,14 +219,17 @@ void Manager::ChengeScene_Battle() {
 	else
 	{
 		// 経験値の処理の処理
-		player->SetEXP(enemy->GetEXP());
+		player->SetEXP(player->GetEXP() + enemy->GetEXP());
 
 
 		// レベルアップの処理
-		if (player->GetLV() * 20)
+		if (player->GetLV() * 20 < player->GetEXP())
 		{
 			player->SetEXP(0);
 			player->SetLV(player->GetLV() + 1);
+			// 最大HPMP上昇
+			player->SetMaxHP(player->GetMaxHP() + player->GetLV());
+			player->SetMaxMP(player->GetMaxMP() + player->GetLV());
 		}
 		this->NowScene = this->battle->GetNextScene();
 	}
