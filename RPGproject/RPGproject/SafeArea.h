@@ -9,7 +9,7 @@
 class SafeArea : public SuperScene {
 private:
 	const int heal = 30;	// 回復の表示カウント
-	const int talkwait = 30;
+	const int cursor = 32;	// カーソルの移動距離
 
 	int Gr_Back;	// 背景
 	int Gr_Wall;	// 壁
@@ -29,7 +29,7 @@ private:
 	bool talkflag;			// 会話中かどうか
 	int healcount;			// 回復のフレームカウント
 	int shopmenu;			// ショップ画面
-	int shopmX, shopmY;		// ショップ画面でのカーソル
+	int shopmY;		// ショップ画面でのカーソル
 
 public:
 	SafeArea();

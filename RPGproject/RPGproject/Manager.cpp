@@ -841,9 +841,13 @@ void Manager::SafeAreaProcess() {
 	}
 
 	// 一般人に触れたら
-	if (safeArea->GetPeople() == true && player->GetmenuFlag() == false) {
+	if (safeArea->GetPeople() == true) {
 		// 動いたらキャンセル
 		if (playerY != player->GetY() || playerX != player->GetX()) {
+			safeArea->SetPeople(false);
+		}
+		// メニューを開いたら
+		else if (player->GetmenuFlag() == true) {
 			safeArea->SetPeople(false);
 		}
 		// そのままなら会話
@@ -853,24 +857,32 @@ void Manager::SafeAreaProcess() {
 	}
 
 	// 噴水に触れたら
-	if (safeArea->GetHeal() == true && player->GetmenuFlag() == false) {
+	if (safeArea->GetHeal() == true) {
 		// 動いたらキャンセル
 		if (playerY != player->GetY() || playerX != player->GetX()) {
+			safeArea->SetHeal(false);
+		}
+		// メニューを開いたら
+		else if (player->GetmenuFlag() == true) {
 			safeArea->SetHeal(false);
 		}
 		// そのままなら回復
 		else {
 			if (KeyData::Get(KEY_INPUT_Z) == 1) {
-				player->SetHP(10);
-				player->SetMP(10);
+				player->SetHP(player->GetMaxHP());
+				player->SetMP(player->GetMaxMP());
 			}
 		}
 	}
 
 	// 道具屋に触れたら
-	if (safeArea->GetItem() == true && player->GetmenuFlag() == false) {
+	if (safeArea->GetItem() == true) {
 		// 動いたらキャンセル
 		if (playerY != player->GetY() || playerX != player->GetX()) {
+			safeArea->SetItem(false);
+		}
+		// メニューを開いたら
+		else if (player->GetmenuFlag() == true) {
 			safeArea->SetItem(false);
 		}
 		// そのままならショップ画面

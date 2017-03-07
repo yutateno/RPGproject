@@ -26,6 +26,21 @@ string Item::SearchName(int ID)
 	case 1:
 		str = "test_item";
 		break;
+	case 2:
+		str = "‚â‚­(‚É‚½‚¿‚»‚¤‚È)‚­‚³";
+		break;
+	case 3:
+		str = "´‚ç‚©‚È…";
+		break;
+	case 4:
+		str = "‚¯‚Ş‚èƒ_ƒ}";
+		break;
+	case 5:
+		str = "¢ŠE÷‚Ìƒn";
+		break;
+	case 9:
+		str = "‚È‚É‚à‚È‚¢";
+		break;
 	default:
 		break;
 	}

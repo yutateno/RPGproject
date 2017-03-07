@@ -22,7 +22,6 @@ SafeArea::SafeArea() {
 	shopflag = false;
 	healcount = 0;
 	shopmenu = 0;
-	shopmX = 0;
 	shopmY = 0;
 }
 SafeArea::~SafeArea() {
@@ -107,22 +106,64 @@ void SafeArea::UpDate_Main() {
 	// 道具屋に触れたら
 	if (itemflag == true) {
 		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			// 買う、売る、を開いたときのショップ画面(今ない
-			if (shopflag == true && shopmenu == 1) {
-				
-			}
-			else if (shopflag == true && shopmenu == 0) {
-				// 買うを押したとき
-				if (shopmY == 0) {
-					
+			// 買い物の最初の画面
+			if (shopflag == true) {
+				if (shopmenu == 0) {
+					// 買うを押したとき
+					if (shopmY == 0) {
+						shopmenu = 1;
+					}
+					// 売るを押したとき
+					else if (shopmY == 1) {
+						shopmenu = 2;
+					}
+					// やめるを押したとき
+					else {
+						shopflag = false;
+					}
+					shopmY = 0;
 				}
-				// 売るを押したとき
-				else if (shopmY == 32) {
-					
+				// 買うを開いたときのショップ画面
+				else if (shopmenu == 1) {
+					switch (shopmY) {
+					case 0:
+						//str = "やく(にたちそうな)くさ";
+						break;
+					case 1:
+						//str = "清らかな水";
+						break;
+					case 2:
+						//str = "けむりダマ";
+						break;
+					case 3:
+						//str = "世界樹のハ";
+						break;
+					default:
+						shopmenu = 0;
+						shopmY = 0;
+						break;
+					}
 				}
-				// やめるを押したとき
-				else {
-					shopflag = false;
+				// 売るを開いたときのショップ画面
+				else if (shopmenu == 2) {
+					switch (shopmY) {
+					case 0:
+						//str = "やく(にたちそうな)くさ";
+						break;
+					case 1:
+						//str = "清らかな水";
+						break;
+					case 2:
+						//str = "けむりダマ";
+						break;
+					case 3:
+						//str = "世界樹のハ";
+						break;
+					default:
+						shopmenu = 0;
+						shopmY = 0;
+						break;
+					}
 				}
 			}
 			// 触れただけの時
@@ -137,7 +178,7 @@ void SafeArea::UpDate_Main() {
 		if (KeyData::Get(KEY_INPUT_UP) == 1) {
 			// 一番上じゃなければ
 			if (shopmY > 0) {
-				shopmY -= 32;
+				shopmY --;
 			}
 			// 一番上なら
 			else {
@@ -146,13 +187,35 @@ void SafeArea::UpDate_Main() {
 		}
 		// 下を押した
 		if (KeyData::Get(KEY_INPUT_DOWN) == 1) {
-			// 一番下じゃなければ
-			if (shopmY < 64) {
-				shopmY += 32;
-			}
-			// 一番下なら
-			else {
+			if (shopmenu == 0) {
+				// 一番下じゃなければ
+				if (shopmY < 2) {
+					shopmY++;
+				}
+				// 一番下なら
+				else {
 
+				}
+			}
+			else if (shopmenu == 1) {
+				// 一番下じゃなければ
+				if (shopmY < 4) {
+					shopmY++;
+				}
+				// 一番下なら
+				else {
+
+				}
+			}
+			else {
+				// 一番下じゃなければ
+				if (shopmY < 4) {
+					shopmY++;
+				}
+				// 一番下なら
+				else {
+
+				}
 			}
 		}
 	}
@@ -242,15 +305,30 @@ void SafeArea::Draw_Main(int x, int y) {
 
 	if (itemflag == true && shopflag == true) {
 		if (shopmenu == 0) {
-			DrawFormatString(35, 0, BLACK, "買う");
-			DrawFormatString(35, 32, BLACK, "売る");
-			DrawFormatString(35, 64, BLACK, "やめる");
-			DrawBox(shopmX, shopmY, 32 + shopmX, 32 + shopmY, BLUE, true);
+			DrawFormatString(35, cursor * 0, BLACK, "買う");
+			DrawFormatString(35, cursor * 1, BLACK, "売る");
+			DrawFormatString(35, cursor * 2, BLACK, "やめる");
+			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
+			DrawFormatString(320, 240, BLACK, "いらっしゃーい");
+		}
+		else if(shopmenu == 1) {
+			DrawFormatString(35, cursor * 0, BLACK, "やく(にたちそうな)くさ");
+			DrawFormatString(35, cursor * 1, BLACK, "清らかな水");
+			DrawFormatString(35, cursor * 2, BLACK, "けむりダマ");
+			DrawFormatString(35, cursor * 3, BLACK, "世界樹のハ");
+			DrawFormatString(35, cursor * 4, BLACK, "戻る");
+			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
+			DrawFormatString(320, 240, BLACK, "何を買う？");
 		}
 		else {
-
+			DrawFormatString(35, cursor * 0, BLACK, "やく(にたちそうな)くさ");
+			DrawFormatString(35, cursor * 1, BLACK, "清らかな水");
+			DrawFormatString(35, cursor * 2, BLACK, "けむりダマ");
+			DrawFormatString(35, cursor * 3, BLACK, "世界樹のハ");
+			DrawFormatString(35, cursor * 4, BLACK, "戻る");
+			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
+			DrawFormatString(320, 240, BLACK, "何を売る？");
 		}
-		DrawFormatString(320, 240, BLACK, "いらっしゃーい");
 	}
 }
 
