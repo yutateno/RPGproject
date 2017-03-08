@@ -1,29 +1,34 @@
 #include "Manager.h"
 
 Battle::Battle() {
-	this->endFlag = false;
-	this->nextScene = eScene::S_End;
-	this->step = eStep::Start;
-	this->startCount = 0;
-	this->endCount = 0;
+	// 動作関係
+	this->endFlag = false;				// このシーンの終了するフラグ
+	this->nextScene = eScene::S_End;	// 次のシーンの設定する
+
+	// 演出関係
+	this->step = eStep::Start;			// 演出関係
+	this->startCount = 50;				// シーン開始時の演出時間
+	this->endCount = 50;					// シーン終了時の演出時間
+	count = 0;							// (フレーム)時間のカウント
 
 	// 画像
 	Gr_Back = LoadGraph("img\\battle_background.png");		// 背景
 
-	// コマンド状態
-	command = NEUTRAL;
-	preCommand = command;
+	// 戦闘システム関係
+	command = NEUTRAL;				// 現在のコマンド
+	preCommand = command;			// 直前のコマンドを保存する
+	damageFlag = false;				// ダメージを与えたかどうか
+	damageWidth = 0;				//ダメージの振れ幅
 
-	damageFlag = false;
-	damageWidth = 0;
-
-	textFlag = true;
+	// ログ関係
+	textFlag = true;				// true:表示する
 
 	// カーソル座標
-	cursorX = 0;
-	cursorY = 0;
+	cursorX = 0;		// 相対座標
+	cursorY = 0;		// 相対座標
 }
 Battle::~Battle() {
+	// 画像削除
 	DeleteGraph(Gr_Back);
 }
 
@@ -44,9 +49,13 @@ void Battle::UpDate() {
 	}
 }
 void Battle::UpDate_Start() {
-	this->startCount++;
+	// カウントアップ
+	count++;
 
-	if (this->startCount < 50) return;	// 50フレームで開始画面終了
+	// startCountだけ演出する
+	if (count < startCount) return;
+	// カウントリセットして次のステップへ
+	count = 0;
 	this->step = eStep::Main;
 }
 void Battle::UpDate_Main() {
@@ -65,6 +74,7 @@ void Battle::UpDate_Main() {
 
 	// Zキーで決定
 	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+		// コマンドの状態から処理を選択
 		switch (command)
 		{
 		case NEUTRAL:	// 初期
@@ -73,16 +83,14 @@ void Battle::UpDate_Main() {
 				// ここに攻撃力などを代入する式を追加する
 				damageWidth = 0;		// 振れ幅
 				damageFlag = true;		// Managerに、enemyにダメージを与えるよう指示する
-				command = NEUTRAL;		// commandをNEUTRALに戻す
-				command = ATTACK;
+				command = ATTACK;		// コマンド状態を変更
 			}
 			else if (cursorY == 1)// 魔法選択時
 			{
 				// ここに攻撃力などを代入する式を追加する
 				damageWidth = 3;		// 振れ幅
 				damageFlag = true;		// Managerに、enemyにダメージを与えるよう指示する
-				command = NEUTRAL;		// commandをNEUTRALに戻す
-				command = MAGIC;
+				command = MAGIC;		// コマンド状態を変更
 			}
 			else{					// 逃げる選択時
 				command = RUN_AWAY;
@@ -90,12 +98,15 @@ void Battle::UpDate_Main() {
 			break;
 
 		case ATTACK:	// 攻撃メニュー
+			// ここで記入することはなし。NEUTRALにはManagerが戻してくれる
 			break;
 
 		case MAGIC:		// 魔法メニュー
+			// ここで記入することはなし。NEUTRALにはManagerが戻してくれる
 			break;
 
 		case RUN_AWAY:	// 逃げる
+			// ここで記入することはなし。NEUTRALにはManagerが戻してくれる
 			break;
 
 		default:		// 在り得ない。エラー
@@ -116,9 +127,13 @@ void Battle::UpDate_Main() {
 	}
 }
 void Battle::UpDate_End() {
-	this->endCount++;
+	// カウントアップ
+	count++;
 
-	if (this->endCount < 50) return;	// 50フレームで終了画面終了
+	// endCountだけ演出する
+	if (count < endCount) return;
+	// カウントをリセットしてこのシーンを終了する
+	count = 0;
 	this->endFlag = true;
 }
 void Battle::Draw() {
@@ -157,13 +172,16 @@ void Battle::Draw(bool flag) {
 	}
 }
 void Battle::Draw_Start() {
+	// debug---------------------------------------------------------------------------------------------------
 	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
+	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面 %d / %d", count, this->startCount);
+	// --------------------------------------------------------------------------------------------------------
 }
 void Battle::Draw_Main() {
 	// 背景
 	DrawGraph(0, 0, Gr_Back, true);
 
+	// コマンド表示がオンなら
 	if (textFlag)
 	{
 		// コマンド状態に応じて表示を変化
@@ -189,13 +207,14 @@ void Battle::Draw_Main() {
 		}
 
 		// カーソル
-		//DrawStringToHandle(cursorX, 400 + (cursorY * 32), "▲", WHITE, Font::Get(eFont::SELECT));
 		DrawFormatString(cursorX, 384 + (cursorY * 32), WHITE, "▲");
 	}
 }
 void Battle::Draw_End() {
+	// debug---------------------------------------------------------------------------------------------------
 	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
+	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, this->endCount);
+	// --------------------------------------------------------------------------------------------------------
 }
 
 // どの画面から戦闘画面に移行したか（戦闘終了時にその画面に戻る)

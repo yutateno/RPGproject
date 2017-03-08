@@ -166,9 +166,6 @@ void Field::Draw_Main() {
 			DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchipForID, true);
 		}
 	}
-
-	// TIPS
-	DrawFormatString(420, 360, BLACK, "フィールド画面\nメイン処理画面\nXキーで拠点画面へ\nCキーでダンジョン画面へ\n");
 }
 void Field::Draw_End() {
 	// debug-------------------------------------------------------------------------------------------------
