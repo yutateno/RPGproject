@@ -16,7 +16,8 @@ private:
 	// ステータス
 	int hp;				// 体力
 	int mp;				// 魔力
-	int attack;			// 攻撃力
+	Attack *attack;		// 攻撃クラス
+	int damage;			// ゲッター用の変数
 	int exp;			// 経験値
 
 	// 画像
@@ -28,7 +29,7 @@ public:
 	~Enemy();
 
 	void aaaDraw();					// 描画
-	int AttackProcess();			// 攻撃の処理
+	void AttackProcess();			// 攻撃の処理
 
 	void SearchStatus();			// IDからステータスを取得する
 

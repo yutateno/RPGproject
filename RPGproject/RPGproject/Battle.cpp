@@ -20,6 +20,10 @@ Battle::Battle() {
 	damageFlag = false;				// ダメージを与えたかどうか
 	damageWidth = 0;				//ダメージの振れ幅
 
+	// コマンドが乗ってる板
+	commandX = 8;
+	commandY = 320;
+
 	// ログ関係
 	textFlag = true;				// true:表示する
 
@@ -188,9 +192,9 @@ void Battle::Draw_Main() {
 		switch (command)
 		{
 		case NEUTRAL:	// 初期
-			DrawFormatString(0, 384, WHITE, "  攻撃");
-			DrawFormatString(0, 416, WHITE, "  魔法");
-			DrawFormatString(0, 448, WHITE, "  逃げる");
+			DrawFormatString(commandX + 32, commandY + 32, BLACK, "  攻撃");
+			DrawFormatString(commandX + 32, commandY + 64, BLACK, "  魔法");
+			DrawFormatString(commandX + 32, commandY + 96, BLACK, "  逃げる");
 			break;
 
 		case ATTACK:	// 攻撃メニュー
@@ -207,7 +211,7 @@ void Battle::Draw_Main() {
 		}
 
 		// カーソル
-		DrawFormatString(cursorX, 384 + (cursorY * 32), WHITE, "▲");
+		DrawFormatString(commandX + 32 + cursorX, commandY + 32 + (cursorY * 32), BLACK, "▲");
 	}
 }
 void Battle::Draw_End() {

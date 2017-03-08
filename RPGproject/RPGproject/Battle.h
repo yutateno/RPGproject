@@ -15,6 +15,9 @@ private:
 	bool damageFlag;		// ダメージを与える処理をおこなうかどうかのフラグ
 	int damageWidth;		// ダメージのブレ幅
 
+	// コマンドが乗ってる板
+	int commandX, commandY;			// 絶対座標
+
 	// カーソル関係
 	int cursorX, cursorY;			// カーソルの相対座標
 
