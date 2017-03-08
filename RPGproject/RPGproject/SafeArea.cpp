@@ -175,6 +175,8 @@ void SafeArea::Draw_Main(int x, int y) {
 
 	// 回復店主
 	if (innflag == true && talkflag == true) {
+		DrawFormatString(320, 150, BLACK, "所持金：%d円", premoney);
+		DrawFormatString(320, 118, BLACK, "100円");
 		DrawFormatString(0, cursor * 0, BLACK, "泊まりますか？");
 		DrawFormatString(35, cursor * 1, BLACK, "休みます");
 		DrawFormatString(35, cursor * 2, BLACK, "やめときます");
@@ -182,11 +184,11 @@ void SafeArea::Draw_Main(int x, int y) {
 	}
 	// 回復表示
 	if (healcount > 0) {
-		if (premoney >= money) {
+		if (premoney > money) {
 			DrawFormatString(320, 240, BLACK, "回復しました。");
 		}
 		else {
-			DrawFormatString(320, 208, BLACK, "出直して");
+			DrawFormatString(320, 240, BLACK, "出直して");
 		}
 	}
 
@@ -197,6 +199,8 @@ void SafeArea::Draw_Main(int x, int y) {
 
 	//買い物関連----------------------------------------------------
 	if (itemflag == true && shopflag == true) {
+		// 所持金
+		DrawFormatString(320, 150, BLACK, "所持金：%d円", premoney);
 		// 最初のメニュー
 		if (shopmenu == 0) {
 			DrawFormatString(35, cursor * 0, BLACK, "買う");
@@ -215,7 +219,7 @@ void SafeArea::Draw_Main(int x, int y) {
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "何を買う？");
 			if (shopmY < 4) {
-				DrawFormatString(70, cursor * 6, BLACK, "%d円です。", money);
+				DrawFormatString(320, 118, BLACK, "%d円", money);
 			}
 		}
 		// 売るときのメニュー
@@ -228,17 +232,29 @@ void SafeArea::Draw_Main(int x, int y) {
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "何を売る？");
 			if (shopmY != 9) {
-				DrawFormatString(70, cursor * 11, BLACK, "%d円です。", money);
+				DrawFormatString(320, 118, BLACK, "%d円", money);
 			}
 		}
 	}
 	// 店主のセリフ
-	if (shopcount >= 0) {
-		if (premoney >= money) {
+	// 買ったとき
+	if (shopmenu == 1 && shopcount >= 0) {
+		if (premoney > money) {
 			DrawFormatString(320, 208, BLACK, "まいど～");
 		}
 		else {
 			DrawFormatString(320, 208, BLACK, "出直して");
+		}
+	}
+	// 売ったとき
+	if (shopmenu == 2 && shopcount >= 0) {
+		// 無以外を売ったとき
+		if (item[shopmY] != 0) {
+			DrawFormatString(320, 208, BLACK, "まいど～");
+		}
+		// 無を売るとき
+		else {
+			DrawFormatString(320, 208, BLACK, "はい");
 		}
 	}
 	//--------------------------------------------------------------
@@ -275,12 +291,12 @@ void SafeArea::HealProcess() {
 					if (premoney >= money) {
 						premoney -= money;
 						healflag = true;
-						healcount = heal;
 					}
 					// お金なければ
 					else {
-
+						
 					}
+					healcount = heal;
 					healY = 0;
 				}
 				// 回復やめたら
@@ -349,47 +365,9 @@ void SafeArea::ShopProcess() {
 				}
 				// 買うを開いたときのショップ画面
 				else if (shopmenu == 1) {
-					switch (shopmY) {
-					case 0:
-						//str = "やく(にたちそうな)くさ";
+					if (shopmY < 4) {
 						if (premoney >= money) {
-							ID = 2;
-							premoney -= money;
-							buyflag = true;
-						}
-						else {
-
-						}
-						shopcount = shop;
-						break;
-					case 1:
-						//str = "清らかな水";
-						if (premoney >= money) {
-							ID = 3;
-							premoney -= money;
-							buyflag = true;
-						}
-						else {
-							
-						}
-						shopcount = shop;
-						break;
-					case 2:
-						//str = "けむりダマ";
-						if (premoney >= money) {
-							ID = 4;
-							premoney -= money;
-							buyflag = true;
-						}
-						else {
-
-						}
-						shopcount = shop;
-						break;
-					case 3:
-						//str = "世界樹のハ";
-						if (premoney >= money) {
-							ID = 5;
+							ID = shopmY + 2;
 							buyflag = true;
 							premoney -= money;
 						}
@@ -397,11 +375,10 @@ void SafeArea::ShopProcess() {
 
 						}
 						shopcount = shop;
-						break;
-					default:
+					}
+					else {
 						shopmenu = 0;
 						shopmY = 0;
-						break;
 					}
 				}
 				// 売るを開いたときのショップ画面
@@ -413,6 +390,7 @@ void SafeArea::ShopProcess() {
 					}
 					// なにかしら売る
 					else {
+						premoney += money;
 						itemnum = shopmY;
 						ID = item[shopmY];
 						shopcount = shop;
