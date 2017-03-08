@@ -1,5 +1,9 @@
 #pragma once
-#include "Manager.h"
+#include "DxLib.h"
+
+#include "Input.h"
+#include "Font.h"
+#include "Scene.h"
 
 // ƒRƒ}ƒ“ƒhó‘Ô
 enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY };

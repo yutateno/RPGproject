@@ -44,6 +44,35 @@ string Item::SearchName(int ID)
 
 	return str;
 }
+int Item::SearchPrice(int ID)
+{
+	int priceForID;
+	switch (ID)
+	{
+	case 0:
+		priceForID = 0;
+		break;
+	case 1:
+		priceForID = 10;
+		break;
+	case 2:
+		priceForID = 20;
+		break;
+	case 3:
+		priceForID = 30;
+		break;
+	case 4:
+		priceForID = 40;
+		break;
+	case 5:
+		priceForID = 50;
+		break;
+	default:
+		break;
+	}
+
+	return priceForID;
+}
 
 string Item::GetName()
 {

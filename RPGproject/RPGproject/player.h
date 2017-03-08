@@ -1,6 +1,13 @@
 #pragma once
 
-#include "Manager.h"
+#include "DxLib.h"
+
+#include "Input.h"
+#include "Font.h"
+#include "Scene.h"
+
+#include "Item.h"
+#include "Attack.h"
 
 #include <string>
 
@@ -58,8 +65,8 @@ public:
 
 	bool GetmenuFlag();		//メニュー画面を開いてるかどうか
 
-	void BuyItem(int ID);
-	void SellItem(int num, int ID);
+	bool BuyItem(int ID);
+	void SellItem(int num);
 
 	// ゲッターセッターたち
 	void SetName(string name);

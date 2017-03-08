@@ -1,11 +1,24 @@
 #pragma once
-#include "Manager.h"
+#include "DxLib.h"
+
+#include "Input.h"
+#include "Font.h"
+#include "Scene.h"
+
+#include "Item.h"
+
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
 class Item;
+
+// 買い物中の状態
+enum ShopMenu
+{
+	START, BUY, SELL, END
+};
 
 // 町とかの拠点
 class SafeArea : public SuperScene {
@@ -15,8 +28,13 @@ private:
 	const int shop = 20;	// ショップでの売買後の表示カウント
 
 	// 画像関連
-	int Gr_Back;	// 背景
-	int Gr_Wall;	// 壁
+	int Gr_Back;		// 背景
+	int Gr_Wall;		// 壁
+	int Gr_Exit;		// 出口
+	int Gr_Murabito;	// 村人
+	int Gr_Shop;		// 店
+	int Gr_Yado;		// 宿
+	int graph;			// 描写用
 
 	// マップ関連
 	vector<vector<string>> map;
@@ -42,18 +60,23 @@ private:
 	bool itemflag;			// 道具屋に触れたら
 	bool shopflag;			// ショップ画面
 	int shopcount;			// ショップのフレームカウント
-	int shopmenu;			// ショップ画面
+	ShopMenu shopmenu;		// ショップ画面
 	int shopmY;				// ショップ画面でのカーソル
-	int money;				// 値段
-	int premoney;			// 入った瞬間の値段
 	bool buyflag;			// 買ったかどうか
 	bool sellflag;			// 売ったかどうか
+
+	// 擬似プレイヤー要素
+	int price;				// 値段
+	int money;				// 所持金
 
 	// アイテム関連
 	int ID;					// ID
 	int item[9];			// アイテム
 	Item *itemm;
-	int itemnum;			// アイテムの場所
+	int itemPosition;			// アイテムの場所
+
+	// 演出関係
+	int count;
 
 public:
 	SafeArea();
@@ -65,7 +88,7 @@ public:
 	void UpDate_Main();	// メイン画面アップデート
 	void UpDate_End();	// 終了画面アップデート
 
-	void Draw();	// 描画
+	void Draw();		// 描画
 	void Draw_Start();	// 開始画面描画
 	void Draw_Main(int x, int y);	// メイン画面描画
 	void Draw_End();	// 終了画面描画
@@ -74,6 +97,9 @@ public:
 	void HealProcess();		// 回復のプロセス
 	void PeopleProcess();	// 人とのプロセス
 	void ShopProcess();		// 買い物のプロセス
+
+	// プレイヤーがアイテムの購入に失敗した場合に呼ばれる関数
+	void Refund();
 
 	// ゲッターセッター
 	int GetMapData(int x, int y);
@@ -103,8 +129,8 @@ public:
 	bool GetSell();
 	void SetID(int ID);			// アイテムのＩＤ
 	int GetID();
-	void SetNum(int num);		// アイテムの位置
-	int GetNum();
+	void SetItemPosition(int itemPosition);		// アイテムの位置
+	int GetItemPosition();
 	void SetnumID(int num, int ID);
 	void SetMoney(int money);	// お金
 	int GetMoney();

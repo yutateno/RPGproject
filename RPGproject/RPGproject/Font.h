@@ -1,5 +1,5 @@
 #pragma once
-#include "Manager.h"
+#include "DxLib.h"
 
 enum class eFont : __int8 {SELECT};
 

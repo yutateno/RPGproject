@@ -944,14 +944,17 @@ void Manager::DungeonProcess() {
 }
 
 void Manager::SafeAreaProcess() {
-	this->safeArea->UpDate(player->GetX(), player->GetY());
+	// セーフエリアの処理
+	safeArea->UpDate(player->GetX(), player->GetY());
 
+	// プレイヤーのお金の動きを追跡して反映
 	player->SetMoney(safeArea->GetMoney());
 
 	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
 	playerX = player->GetX();
 	playerY = player->GetY();
 	
+	// 特定条件下でプレイヤー本体のプロセスを停止
 	if (safeArea->GetStep() == eStep::Main && safeArea->GetTalk() == false && safeArea->GetShop() == false)
 	{
 		player->Process();
@@ -1071,12 +1074,20 @@ void Manager::SafeAreaProcess() {
 		else {
 			// 買ったとき
 			if (safeArea->GetBuy() == true) {
-				player->BuyItem(safeArea->GetID());
+				if (player->BuyItem(safeArea->GetID()))
+				{
+					// 購入成功
+				}
+				else
+				{
+					// 購入失敗
+					safeArea->Refund();
+				}
 				safeArea->SetBuy(false);
 			}
 			// 売ったとき
 			if (safeArea->GetSell() == true) {
-				player->SellItem(safeArea->GetNum(), safeArea->GetID());
+				player->SellItem(safeArea->GetItemPosition());
 				safeArea->SetSell(false);
 			}
 			// 持ち物欄の写し

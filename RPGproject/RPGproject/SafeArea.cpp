@@ -2,18 +2,33 @@
 #include "SafeArea.h"
 
 SafeArea::SafeArea() {
-	this->endFlag = false;
-	this->nextScene = eScene::S_End;
-	this->step = eStep::Start;
-	this->startCount = 0;
-	this->endCount = 0;
-	MapData();
+	// 動作関係
+	endFlag = false;
+	nextScene = eScene::S_End;
 
+	// 画像関係
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
 	Gr_Back = LoadGraph("img\\safearea_background.png");
+	Gr_Exit = LoadGraph("img\\exit.png");
+	Gr_Murabito = LoadGraph("img\\murabito.png");
+	Gr_Shop = LoadGraph("img\\shop.png");
+	Gr_Yado = LoadGraph("img\\yado.png");
+	graph = 0;
 
+	// 演出関係
+	step = eStep::Start;
+	startCount = 50;
+	endCount = 50;
+	count = 0;
+
+	// マップデータ読み込み
+	MapData();
+
+	// これなに？
 	x = 0;
 	y = 0;
+
+	// 各種フラグ
 	fieldflag = false;
 	peopleflag = false;
 	itemflag = false;
@@ -23,21 +38,37 @@ SafeArea::SafeArea() {
 	shopflag = false;
 	buyflag = false;
 	sellflag = false;
+
+	// カウント系
 	healcount = 0;
 	shopcount = 0;
-	shopmenu = 0;
+
+	// UI管理関係
+	shopmenu = START;
 	shopmY = 0;
+
+	// 擬似プレイヤー要素
 	money = 0;
-	premoney = 0;
 	ID = 0;
 	for (int i = 0; i < 9; i++) {
 		item[i] = 0;
 	}
+
+	// 参照用アイテムと常に変動する値段
 	itemm = new Item();
+	price = 0;
+
+	// 初期化し忘れよくない
+	itemPosition = 0;
+	innflag = false;
 }
 SafeArea::~SafeArea() {
+	// 画像削除
 	DeleteGraph(Gr_Wall);
 	DeleteGraph(Gr_Back);
+
+	// 参照用アイテム削除
+	delete 	itemm;
 }
 
 void SafeArea::UpDate() {
@@ -75,36 +106,58 @@ void SafeArea::UpDate(int playerX, int playerY) {
 }
 
 void SafeArea::UpDate_Start() {
-	this->startCount++;
+	// カウントアップ
+	count++;
 
-	if (this->startCount < 50) return;	// 50フレームで開始画面終了
-	this->step = eStep::Main;
+	// startCountだけ演出
+	if (count < startCount) return;
+	// カウントリセットとステップ進行
+	count = 0;
+	step = eStep::Main;
 }
 
 void SafeArea::UpDate_Main() {
-
-	//// Xキーで戦闘画面に
-	//if (KeyData::Get(KEY_INPUT_X) == 1) {
-	//	this->nextScene = eScene::S_Battle;
-	//	this->step = eStep::End;
-	//}
-
 	// 特定の場所行ったらフィールド画面へ
 	if (fieldflag == true) {
-		this->nextScene = eScene::S_Field;
-		this->step = eStep::End;
+		nextScene = eScene::S_Field;
+		step = eStep::End;
 	}
 
-	HealProcess();
-	PeopleProcess();
-	ShopProcess();
+	// 宿屋に話しかけられる状態であれば
+	if (innflag)
+	{
+		HealProcess();		// 回復ポイント(宿屋)の処理
+	}
+	// 表示時間のカウントダウンカウントダウン
+	if (healcount > 0) {
+		healcount--;
+	}
+
+	// 村人に話しかけられる状態であれば
+	if (peopleflag)
+	{
+		PeopleProcess();	// 村人(会話要素)
+	}
+
+	if (itemflag)
+	{
+		ShopProcess();		// 店
+	}
+	// ショップの売買後の会話表示のカウントダウン
+	if (shopcount >= 0) {
+		shopcount--;
+	}
 }
 
 void SafeArea::UpDate_End() {
-	this->endCount++;
+	// カウントアップ
+	count++;
 
-	if (this->endCount < 50) return;	// 50フレームで終了画面終了
-	this->endFlag = true;
+	// endCountだけ演出
+	if (count < endCount) return;
+	// カウントリセットとシーン終了
+	count = 0;
+	endFlag = true;
 }
 
 void SafeArea::Draw() {
@@ -126,56 +179,63 @@ void SafeArea::Draw() {
 
 void SafeArea::Draw_Start() {
 	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
+	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面 %d / %d", count, startCount);
 }
 
 void SafeArea::Draw_Main(int x, int y) {
-
+	// 背景
 	DrawGraph(0, 0, Gr_Back, false);
 
+	// マップチップ描写
 	for (int i = 0, n = (int)map.size(); i < n; i++) {
 		for (int j = 0, m = (int)map[i].size(); j < m; j++) {
 			//stoi で文字を数値に変換
 			switch ((int)(stoi(map[i][j]) * 0.1)) {
 			case 0:	//00
+				graph = 0;
 				break;
 
 			case 1:	//壁
 				switch (stoi(map[i][j]) % 10) {
 				case 0:	//10
-					DrawGraph(j * 32 - x, i * 32 - y, Gr_Wall, false);
+					graph = Gr_Wall;
 					break;
 
 				case 1:
-					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, BLUE, TRUE);	// 出口
+					graph = Gr_Exit;	// 出口
 					break;
 
 				case 2:
-					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, WHITE, TRUE);	// 案内人
+					graph = Gr_Murabito;	// 案内人
 					break;
 
 				case 3:
-					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, YELLOW, TRUE);	// 道具屋
+					graph = Gr_Shop;	// 道具屋
 					break;
 
 				case 4:
-					DrawBox(j * 32 - x, i * 32 - y, j * 32 - x + 32, i * 32 - y + 32, RED, TRUE);	// 癒し
+					graph = Gr_Yado;	// 癒し
 					break;
 
 				default:
+					// エラー
 					break;
 				}
 				break;
 
 			default:
+				// エラー
 				break;
 			}
+
+			// 描写
+			DrawGraph(j * 32 - x, i * 32 - y, graph, true);
 		}
 	}
 
 	// 回復店主
 	if (innflag == true && talkflag == true) {
-		DrawFormatString(320, 150, BLACK, "所持金：%d円", premoney);
+		DrawFormatString(320, 150, BLACK, "所持金：%d円", money);
 		DrawFormatString(320, 118, BLACK, "100円");
 		DrawFormatString(0, cursor * 0, BLACK, "泊まりますか？");
 		DrawFormatString(35, cursor * 1, BLACK, "休みます");
@@ -184,7 +244,7 @@ void SafeArea::Draw_Main(int x, int y) {
 	}
 	// 回復表示
 	if (healcount > 0) {
-		if (premoney > money) {
+		if (money > price) {
 			DrawFormatString(320, 240, BLACK, "回復しました。");
 		}
 		else {
@@ -200,7 +260,7 @@ void SafeArea::Draw_Main(int x, int y) {
 	//買い物関連----------------------------------------------------
 	if (itemflag == true && shopflag == true) {
 		// 所持金
-		DrawFormatString(320, 150, BLACK, "所持金：%d円", premoney);
+		DrawFormatString(320, 150, BLACK, "所持金：%d円", money);
 		// 最初のメニュー
 		if (shopmenu == 0) {
 			DrawFormatString(35, cursor * 0, BLACK, "買う");
@@ -219,7 +279,7 @@ void SafeArea::Draw_Main(int x, int y) {
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "何を買う？");
 			if (shopmY < 4) {
-				DrawFormatString(320, 118, BLACK, "%d円", money);
+				DrawFormatString(320, 118, BLACK, "%d円", price);
 			}
 		}
 		// 売るときのメニュー
@@ -232,14 +292,14 @@ void SafeArea::Draw_Main(int x, int y) {
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "何を売る？");
 			if (shopmY != 9) {
-				DrawFormatString(320, 118, BLACK, "%d円", money);
+				DrawFormatString(320, 118, BLACK, "%d円", price);
 			}
 		}
 	}
 	// 店主のセリフ
 	// 買ったとき
 	if (shopmenu == 1 && shopcount >= 0) {
-		if (premoney > money) {
+		if (money > price) {
 			DrawFormatString(320, 208, BLACK, "まいど～");
 		}
 		else {
@@ -249,20 +309,28 @@ void SafeArea::Draw_Main(int x, int y) {
 	// 売ったとき
 	if (shopmenu == 2 && shopcount >= 0) {
 		// 無以外を売ったとき
-		if (item[shopmY] != 0) {
-			DrawFormatString(320, 208, BLACK, "まいど～");
-		}
-		// 無を売るとき
-		else {
-			DrawFormatString(320, 208, BLACK, "はい");
+		// shopmY=9:配列外参照
+		if (shopmY != 9)
+		{
+			if (item[shopmY] != 0) {
+				DrawFormatString(320, 208, BLACK, "まいど～");
+			}
+			// 無を売るとき
+			else {
+				DrawFormatString(320, 208, BLACK, "はい");
+			}
 		}
 	}
 	//--------------------------------------------------------------
+
+	// debug-------------------------------------------------
+	DrawFormatString(600, 450, BLACK, " %d ", innflag);
+	// --------------------------------------------------------
 }
 
 void SafeArea::Draw_End() {
 	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
+	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, endCount);
 }
 
 void SafeArea::MapData() {
@@ -279,40 +347,47 @@ void SafeArea::MapData() {
 }
 
 void SafeArea::HealProcess() {
-	// 宿の店主に触れたら
-	if (innflag == true) {
-		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			// セリフが出たら
-			money = 100;
-			if (talkflag == true) {
-				// 回復頼んだら
-				if (healY == 0) {
-					// お金あれば
-					if (premoney >= money) {
-						premoney -= money;
-						healflag = true;
-					}
-					// お金なければ
-					else {
-						
-					}
-					healcount = heal;
-					healY = 0;
+	// 宿の値段
+	price = 100;
+
+	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+		// 既に話している場合
+		if (talkflag == true) {
+			// 回復頼んだら
+			if (healY == 0) {
+				// お金あれば
+				if (money >= price) {
+					money -= price;
+					healflag = true;
 				}
-				// 回復やめたら
+				// お金なければ
 				else {
-					healY = 0;
+					// 泊まれない
 				}
-				talkflag = false;
+
+				// セリフ表示と選択アイコン座標初期化
+				healcount = heal;
+				healY = 0;
 			}
-			// 触れただけの時
+			// 回復を断る
 			else {
-				talkflag = true;
+				healY = 0;
 			}
+
+			// 会話終了
+			talkflag = false;
+		}
+		// 話しかけた場合
+		else
+		{
+			// 泊まるかの選択に映る
+			talkflag = true;
 		}
 	}
+
 	// 選択肢
-	if (innflag == true && talkflag == true) {
+	// 話しかけてい間だけ
+	if (talkflag == true) {
 		if (KeyData::Get(KEY_INPUT_UP) == 1) {
 			healY = 0;
 		}
@@ -320,181 +395,185 @@ void SafeArea::HealProcess() {
 			healY = 1;
 		}
 	}
-	// 回復の表示
-	if (healcount > 0) {
-		healcount--;
-	}
 }
 
 void SafeArea::PeopleProcess() {
-	// 一般人に触れたら
-	if (peopleflag == true) {
-		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			// セリフが出ていたら
-			if (talkflag == false) {
-				talkflag = true;
-			}
-			// セリフが出ていなかったら
-			else {
-				talkflag = false;
-			}
+	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+		// セリフが出ていたら
+		if (talkflag == false) {
+			talkflag = true;
+		}
+		// セリフが出ていなかったら
+		else {
+			talkflag = false;
 		}
 	}
 }
 
 void SafeArea::ShopProcess() {
-	// 道具屋に触れたら
-	if (itemflag == true) {
-		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			// 買い物の最初の画面
-			if (shopflag == true) {
-				if (shopmenu == 0) {
-					// 買うを押したとき
-					if (shopmY == 0) {
-						shopmenu = 1;
-					}
-					// 売るを押したとき
-					else if (shopmY == 1) {
-						shopmenu = 2;
-					}
-					// やめるを押したとき
-					else {
-						shopflag = false;
-					}
-					shopmY = 0;
+	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+		// 既に話しかけている場合
+		if (shopflag == true) {
+			switch (shopmenu)
+			{
+			case START:
+				// 購入画面へ
+				if (shopmY == 0) {
+					shopmenu = BUY;
 				}
-				// 買うを開いたときのショップ画面
-				else if (shopmenu == 1) {
-					if (shopmY < 4) {
-						if (premoney >= money) {
-							ID = shopmY + 2;
-							buyflag = true;
-							premoney -= money;
-						}
-						else {
+				// 売却画面へ
+				else if (shopmY == 1) {
+					shopmenu = SELL;
+				}
+				// やめるを押したとき
+				else {
+					// 買い物終了
+					shopflag = false;
+				}
 
-						}
-						shopcount = shop;
-					}
-					else {
-						shopmenu = 0;
-						shopmY = 0;
-					}
+				// カーソル初期化
+				shopmY = 0;
+				break;
+
+			case BUY:
+				switch (shopmY)
+				{
+				case 0:		// やく(にたちそうな)くさ
+					price = itemm->SearchPrice(2);
+					ID = 2;
+					break;
+				case 1:		// 清らかな水
+					price = itemm->SearchPrice(3);
+					ID = 3;
+					break;
+				case 2:		// けむりダマ
+					price = itemm->SearchPrice(4);
+					ID = 4;
+					break;
+				case 3:		// 世界樹のハ
+					price = itemm->SearchPrice(5);
+					ID = 5;
+					break;
+
+				case 4:		// 戻るボタン
+					price = 0;
+					ID = 0;
+					break;
+
+				default:	// エラー
+					price = 0;
+					ID = 0;
+					break;
 				}
-				// 売るを開いたときのショップ画面
-				else if (shopmenu == 2) {
-					// 戻るボタン
-					if (shopmY == 9) {
-						shopmenu = 0;
-						shopmY = 0;
-					}
-					// なにかしら売る
-					else {
-						premoney += money;
-						itemnum = shopmY;
-						ID = item[shopmY];
-						shopcount = shop;
-						sellflag = true;
-					}
+
+				// お金が足りていれば
+				if (money >= price) {
+					// Managerに処理させるフラグを立てる
+					buyflag = true;
+					// 所持金をマイナスする
+					money -= price;
 				}
+				else {
+					// 所持金不足
+				}
+
+				// セリフ表示時間更新
+				shopcount = shop;
+
+				// 初期化
+				shopmenu = START;
+				shopmY = 0;
+				break;
+
+			case SELL:
+				// shopmY=9:配列外参照
+				if (shopmY != 9)
+				{
+					// 値段とそのアイテムの保管場所を保存
+					price = itemm->SearchPrice(item[shopmY]);
+					itemPosition = shopmY;
+
+					// Managerに処理させるフラグを立てる
+					sellflag = true;
+
+					// アイテムを消す
+					item[shopmY] = 0;
+
+					// 所持金をプラスする
+					money += price;
+				}
+				// 戻る選択時
+				else
+				{
+					// 値段とそのアイテムの保管場所を保存
+					price = 0;
+					itemPosition = 0;
+				}
+
+				// セリフ表示時間更新
+				shopcount = shop;
+
+				// 初期化
+				shopmenu = START;
+				shopmY = 0;
+				break;
+
+			case END:
+				break;
+
+			default:
+				// エラー
+				break;
 			}
-			// 触れただけの時
-			else {
-				shopflag = true;
-			}
+		}
+		// まだ話しかけていないとき
+		else {
+			shopflag = true;
 		}
 	}
-	// ショップの売買後の会話表示
-	if (shopcount >= 0) {
-		shopcount--;
-	}
-	// 買うときのショップの値段表示
-	if (shopmenu == 1) {
-		switch (shopmY) {
-		case 0:
-			money = 10;
-			break;
-		case 1:
-			money = 15;
-			break;
-		case 2:
-			money = 10;
-			break;
-		case 3:
-			money = 20;
-			break;
-		default:
-			money = 0;
-			break;
-		}
-	}
-	// 売るときのショップの値段表示
-	if (shopmenu == 2) {
-		switch (item[shopmY]) {
-		case 2:
-			money = 5;
-			break;
-		case 3:
-			money = 7;
-			break;
-		case 4:
-			money = 5;
-			break;
-		case 5:
-			money = 10;
-			break;
-		default:
-			money = 0;
-			break;
-		}
-	}
+
 	// ショップ画面でのカーソル移動
-	if (shopflag == true && itemflag == true) {
+	if (shopflag == true) {
 		// 上を押した
-		if (KeyData::Get(KEY_INPUT_UP) == 1) {
-			// 一番上じゃなければ
-			if (shopmY > 0) {
-				shopmY--;
-			}
-			// 一番上なら
-			else {
-
-			}
+		if (KeyData::Get(KEY_INPUT_UP) == 1 && shopmY > 0) {
+			shopmY--;
 		}
 		// 下を押した
 		if (KeyData::Get(KEY_INPUT_DOWN) == 1) {
-			if (shopmenu == 0) {
-				// 一番下じゃなければ
+			switch (shopmenu)
+			{
+			case START:
 				if (shopmY < 2) {
 					shopmY++;
 				}
-				// 一番下なら
-				else {
+				break;
 
-				}
-			}
-			else if (shopmenu == 1) {
-				// 一番下じゃなければ
+			case BUY:
 				if (shopmY < 4) {
 					shopmY++;
 				}
-				// 一番下なら
-				else {
+				break;
 
-				}
-			}
-			else {
-				// 一番下じゃなければ
+			case SELL:
 				if (shopmY < 9) {
 					shopmY++;
 				}
-				// 一番下なら
-				else {
+				break;
 
-				}
+			case END:
+				break;
+
+			default:
+				// エラー
+				break;
 			}
 		}
 	}
+}
+
+void SafeArea::Refund()
+{
+	money += itemm->SearchPrice(ID);
 }
 
 int SafeArea::GetMapData(int x, int y) {
@@ -604,12 +683,12 @@ int SafeArea::GetID() {
 	return ID;
 }
 
-void SafeArea::SetNum(int num) {
-	itemnum = num;
+void SafeArea::SetItemPosition(int itemPosition) {
+	this->itemPosition = itemPosition;
 }
 
-int SafeArea::GetNum() {
-	return itemnum;
+int SafeArea::GetItemPosition() {
+	return itemPosition;
 }
 
 void SafeArea::SetnumID(int num, int ID) {
@@ -617,11 +696,11 @@ void SafeArea::SetnumID(int num, int ID) {
 }
 
 void SafeArea::SetMoney(int money) {
-	premoney = money;
+	this->money = money;
 }
 
 int SafeArea::GetMoney() {
-	return premoney;
+	return money;
 }
 
 eStep SafeArea::GetStep() {

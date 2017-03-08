@@ -1,5 +1,9 @@
 #pragma once
-#include "Manager.h"
+#include "DxLib.h"
+
+#include "Input.h"
+#include "Font.h"
+#include "Scene.h"
 
 // ƒV[ƒ“‚Ì—ñ‹“
 enum class eScene : __int8 {

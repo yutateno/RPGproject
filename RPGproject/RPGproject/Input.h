@@ -1,5 +1,5 @@
 #pragma once
-#include "Manager.h"
+#include "DxLib.h"
 
 // キーボードの入力状態
 class KeyData {

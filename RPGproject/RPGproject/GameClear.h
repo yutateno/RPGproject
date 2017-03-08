@@ -1,5 +1,9 @@
 #pragma once
-#include "Manager.h"
+#include "DxLib.h"
+
+#include "Input.h"
+#include "Font.h"
+#include "Scene.h"
 
 // ’¬‚Æ‚©‚Ì‹’“_
 class GameClear : public SuperScene {
