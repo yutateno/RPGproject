@@ -13,15 +13,21 @@ class Field : public SuperScene {
 private:
 	// 画像
 	int Gr_Back;					// 背景
-	int mapchip0;					// マップチップ
-	int mapchip1;					
-	int mapchip2;
-	int mapchip3;
+	int mapchip[4];					// マップチップ
+	int mapchipForID;				// 描写用の変数
 
+	// マップデータ関係
+	ifstream ifs;					// ファイルオープン用
 	vector<vector<int> > mapdata;	// マップデータ本体
+	int mapchipNum;					// マップチップの種類数
+	int mapchipSize;				// マップチップのサイズ
 
+	// カメラ関係
 	int cameraX;					// カメラの座標
-	int cameraY;
+	int cameraY;					// カメラの座標
+
+	// 演出関係
+	int count;						// (フレーム)時間をカウントする
 
 public:
 	Field();
