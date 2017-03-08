@@ -1,32 +1,42 @@
 #include "Manager.h"
 
 Field::Field() {
-	this->endFlag = false;
-	this->nextScene = eScene::S_End;
-	this->step = eStep::Start;
-	this->startCount = 0;
-	this->endCount = 0;
+	// 動作関係
+	this->endFlag = false;				// シーンの終了を管理
+	this->nextScene = eScene::S_End;	// 一応の初期化
+
+	// 演出関係
+	this->step = eStep::Start;			// このシーンの開始処理
+	this->startCount = 50;				// 開始演出の時間
+	this->endCount = 50;				// 終了演出の時間
+	count = 0;							// (フレーム)時間のカウント
 
 	// 画像読み込み
-	Gr_Back = LoadGraph("img\\field_background.png");
-	mapchip0 = LoadGraph("img\\mapchip0.png");
-	mapchip1 = LoadGraph("img\\mapchip1.png");
-	mapchip2 = LoadGraph("img\\mapchip2.png");
-	mapchip3 = LoadGraph("img\\mapchip3.png");
+	Gr_Back = LoadGraph("img\\field_background.png");		// 背景
+	mapchip[0] = LoadGraph("img\\mapchip0.png");			// 床
+	mapchip[1] = LoadGraph("img\\mapchip1.png");			// 木
+	mapchip[2] = LoadGraph("img\\mapchip2.png");			// 街
+	mapchip[3] = LoadGraph("img\\mapchip3.png");			// ダンジョン
+	mapchipForID = 0;										// 描写用
+
+	// マップチップ関係
+	mapchipNum = 4;			// マップチップの種類数
+	mapchipSize = 32;		// マップチップの大きさ
 
 	// マップデータ読み込み
 	ReadMapData();
 
-	// カメラの一応の初期化。0は使われない
-	cameraX = 0;
-	cameraY = 0;
+	// カメラ関係
+	cameraX = 0;		// 一応の初期化
+	cameraY = 0;		// 一応の初期化
 }
 Field::~Field() {
 	// 画像データ座駆除
 	DeleteGraph(Gr_Back);
-	DeleteGraph(mapchip0);
-	DeleteGraph(mapchip1);
-	DeleteGraph(mapchip2);
+	for (int i = 0;i < mapchipNum;i++)
+	{
+		DeleteGraph(mapchip[i]);
+	}
 }
 
 void Field::UpDate() {
@@ -64,9 +74,13 @@ void Field::UpDate(int playerX, int playerY)
 }
 
 void Field::UpDate_Start() {
-	this->startCount++;
+	// カウントアップ
+	this->count++;
 
-	if (this->startCount < 50) return;	// 50フレームで開始画面終了
+	// startCountだけ演出する
+	if (this->count < startCount) return;
+	// カウントをリセットしてステップ進行
+	count = 0;
 	this->step = eStep::Main;
 }
 void Field::UpDate_Main() {
@@ -89,42 +103,29 @@ void Field::UpDate_Main() {
 }
 void Field::UpDate_Main(int playerX, int playerY) {
 
-	// Zキーで戦闘画面に
-	/*
-	if (KeyData::Get(KEY_INPUT_Z) == 1) {
-		this->nextScene = eScene::S_Battle;
-		this->step = eStep::End;
-	}
-	*/
-	// Xキーで拠点画面に
-	/*
-	if (KeyData::Get(KEY_INPUT_X) == 1) {
-		this->nextScene = eScene::S_SafeArea;
-		this->step = eStep::End;
-	}
-	*/
-	if (mapdata[(int)(playerY / 32)][(int)(playerX / 32)] == 2)
+	// 2:街
+	if (mapdata[(int)(playerY / mapchipSize)][(int)(playerX / mapchipSize)] == 2)
 	{
+		// 次のシーンを設定してステップ進行
 		nextScene = eScene::S_SafeArea;
 		step = eStep::End;
 	}
-	// Cキーでダンジョン画面に
-	/*
-	if (KeyData::Get(KEY_INPUT_C) == 1) {
-		this->nextScene = eScene::S_Dungeon;
-		this->step = eStep::End;
-	}
-	*/
-	if (mapdata[(int)(playerY / 32)][(int)(playerX / 32)] == 3)
+	// 3:ダンジョン
+	else if (mapdata[(int)(playerY / mapchipSize)][(int)(playerX / mapchipSize)] == 3)
 	{
+		// 次のシーンを設定してステップ進行
 		nextScene = eScene::S_Dungeon;
 		step = eStep::End;
 	}
 }
 void Field::UpDate_End() {
-	this->endCount++;
+	// カウントアップ
+	this->count++;
 
-	if (this->endCount < 50) return;	// 50フレームで終了画面終了
+	// endCountだけ演出する
+	if (this->count < endCount) return;
+	// カウントをリセットしてこのシーンを終了する
+	count = 0;
 	this->endFlag = true;
 }
 void Field::Draw() {
@@ -144,8 +145,10 @@ void Field::Draw() {
 	}
 }
 void Field::Draw_Start() {
+	// debug---------------------------------------------------------------------------------------------------
 	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面%d", this->startCount);
+	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面 %d / %d", count, this->startCount);
+	// --------------------------------------------------------------------------------------------------------
 }
 void Field::Draw_Main() {
 	// 背景
@@ -156,46 +159,24 @@ void Field::Draw_Main() {
 	{
 		for (int j = 0, m = mapdata[i].size();j < m;j++)
 		{
-			switch (mapdata[i][j])
-			{
-			case 0:		// マップチップ0
-				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip0, true);
-				break;
+			// 一時的に保存
+			mapchipForID = mapchip[mapdata[i][j]];
 
-			case 1:		// マップチップ1
-				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip1, true);
-				break;
-
-			case 2:		// マップチップ2
-				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip2, true);
-				break;
-
-			case 3:		// マップチップ3
-				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchip3, true);
-				break;
-
-			default:	// 改行時に来るエラーではない
-				break;
-			}
+			// 描写
+			DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchipForID, true);
 		}
 	}
-	/*
-	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 100, "メイン処理画面", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 200, "Zキーで戦闘画面へ", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 300, "Xキーで拠点画面へ", WHITE, Font::Get(eFont::SELECT));
-	DrawStringToHandle(0, 400, "Cキーでダンジョン画面へ", WHITE, Font::Get(eFont::SELECT));
-	*/
-	DrawFormatString(420, 360, BLACK, "フィールド画面\nメイン処理画面\nXキーで拠点画面へ\nCキーでダンジョン画面へ\n");
 }
 void Field::Draw_End() {
+	// debug-------------------------------------------------------------------------------------------------
 	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面%d", this->endCount);
+	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, endCount);
+	// ------------------------------------------------------------------------------------------------------
 }
 
 void Field::ReadMapData()
 {
-	ifstream ifs("mapdata.txt");
+	ifs.open("mapdata.txt");
 	// マップデータ読み込み失敗
 	if (!ifs)
 	{
@@ -208,9 +189,11 @@ void Field::ReadMapData()
 	int count2 = 0;
 
 	while (getline(ifs, str)) {
+		// 一行分のデータ
 		string token;
 		istringstream stream(str);
 
+		// メモリ確保
 		mapdata.resize(count + 1);
 
 		//1行のうち、文字列とコンマを分割する
@@ -218,19 +201,22 @@ void Field::ReadMapData()
 			//すべて文字列として読み込まれるため
 			//数値は変換が必要
 			mapdata.at(count).push_back((int)stof(token)); //stof(string str) : stringをfloatに変換
+
+			// カウントアップ
 			count2++;
 		}
+		// カウントアップ
 		count++;
 	}
 }
 
 void Field::SetMapData(int x, int y, int data)
 {
-	mapdata[(int)(y / 32)][(int)(x / 32)] = data;
+	mapdata[(int)(y / mapchipSize)][(int)(x / mapchipSize)] = data;
 }
 int Field::GetMapData(int x, int y)
 {
-	return mapdata[(int)(y / 32)][(int)(x / 32)];
+	return mapdata[(int)(y / mapchipSize)][(int)(x / mapchipSize)];
 }
 int Field::GetMapWidth()
 {

@@ -1,22 +1,28 @@
 #pragma once
 #include "Manager.h"
 
-enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY };			// コマンド状態
+// コマンド状態
+enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY };
 
-// 戦闘画面
 class Battle : public SuperScene {
 private:
+	// 画像関係
 	int Gr_Back;			// 背景
 
+	// 戦闘システム関係
 	Command command;		// コマンド状態	
 	Command preCommand;		// 直前のコマンド
-
 	bool damageFlag;		// ダメージを与える処理をおこなうかどうかのフラグ
 	int damageWidth;		// ダメージのブレ幅
 
-	int cursorX, cursorY;			// カーソルの座標
+	// カーソル関係
+	int cursorX, cursorY;			// カーソルの相対座標
 
+	// ログ関係
 	bool textFlag;					// テキストを表示するかどうかのフラグ
+
+	// 演出関係
+	int count;				// (フレーム)時間のカウント
 
 public:
 	Battle();

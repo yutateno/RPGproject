@@ -1,105 +1,122 @@
 #include "Manager.h"
 
 Manager::Manager() {
-	playerX = 0;
-	playerY = 0;
-	probability = 200;
+	// 移動全般
+	playerX = 0;		// 絶対座標
+	playerY = 0;		// 絶対座標
+	probability = 200;	// 敵とのエンカウント率
 
 	// 戦闘関連
 	turn = true;		// true : プレイヤーのターン
-	count = 0;
-	preHP = 0;
-	lose = false;
+	count = 0;			// 演出用の(フレーム)時間カウント
+	preHP = 0;			// 直前のＨＰ
+	lose = false;		// 戦闘に敗北したか。false:してない
 
-	player = new Player();
-	this->endFlag = false;
-	this->NowScene = eScene::S_Title;
-	this->title = new Title();
+	// ゲーム進行関係
+	player = new Player();			// プレイヤー本体
+	endFlag = false;				// ゲーム終了するフラグ
+	NowScene = eScene::S_Title;		// 最初の画面を指定
+	title = new Title();			// 最初の画面を生成
 }
 Manager::~Manager() {
+	// 現在のシーンを削除
 	switch (NowScene)
 	{
 	case eScene::S_Title://タイトル画面
 		delete title;
 		break;
+
 	case eScene::S_Field:// フィールド画面
 		delete field;
 		break;
+
 	case eScene::S_Battle:// 戦闘画面
 		delete battle;
 		break;
+
 	case eScene::S_SafeArea:// 拠点画面
 		delete safeArea;
 		break;
+
 	case eScene::S_Dungeon://ダンジョン画面
 		delete dungeon;
 		break;
+
 	case eScene::S_GameOver://ゲームオーバー画面
 		delete gameOver;
 		break;
+
 	case eScene::S_GameClear://ゲームクリア画面
 		delete gameClear;
 		break;
+
 	default:	//Error
 		break;
 	}
 
+	// プレイヤー削除
 	delete player;
 }
 
 void Manager::UpDate() {
 
 	// 【画面切り替え】
-	switch (this->NowScene) {
+	switch (NowScene) {
 	case eScene::S_Title://タイトル画面
 		// エンドフラグが立ったら次のシーンへ移行
-		if (this->title->GetEndFlag()) {
-			this->ChengeScene_Title();
+		if (title->GetEndFlag()) {
+			ChengeScene_Title();
 		}
 		break;
+
 	case eScene::S_Field:// フィールド画面
-		if (this->field->GetEndFlag()) {
-			this->ChengeScene_Field();
+		if (field->GetEndFlag()) {
+			ChengeScene_Field();
 		}
 		break;
+
 	case eScene::S_Battle:// 戦闘画面
-		if (this->battle->GetEndFlag()) {
-			this->ChengeScene_Battle();
+		if (battle->GetEndFlag()) {
+			ChengeScene_Battle();
 		}
 		break;
+
 	case eScene::S_SafeArea:// 拠点画面
-		if (this->safeArea->GetEndFlag()) {
-			this->ChengeScene_SafeArea();
+		if (safeArea->GetEndFlag()) {
+			ChengeScene_SafeArea();
 		}
 		break;
+
 	case eScene::S_Dungeon://ダンジョン画面
-		if (this->dungeon->GetEndFlag()) {
-			this->ChengeScene_Dungeon();
+		if (dungeon->GetEndFlag()) {
+			ChengeScene_Dungeon();
 		}
 		break;
 	case eScene::S_GameOver://ゲームオーバー画面
-		if (this->gameOver->GetEndFlag()) {
-			this->ChengeScene_GameOver();
+		if (gameOver->GetEndFlag()) {
+			ChengeScene_GameOver();
 		}
 		break;
+
 	case eScene::S_GameClear://ゲームクリア画面
 		if (this->gameClear->GetEndFlag()) {
 			this->ChengeScene_GameClear();
 		}
 		break;
+
 	default:	//Error
 		this->endFlag = true;
 		break;
 	}
 
-
-
 	// 【各画面アップデート】
-	switch (this->NowScene) {
+	switch (NowScene) {
 	case eScene::S_Title://タイトル画面
-		this->title->UpDate();
+		title->UpDate();
 		break;
+
 	case eScene::S_Field:// フィールド画面
+		// フィールドの処理は長いので別の関数へ逃がした
 		FieldProcess();
 		break;
 
@@ -117,6 +134,7 @@ void Manager::UpDate() {
 			}
 		}
 
+		// バトルの処理は長いので別の関数へ逃がした
 		BattleProcess();
 		break;
 		
@@ -129,93 +147,103 @@ void Manager::UpDate() {
 		break;
 
 	case eScene::S_GameOver://ゲームオーバー画面
-		this->gameOver->UpDate();
+		gameOver->UpDate();
 		break;
+
 	case eScene::S_GameClear://ゲームクリア画面
-		this->gameClear->UpDate();
+		gameClear->UpDate();
 		break;
+
 	default:	//Error
-		this->endFlag = true;
+		endFlag = true;
 		break;
 	}
 }
 
 // タイトル画面からのシーン移行
 void Manager::ChengeScene_Title() {
-	//InitGraph();	// 全グラフィック削除
-	InitSoundMem();	// 曲データ全削除
+	// 次のシーンをタイトルから取得して設定
+	NowScene = title->GetNextScene();
 
-	this->NowScene = this->title->GetNextScene();
-
-	switch (this->NowScene) {
+	// 次のシーンによって処理を変える
+	switch (NowScene) {
 	case eScene::S_Field:// フィールド画面
-		this->field = new Field();
+		// フィールド生成
+		field = new Field();
 
 		// プレイヤーの初期位置移動
 		player->SetX(320 - 16);
 		player->SetY(240 - 16);
+		break;
 
-		delete this->title;	// タイトル実体削除
-		break;
 	case eScene::S_End://ゲーム終了
-		this->endFlag = true;
-		delete this->title;	// タイトル実体削除
+		endFlag = true;
 		break;
+
 	default:	//Error
-		this->endFlag = true;
-		delete this->title;	// タイトル実体削除
+		endFlag = true;
 		break;
 	}
+
+	// タイトル削除
+	delete title;
 }
 
 // フィールド画面からのシーン移行
 void Manager::ChengeScene_Field() {
-	//InitGraph();	// 全グラフィック削除
-	InitSoundMem();	// 曲データ全削除
+	// 次のシーンをフィールドから取得
+	NowScene = field->GetNextScene();
 
-	this->NowScene = this->field->GetNextScene();
-
-	switch (this->NowScene) {
+	// 次のシーンによって処理を変える
+	switch (NowScene) {
 	case eScene::S_Battle:// 戦闘画面
-		this->battle = new Battle();
-		count = 0;
-		enemy = new Enemy((int)GetRand(1));
+		battle = new Battle();
+
 		// フィールド画面から移行したことを保存
-		this->battle->SetReturnScene(eScene::S_Field);
+		battle->SetReturnScene(eScene::S_Field);
+
+		// 演出用の変数初期化
+		count = 0;
+
+		// 敵の生成
+		enemy = new Enemy((int)GetRand(1));
 		break;
+
 	case eScene::S_SafeArea:// 拠点画面
 		this->safeArea = new SafeArea();
 		// プレイヤーの初期位置移動
 		player->SetX(320 - 16);
 		player->SetY(480 - 64);
-		delete this->field;	// フィールド画面実体削除
 		break;
+
 	case eScene::S_Dungeon://ダンジョン画面
-		this->dungeon = new Dungeon();
+		dungeon = new Dungeon();
 		player->SetX(464);
 		player->SetY(864);
-		delete this->field;
 		break;
+
 	case eScene::S_End://ゲーム終了
-		this->endFlag = true;
-		delete this->field;
+		endFlag = true;
 		break;
+
 	default:	//Error
-		this->endFlag = true;
-		delete this->field;
+		endFlag = true;
 		break;
 	}
+
+	// フィールド画面実体削除
+	delete field;
 }
 
 // 戦闘画面からのシーン移行
 void Manager::ChengeScene_Battle() {
-	//InitGraph();	// 全グラフィック削除
-	InitSoundMem();	// 曲データ全削除
-
+	// 戦闘で敗北したかどうかで次のシーンを変更
+	// 敗北した場合
 	if (lose)
 	{
 		NowScene = eScene::S_GameOver;
 	}
+	// 勝利した場合
 	else
 	{
 		// 経験値の処理の処理
@@ -225,186 +253,200 @@ void Manager::ChengeScene_Battle() {
 		// レベルアップの処理
 		if (player->GetLV() * 20 < player->GetEXP())
 		{
-			player->SetEXP(0);
-			player->SetLV(player->GetLV() + 1);
-			// 最大HPMP上昇
-			player->SetMaxHP(player->GetMaxHP() + player->GetLV());
-			player->SetMaxMP(player->GetMaxMP() + player->GetLV());
+			player->SetEXP(0);					// 経験値を0にする
+			player->SetLV(player->GetLV() + 1);	// レベルを１上げる
+			player->SetMaxHP(player->GetMaxHP() + player->GetLV());		// HP上昇
+			player->SetMaxMP(player->GetMaxMP() + player->GetLV());		// MP上昇
 		}
-		this->NowScene = this->battle->GetNextScene();
+
+		// バトルから次のシーンを取得
+		NowScene = battle->GetNextScene();
 	}
 
+	// 次のシーンによって処理を変更
 	switch (this->NowScene) {
 	case eScene::S_Field:// フィールド画面
-		this->field = new Field();
+		field = new Field();
 
-		// プレイヤーの初期位置移動
+		// プレイヤーの初期位置を保存しておいて
 		player->SetX(playerX);
 		player->SetY(playerY);
+		break;
 
-		delete this->battle;	// 戦闘画面実体削除
-		break;
 	case eScene::S_SafeArea:// 拠点画面
-		this->safeArea = new SafeArea();
-		delete this->battle;
+		safeArea = new SafeArea();
 		break;
+
 	case eScene::S_Dungeon://ダンジョン画面
-		this->dungeon = new Dungeon();
-		delete this->battle;
+		dungeon = new Dungeon();
 		break;
+
 	case eScene::S_GameOver://ゲームオーバー画面
-		this->gameOver = new GameOver();
-		delete this->battle;
+		gameOver = new GameOver();
 		break;
+
 	case eScene::S_End://ゲーム終了
-		this->endFlag = true;
-		delete this->battle;
+		endFlag = true;
 		break;
+
 	default:	//Error
-		this->endFlag = true;
-		delete this->battle;
+		endFlag = true;
 		break;
 	}
 
 	// 敵削除
 	delete enemy;
+
+	// 戦闘画面実体削除
+	delete battle;
 }
 
 // 拠点画面からのシーン移行
 void Manager::ChengeScene_SafeArea() {
-	//InitGraph();	// 全グラフィック削除
-	InitSoundMem();	// 曲データ全削除
+	// 次のシーンをセーフエリアから取得
+	NowScene = safeArea->GetNextScene();
 
-	this->NowScene = this->safeArea->GetNextScene();
-
-	switch (this->NowScene) {
+	switch (NowScene) {
 	case eScene::S_Field:// フィールド画面
-		this->field = new Field();
+		field = new Field();
 
 		// プレイヤーの初期位置移動
 		player->SetX(320 - 16);
 		player->SetY(240 - 16);
+		break;
 
-		delete this->safeArea;	// 拠点画面実体削除
-		break;
 	case eScene::S_Battle:// 戦闘画面
-		this->battle = new Battle();
+		battle = new Battle();
+
+		// 演出用の変数の初期化
 		count = 0;
+
+		// 敵生成
 		enemy = new Enemy();
+
 		// 拠点画面から移行したことを保存
-		this->battle->SetReturnScene(eScene::S_SafeArea);
-		delete this->safeArea;
+		battle->SetReturnScene(eScene::S_SafeArea);
 		break;
+
 	case eScene::S_End://ゲーム終了
-		this->endFlag = true;
-		delete this->safeArea;
+		endFlag = true;
 		break;
+
 	default:	//Error
 		this->endFlag = true;
-		delete this->safeArea;
 		break;
 	}
+
+	// 拠点画面実体削除
+	delete safeArea;
 }
 
 // ダンジョン画面からのシーン移行
 void Manager::ChengeScene_Dungeon() {
-	//InitGraph();	// 全グラフィック削除
-	InitSoundMem();	// 曲データ全削除
+	// 次のシーンをダンジョンから入手
+	NowScene = dungeon->GetNextScene();
 
-	this->NowScene = this->dungeon->GetNextScene();
-
-	switch (this->NowScene) {
+	switch (NowScene) {
 	case eScene::S_Field:// フィールド画面
-		this->field = new Field();
+		field = new Field();
+
 		// プレイヤーの初期位置移動
 		player->SetX(320 - 16);
 		player->SetY(240 - 16);
-		delete this->dungeon;	// ダンジョン画面実体削除
 		break;
+
 	case eScene::S_Battle:// 戦闘画面
-		this->battle = new Battle();
+		battle = new Battle();
+
+		// 演出用変数を初期化
 		count = 0;
+
+		// 敵生成
 		enemy = new Enemy();
+
 		// ダンジョン画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Dungeon);
-		delete this->dungeon;
 		break;
+
 	case eScene::S_GameClear://ゲームクリア画面
 		this->gameClear = new GameClear();
-		delete this->dungeon;
 		break;
+
 	case eScene::S_End://ゲーム終了
 		this->endFlag = true;
-		delete this->dungeon;
 		break;
+
 	default:	//Error
 		this->endFlag = true;
-		delete this->dungeon;
 		break;
 	}
+
+	delete dungeon;	// ダンジョン画面実体削除
 }
 
 // ゲームオーバー画面からのシーン移行
 void Manager::ChengeScene_GameOver() {
-	//InitGraph();	// 全グラフィック削除
-	InitSoundMem();	// 曲データ全削除
+	// ゲームオーバーから次のシーンを取得
+	NowScene = gameOver->GetNextScene();
 
-	this->NowScene = this->gameOver->GetNextScene();
-
-	switch (this->NowScene) {
+	switch (NowScene) {
 	case eScene::S_Title://タイトル画面
-		this->title = new Title();
-		delete this->gameOver;	// ゲームオーバー画面実体削除
+		title = new Title();
 		break;
+
 	case eScene::S_End://ゲーム終了
-		this->endFlag = true;
-		delete this->gameOver;
+		endFlag = true;
 		break;
+
 	default:	//Error
-		this->endFlag = true;
-		delete this->gameOver;
+		endFlag = true;
 		break;
 	}
+
+	// ゲームオーバー画面実体削除
+	delete gameOver;
 }
 
 // ゲームクリア画面からのシーン移行
 void Manager::ChengeScene_GameClear() {
-	//InitGraph();	// 全グラフィック削除
-	InitSoundMem();	// 曲データ全削除
+	// ゲームクリアから次のシーンを取得
+	NowScene = gameClear->GetNextScene();
 
-	this->NowScene = this->gameClear->GetNextScene();
-
-	switch (this->NowScene) {
+	switch (NowScene) {
 	case eScene::S_Title://タイトル画面
-		this->title = new Title();
-		delete this->gameClear;	// ゲームクリア画面実体削除
+		title = new Title();
 		break;
+
 	case eScene::S_End://ゲーム終了
-		this->endFlag = true;
-		delete this->gameClear;
+		endFlag = true;
 		break;
+
 	default:	//Error
-		this->endFlag = true;
-		delete this->gameClear;
+		endFlag = true;
 		break;
 	}
+
+	// ゲームクリア画面実体削除
+	delete gameClear;
 }
 
 void Manager::Draw() {
 	// 【各画面描画】
-	switch (this->NowScene) {
+	switch (NowScene) {
 	case eScene::S_Title://タイトル画面
-		this->title->Draw();
+		title->Draw();
 		break;
-	case eScene::S_Field:// フィールド画面
-		this->field->Draw();
 
+	case eScene::S_Field:// フィールド画面
+		field->Draw();
+
+		// フィールドのステップがメインならプレイヤーを描写
 		if (field->GetStep() == eStep::Main)
 		{
 			player->aaaDraw(field->GetMapWidth(), field->GetMapHeight());
 		}
-
 		break;
+
 	case eScene::S_Battle:// 戦闘画面
 		// コマンドの表示
 		if (turn&&count == 0)
@@ -422,12 +464,20 @@ void Manager::Draw() {
 			// 勝利時
 			if (enemy->GetHP() <= 0)
 			{
-				DrawFormatString(0, 384, WHITE, "勝利\n %d の経験値を獲得！", enemy->GetEXP());
+				// バトルがメインステップの時のみログを表示
+				if (battle->GetStep() == eStep::Main)
+				{
+					DrawFormatString(0, 384, WHITE, "勝利\n %d の経験値を獲得！", enemy->GetEXP());
+				}
 			}
 			// 敗北時
 			else if (player->GetHP() <= 0)
 			{
-				DrawFormatString(0, 384, WHITE, "敗北");
+				// バトルがメインステップの時のみログを表示
+				if (battle->GetStep() == eStep::Main)
+				{
+					DrawFormatString(0, 384, WHITE, "敗北");
+				}
 			}
 			else
 			{

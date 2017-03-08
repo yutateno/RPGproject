@@ -9,6 +9,8 @@ private:
 	
 	int Gr_Back;	// 背景
 
+	int count;		// 開始終了の時間をカウント(フレーム)
+
 public:
 	Title();
 	~Title();
