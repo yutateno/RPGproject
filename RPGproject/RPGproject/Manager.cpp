@@ -8,6 +8,7 @@ Manager::Manager() {
 
 	// 戦闘関連
 	turn = true;		// true : プレイヤーのターン
+	logCount = 160;		// 演出時間
 	count = 0;			// 演出用の(フレーム)時間カウント
 	preHP = 0;			// 直前のＨＰ
 	lose = false;		// 戦闘に敗北したか。false:してない
@@ -404,6 +405,9 @@ void Manager::ChengeScene_GameOver() {
 		break;
 	}
 
+	// 敗北フラグを折る
+	lose = false;
+
 	// ゲームオーバー画面実体削除
 	delete gameOver;
 }
@@ -646,25 +650,34 @@ void Manager::BattleProcess()
 	// 戦闘勝利
 	if (enemy->GetHP() <= 0)
 	{
-		if (count < 100)			// ログをXフレーム表示する
+		if (count < logCount)			// ログをXフレーム表示する
 		{
+			// カウントアップ
 			count++;
 		}
 		else
 		{
+			// カウントリセット
+			count = 0;
+			// バトルのステップ進行
 			battle->SetStep(eStep::End);
 		}
 	}
 	// 戦闘敗北
 	else if (player->GetHP() <= 0)
 	{
-		if (count < 100)			// ログをXフレーム表示する
+		if (count < logCount)			// ログをXフレーム表示する
 		{
+			// カウントアップ
 			count++;
 		}
 		else
 		{
+			// カウントリセット
+			count = 0;
+			// 敗北フラグを立てる
 			lose = true;
+			// バトルのステップ進行
 			battle->SetStep(eStep::End);
 		}
 	}
@@ -673,8 +686,10 @@ void Manager::BattleProcess()
 		// 自分のターン
 		if (turn)
 		{
-			if (battle->GetDamageFlag())		// battleからダメージを与える支持を受けたら
+			// battleからダメージを与える指示を受けたら
+			if (battle->GetDamageFlag())
 			{
+				// 演出中ではないとき
 				if (count == 0)
 				{
 					switch (battle->GetCommand())
@@ -691,11 +706,12 @@ void Manager::BattleProcess()
 						{
 							player->SetMP(player->GetMP() - 1);
 						}
+						// MPが足りない場合
 						else
 						{
 							battle->SetDamageFlag(false);			// フラグを折る
-							battle->SetCommand(NEUTRAL);
-							count = 0;			// カウントを戻す
+							battle->SetCommand(NEUTRAL);			// バトルのコマンドを元に戻す
+							count = 0;								// カウントを戻す
 							return;
 						}
 						break;
@@ -706,37 +722,52 @@ void Manager::BattleProcess()
 					default:
 						break;
 					}
+
+					//ダメージ決定
 					player->SetATK(battle->GetDamageWidth());			// 選択した行動を反映する
-					enemy->SetHP(enemy->GetHP() - player->GetATK());		// ダメージ
+					enemy->SetHP(enemy->GetHP() - player->GetATK());	// ダメージ
 				}
-				if (count < 50)			// ログをXフレーム表示する
+
+				// 演出中
+				if (count < logCount)			// ログをXフレーム表示する
 				{
+					// カウントアップ
 					count++;
 				}
 				else
 				{
+					// カウントリセット
+					count = 0;
+
 					battle->SetDamageFlag(false);			// フラグを折る
-					battle->SetCommand(NEUTRAL);
-					count = 0;			// カウントを戻す
-					turn = false;			// あいてにターンを渡す
+					battle->SetCommand(NEUTRAL);			// バトルのコマンドを戻す
+					count = 0;								// カウントを戻す
+					turn = false;							// あいてにターンを渡す
 				}
 			}
 		}
 		// 相手のターン
 		else
 		{
+			// 演出中ではなければ
 			if (count == 0)
 			{
 				player->SetHP(player->GetHP() - enemy->GetATK());		// 攻撃力分だけダメージ
 			}
-			if (count < 50)			// ログをXフレーム表示する
+
+			// 演出中
+			if (count < logCount)			// ログをXフレーム表示する
 			{
+				// カウントアップ
 				count++;
 			}
 			else
 			{
+				// カウントリセット
+				count = 0;
+
 				count = 0;			// カウントを戻す
-				turn = true;			// プレイヤーにターンを渡す
+				turn = true;		// プレイヤーにターンを渡す
 			}
 		}
 	}
