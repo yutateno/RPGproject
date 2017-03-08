@@ -45,6 +45,7 @@ private:
 	int shopmenu;			// ショップ画面
 	int shopmY;				// ショップ画面でのカーソル
 	int money;				// 値段
+	int premoney;			// 入った瞬間の値段
 	bool buyflag;			// 買ったかどうか
 	bool sellflag;			// 売ったかどうか
 
@@ -105,5 +106,7 @@ public:
 	void SetNum(int num);		// アイテムの位置
 	int GetNum();
 	void SetnumID(int num, int ID);
+	void SetMoney(int money);	// お金
+	int GetMoney();
 	eStep GetStep();	// 今のステップ状況
 };

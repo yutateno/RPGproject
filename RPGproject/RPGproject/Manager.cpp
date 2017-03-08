@@ -219,6 +219,7 @@ void Manager::ChengeScene_Field() {
 		// プレイヤーの初期位置移動
 		player->SetX(320 - 16);
 		player->SetY(480 - 64);
+		safeArea->SetMoney(player->GetMoney());
 		break;
 
 	case eScene::S_Dungeon://ダンジョン画面
@@ -922,6 +923,8 @@ void Manager::DungeonProcess() {
 
 void Manager::SafeAreaProcess() {
 	this->safeArea->UpDate(player->GetX(), player->GetY());
+
+	player->SetMoney(safeArea->GetMoney());
 
 	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
 	playerX = player->GetX();

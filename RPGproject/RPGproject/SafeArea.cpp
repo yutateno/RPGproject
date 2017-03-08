@@ -28,6 +28,7 @@ SafeArea::SafeArea() {
 	shopmenu = 0;
 	shopmY = 0;
 	money = 0;
+	premoney = 0;
 	ID = 0;
 	for (int i = 0; i < 9; i++) {
 		item[i] = 0;
@@ -181,7 +182,12 @@ void SafeArea::Draw_Main(int x, int y) {
 	}
 	// 回復表示
 	if (healcount > 0) {
-		DrawFormatString(320, 240, BLACK, "回復しました。");
+		if (premoney >= money) {
+			DrawFormatString(320, 240, BLACK, "回復しました。");
+		}
+		else {
+			DrawFormatString(320, 208, BLACK, "出直して");
+		}
 	}
 
 	// 村人のセリフ
@@ -228,7 +234,12 @@ void SafeArea::Draw_Main(int x, int y) {
 	}
 	// 店主のセリフ
 	if (shopcount >= 0) {
-		DrawFormatString(320, 208, BLACK, "まいど～");
+		if (premoney >= money) {
+			DrawFormatString(320, 208, BLACK, "まいど～");
+		}
+		else {
+			DrawFormatString(320, 208, BLACK, "出直して");
+		}
 	}
 	//--------------------------------------------------------------
 }
@@ -256,11 +267,20 @@ void SafeArea::HealProcess() {
 	if (innflag == true) {
 		if (KeyData::Get(KEY_INPUT_Z) == 1) {
 			// セリフが出たら
+			money = 100;
 			if (talkflag == true) {
 				// 回復頼んだら
 				if (healY == 0) {
-					healflag = true;
-					healcount = heal;
+					// お金あれば
+					if (premoney >= money) {
+						premoney -= money;
+						healflag = true;
+						healcount = heal;
+					}
+					// お金なければ
+					else {
+
+					}
 					healY = 0;
 				}
 				// 回復やめたら
@@ -332,26 +352,50 @@ void SafeArea::ShopProcess() {
 					switch (shopmY) {
 					case 0:
 						//str = "やく(にたちそうな)くさ";
-						ID = 2;
-						buyflag = true;
+						if (premoney >= money) {
+							ID = 2;
+							premoney -= money;
+							buyflag = true;
+						}
+						else {
+
+						}
 						shopcount = shop;
 						break;
 					case 1:
 						//str = "清らかな水";
-						ID = 3;
-						buyflag = true;
+						if (premoney >= money) {
+							ID = 3;
+							premoney -= money;
+							buyflag = true;
+						}
+						else {
+							
+						}
 						shopcount = shop;
 						break;
 					case 2:
 						//str = "けむりダマ";
-						ID = 4;
-						buyflag = true;
+						if (premoney >= money) {
+							ID = 4;
+							premoney -= money;
+							buyflag = true;
+						}
+						else {
+
+						}
 						shopcount = shop;
 						break;
 					case 3:
 						//str = "世界樹のハ";
-						ID = 5;
-						buyflag = true;
+						if (premoney >= money) {
+							ID = 5;
+							buyflag = true;
+							premoney -= money;
+						}
+						else {
+
+						}
 						shopcount = shop;
 						break;
 					default:
@@ -592,6 +636,14 @@ int SafeArea::GetNum() {
 
 void SafeArea::SetnumID(int num, int ID) {
 	item[num] = ID;
+}
+
+void SafeArea::SetMoney(int money) {
+	premoney = money;
+}
+
+int SafeArea::GetMoney() {
+	return premoney;
 }
 
 eStep SafeArea::GetStep() {
