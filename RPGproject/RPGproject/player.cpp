@@ -251,6 +251,31 @@ void Player::BuyItem(int ID)
 	}
 }
 
+void Player::SellItem(int num, int ID)
+{
+	switch (ID)
+	{
+	case 2:
+		delete item[num];
+		item[num] = new Item(0);
+		break;
+	case 3:
+		delete item[num];
+		item[num] = new Item(0);
+		break;
+	case 4:
+		delete item[num];
+		item[num] = new Item(0);
+		break;
+	case 5:
+		delete item[num];
+		item[num] = new Item(0);
+		break;
+	default:
+		break;
+	}
+}
+
 bool Player::GetmenuFlag()
 {
 	return menuFlag;

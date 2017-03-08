@@ -843,7 +843,7 @@ void Manager::SafeAreaProcess() {
 
 			case 14:	// 癒し
 				player->MoveReset();
-				safeArea->SetHeal(true);
+				safeArea->SetInn(true);
 				break;
 
 			default:
@@ -870,20 +870,21 @@ void Manager::SafeAreaProcess() {
 	}
 
 	// 噴水に触れたら
-	if (safeArea->GetHeal() == true) {
+	if (safeArea->GetInn() == true) {
 		// 動いたらキャンセル
 		if (playerY != player->GetY() || playerX != player->GetX()) {
-			safeArea->SetHeal(false);
+			safeArea->SetInn(false);
 		}
 		// メニューを開いたら
 		else if (player->GetmenuFlag() == true) {
-			safeArea->SetHeal(false);
+			safeArea->SetInn(false);
 		}
 		// そのままなら回復
 		else {
-			if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			if (safeArea->GetHeal() == true) {
 				player->SetHP(player->GetMaxHP());
 				player->SetMP(player->GetMaxMP());
+				safeArea->SetHeal(false);
 			}
 		}
 	}
@@ -905,6 +906,12 @@ void Manager::SafeAreaProcess() {
 				player->BuyItem(safeArea->GetID());
 				safeArea->SetBuy(false);
 			}
+			// 売ったとき
+			if (safeArea->GetSell() == true) {
+				player->SellItem(safeArea->GetNum(), safeArea->GetID());
+				safeArea->SetSell(false);
+			}
+			// 持ち物欄の写し
 			for (int i = 0; i < 9; i++) {
 				safeArea->SetnumID(i, player->GetID(i));
 			}

@@ -21,7 +21,7 @@ string Item::SearchName(int ID)
 	switch (ID)
 	{
 	case 0:
-		str = "no_items";
+		str = "–³";
 		break;
 	case 1:
 		str = "test_item";
@@ -37,9 +37,6 @@ string Item::SearchName(int ID)
 		break;
 	case 5:
 		str = "¢ŠE÷‚Ìƒn";
-		break;
-	case 9:
-		str = "‚È‚É‚à‚È‚¢";
 		break;
 	default:
 		break;

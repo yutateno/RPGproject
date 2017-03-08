@@ -57,6 +57,7 @@ public:
 	bool GetmenuFlag();		//メニュー画面を開いてるかどうか
 
 	void BuyItem(int ID);
+	void SellItem(int num, int ID);
 
 	// ゲッターセッターたち
 	void SetName(string name);
