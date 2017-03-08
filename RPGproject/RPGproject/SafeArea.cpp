@@ -18,11 +18,13 @@ SafeArea::SafeArea() {
 	peopleflag = false;
 	itemflag = false;
 	healflag = false;
+	healY = false;
 	talkflag = false;
 	shopflag = false;
 	buyflag = false;
 	sellflag = false;
 	healcount = 0;
+	shopcount = 0;
 	shopmenu = 0;
 	shopmY = 0;
 	money = 0;
@@ -92,166 +94,9 @@ void SafeArea::UpDate_Main() {
 		this->step = eStep::End;
 	}
 
-	// 噴水に触れたら
-	if (healflag == true) {
-		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			healcount = heal;
-		}
-	}
-
-	// 一般人に触れたら
-	if (peopleflag == true) {
-		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			if (talkflag == false) {
-				talkflag = true;
-			}
-			else {
-				talkflag = false;
-			}
-		}
-	}
-	
-	// 道具屋に触れたら
-	if (itemflag == true) {
-		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			// 買い物の最初の画面
-			if (shopflag == true) {
-				if (shopmenu == 0) {
-					// 買うを押したとき
-					if (shopmY == 0) {
-						shopmenu = 1;
-					}
-					// 売るを押したとき
-					else if (shopmY == 1) {
-						shopmenu = 2;
-					}
-					// やめるを押したとき
-					else {
-						shopflag = false;
-					}
-					shopmY = 0;
-				}
-				// 買うを開いたときのショップ画面
-				else if (shopmenu == 1) {
-					switch (shopmY) {
-					case 0:
-						//str = "やく(にたちそうな)くさ";
-						ID = 2;
-						buyflag = true;
-						break;
-					case 1:
-						//str = "清らかな水";
-						ID = 3;
-						buyflag = true;
-						break;
-					case 2:
-						//str = "けむりダマ";
-						ID = 3;
-						buyflag = true;
-						break;
-					case 3:
-						//str = "世界樹のハ";
-						ID = 4;
-						buyflag = true;
-						break;
-					default:
-						shopmenu = 0;
-						shopmY = 0;
-						break;
-					}
-				}
-				// 売るを開いたときのショップ画面
-				else if (shopmenu == 2) {
-					switch (shopmY) {
-					case 0:
-						//str = "やく(にたちそうな)くさ";
-						break;
-					case 1:
-						//str = "清らかな水";
-						break;
-					case 2:
-						//str = "けむりダマ";
-						break;
-					case 3:
-						//str = "世界樹のハ";
-						break;
-					default:
-						shopmenu = 0;
-						shopmY = 0;
-						break;
-					}
-				}
-			}
-			// 触れただけの時
-			else {
-				shopflag = true;
-			}
-		}
-	}
-	// ショップの値段表示
-	if (shopmenu == 1) {
-		switch (shopmY) {
-		case 0:
-			money = 10;
-			break;
-		case 1:
-			money = 15;
-			break;
-		case 2:
-			money = 10;
-			break;
-		case 3:
-			money = 20;
-			break;
-		}
-	}
-	// ショップ画面でのカーソル移動
-	if (shopflag == true && itemflag == true) {
-		// 上を押した
-		if (KeyData::Get(KEY_INPUT_UP) == 1) {
-			// 一番上じゃなければ
-			if (shopmY > 0) {
-				shopmY --;
-			}
-			// 一番上なら
-			else {
-				
-			}
-		}
-		// 下を押した
-		if (KeyData::Get(KEY_INPUT_DOWN) == 1) {
-			if (shopmenu == 0) {
-				// 一番下じゃなければ
-				if (shopmY < 2) {
-					shopmY++;
-				}
-				// 一番下なら
-				else {
-
-				}
-			}
-			else if (shopmenu == 1) {
-				// 一番下じゃなければ
-				if (shopmY < 4) {
-					shopmY++;
-				}
-				// 一番下なら
-				else {
-
-				}
-			}
-			else {
-				// 一番下じゃなければ
-				if (shopmY < 9) {
-					shopmY++;
-				}
-				// 一番下なら
-				else {
-
-				}
-			}
-		}
-	}
+	HealProcess();
+	PeopleProcess();
+	ShopProcess();
 }
 
 void SafeArea::UpDate_End() {
@@ -327,16 +172,26 @@ void SafeArea::Draw_Main(int x, int y) {
 		}
 	}
 
+	// 回復店主
+	if (innflag == true && talkflag == true) {
+		DrawFormatString(0, cursor * 0, BLACK, "泊まりますか？");
+		DrawFormatString(35, cursor * 1, BLACK, "休みます");
+		DrawFormatString(35, cursor * 2, BLACK, "やめときます");
+		DrawBox(0, (healY + 1) * cursor, 32, 32 + ((healY + 1) * cursor), BLUE, true);
+	}
+	// 回復表示
 	if (healcount > 0) {
 		DrawFormatString(320, 240, BLACK, "回復しました。");
-		healcount--;
 	}
 
+	// 村人のセリフ
 	if (peopleflag == true && talkflag == true) {
 		DrawFormatString(320, 240, BLACK, "ここは町です。");
 	}
 
+	//買い物関連----------------------------------------------------
 	if (itemflag == true && shopflag == true) {
+		// 最初のメニュー
 		if (shopmenu == 0) {
 			DrawFormatString(35, cursor * 0, BLACK, "買う");
 			DrawFormatString(35, cursor * 1, BLACK, "売る");
@@ -344,6 +199,7 @@ void SafeArea::Draw_Main(int x, int y) {
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "いらっしゃーい");
 		}
+		// 買うときのメニュー
 		else if(shopmenu == 1) {
 			DrawFormatString(35, cursor * 0, BLACK, "やく(にたちそうな)くさ");
 			DrawFormatString(35, cursor * 1, BLACK, "清らかな水");
@@ -356,6 +212,7 @@ void SafeArea::Draw_Main(int x, int y) {
 				DrawFormatString(70, cursor * 6, BLACK, "%d円です。", money);
 			}
 		}
+		// 売るときのメニュー
 		else {
 			for (int i = 0; i < 9; i++)
 			{
@@ -364,11 +221,16 @@ void SafeArea::Draw_Main(int x, int y) {
 			DrawFormatString(35, cursor * 9, BLACK, "戻る");
 			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
 			DrawFormatString(320, 240, BLACK, "何を売る？");
-			if (shopmY < 9) {
+			if (shopmY != 9) {
 				DrawFormatString(70, cursor * 11, BLACK, "%d円です。", money);
 			}
 		}
 	}
+	// 店主のセリフ
+	if (shopcount >= 0) {
+		DrawFormatString(320, 208, BLACK, "まいど～");
+	}
+	//--------------------------------------------------------------
 }
 
 void SafeArea::Draw_End() {
@@ -387,6 +249,230 @@ void SafeArea::MapData() {
 		read_count++;	// 次の行に
 	}
 	read_file.close();
+}
+
+void SafeArea::HealProcess() {
+	// 宿の店主に触れたら
+	if (innflag == true) {
+		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			// セリフが出たら
+			if (talkflag == true) {
+				// 回復頼んだら
+				if (healY == 0) {
+					healflag = true;
+					healcount = heal;
+					healY = 0;
+				}
+				// 回復やめたら
+				else {
+					healY = 0;
+				}
+				talkflag = false;
+			}
+			// 触れただけの時
+			else {
+				talkflag = true;
+			}
+		}
+	}
+	// 選択肢
+	if (innflag == true && talkflag == true) {
+		if (KeyData::Get(KEY_INPUT_UP) == 1) {
+			healY = 0;
+		}
+		if (KeyData::Get(KEY_INPUT_DOWN) == 1) {
+			healY = 1;
+		}
+	}
+	// 回復の表示
+	if (healcount > 0) {
+		healcount--;
+	}
+}
+
+void SafeArea::PeopleProcess() {
+	// 一般人に触れたら
+	if (peopleflag == true) {
+		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			// セリフが出ていたら
+			if (talkflag == false) {
+				talkflag = true;
+			}
+			// セリフが出ていなかったら
+			else {
+				talkflag = false;
+			}
+		}
+	}
+}
+
+void SafeArea::ShopProcess() {
+	// 道具屋に触れたら
+	if (itemflag == true) {
+		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			// 買い物の最初の画面
+			if (shopflag == true) {
+				if (shopmenu == 0) {
+					// 買うを押したとき
+					if (shopmY == 0) {
+						shopmenu = 1;
+					}
+					// 売るを押したとき
+					else if (shopmY == 1) {
+						shopmenu = 2;
+					}
+					// やめるを押したとき
+					else {
+						shopflag = false;
+					}
+					shopmY = 0;
+				}
+				// 買うを開いたときのショップ画面
+				else if (shopmenu == 1) {
+					switch (shopmY) {
+					case 0:
+						//str = "やく(にたちそうな)くさ";
+						ID = 2;
+						buyflag = true;
+						shopcount = shop;
+						break;
+					case 1:
+						//str = "清らかな水";
+						ID = 3;
+						buyflag = true;
+						shopcount = shop;
+						break;
+					case 2:
+						//str = "けむりダマ";
+						ID = 4;
+						buyflag = true;
+						shopcount = shop;
+						break;
+					case 3:
+						//str = "世界樹のハ";
+						ID = 5;
+						buyflag = true;
+						shopcount = shop;
+						break;
+					default:
+						shopmenu = 0;
+						shopmY = 0;
+						break;
+					}
+				}
+				// 売るを開いたときのショップ画面
+				else if (shopmenu == 2) {
+					// 戻るボタン
+					if (shopmY == 9) {
+						shopmenu = 0;
+						shopmY = 0;
+					}
+					// なにかしら売る
+					else {
+						itemnum = shopmY;
+						ID = item[shopmY];
+						shopcount = shop;
+						sellflag = true;
+					}
+				}
+			}
+			// 触れただけの時
+			else {
+				shopflag = true;
+			}
+		}
+	}
+	// ショップの売買後の会話表示
+	if (shopcount >= 0) {
+		shopcount--;
+	}
+	// 買うときのショップの値段表示
+	if (shopmenu == 1) {
+		switch (shopmY) {
+		case 0:
+			money = 10;
+			break;
+		case 1:
+			money = 15;
+			break;
+		case 2:
+			money = 10;
+			break;
+		case 3:
+			money = 20;
+			break;
+		default:
+			money = 0;
+			break;
+		}
+	}
+	// 売るときのショップの値段表示
+	if (shopmenu == 2) {
+		switch (item[shopmY]) {
+		case 2:
+			money = 5;
+			break;
+		case 3:
+			money = 7;
+			break;
+		case 4:
+			money = 5;
+			break;
+		case 5:
+			money = 10;
+			break;
+		default:
+			money = 0;
+			break;
+		}
+	}
+	// ショップ画面でのカーソル移動
+	if (shopflag == true && itemflag == true) {
+		// 上を押した
+		if (KeyData::Get(KEY_INPUT_UP) == 1) {
+			// 一番上じゃなければ
+			if (shopmY > 0) {
+				shopmY--;
+			}
+			// 一番上なら
+			else {
+
+			}
+		}
+		// 下を押した
+		if (KeyData::Get(KEY_INPUT_DOWN) == 1) {
+			if (shopmenu == 0) {
+				// 一番下じゃなければ
+				if (shopmY < 2) {
+					shopmY++;
+				}
+				// 一番下なら
+				else {
+
+				}
+			}
+			else if (shopmenu == 1) {
+				// 一番下じゃなければ
+				if (shopmY < 4) {
+					shopmY++;
+				}
+				// 一番下なら
+				else {
+
+				}
+			}
+			else {
+				// 一番下じゃなければ
+				if (shopmY < 9) {
+					shopmY++;
+				}
+				// 一番下なら
+				else {
+
+				}
+			}
+		}
+	}
 }
 
 int SafeArea::GetMapData(int x, int y) {
@@ -480,12 +566,28 @@ bool SafeArea::GetSell() {
 	return sellflag;
 }
 
+void SafeArea::SetInn(bool flag) {
+	innflag = flag;
+}
+
+bool SafeArea::GetInn() {
+	return innflag;
+}
+
 void SafeArea::SetID(int ID) {
 	this->ID = ID;
 }
 
 int SafeArea::GetID() {
 	return ID;
+}
+
+void SafeArea::SetNum(int num) {
+	itemnum = num;
+}
+
+int SafeArea::GetNum() {
+	return itemnum;
 }
 
 void SafeArea::SetnumID(int num, int ID) {
