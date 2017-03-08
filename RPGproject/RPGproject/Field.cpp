@@ -168,10 +168,42 @@ void Field::Draw_Main() {
 	}
 }
 void Field::Draw_End() {
-	// debug-------------------------------------------------------------------------------------------------
-	DrawStringToHandle(0, 0, "フィールド画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, endCount);
-	// ------------------------------------------------------------------------------------------------------
+	// 次のシーンによって処理を変える
+	switch (nextScene) {
+	case eScene::S_Battle:// 戦闘画面
+		// 徐々に画面を暗くする処理
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (count * 5));
+		// 背景
+		DrawGraph(0, 0, Gr_Back, true);
+
+		// マップチップ
+		for (int i = 0, n = mapdata.size();i < n;i++)
+		{
+			for (int j = 0, m = mapdata[i].size();j < m;j++)
+			{
+				// 一時的に保存
+				mapchipForID = mapchip[mapdata[i][j]];
+
+				// 描写
+				DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchipForID, true);
+			}
+		}
+		// ブレンドモードの後処理
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		break;
+
+	case eScene::S_SafeArea:// 拠点画面
+		break;
+
+	case eScene::S_Dungeon://ダンジョン画面
+		break;
+
+	case eScene::S_End://ゲーム終了
+		break;
+
+	default:	//Error
+		break;
+	}
 }
 
 void Field::ReadMapData()

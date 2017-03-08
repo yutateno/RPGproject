@@ -12,6 +12,10 @@ Manager::Manager() {
 	count = 0;			// 演出用の(フレーム)時間カウント
 	preHP = 0;			// 直前のＨＰ
 	lose = false;		// 戦闘に敗北したか。false:してない
+	statusX = 8;		// コマンドが乗ってる板の座標
+	statusY = 8;		// コマンドが乗ってる板の座標
+	logX = 8;			// ログが乗ってる板の座標
+	logY = 320;			// ログが乗ってる板の座標
 
 	// ゲーム進行関係
 	player = new Player();			// プレイヤー本体
@@ -248,19 +252,6 @@ void Manager::ChengeScene_Battle() {
 	// 勝利した場合
 	else
 	{
-		// 経験値の処理の処理
-		player->SetEXP(player->GetEXP() + enemy->GetEXP());
-
-
-		// レベルアップの処理
-		if (player->GetLV() * 20 < player->GetEXP())
-		{
-			player->SetEXP(0);					// 経験値を0にする
-			player->SetLV(player->GetLV() + 1);	// レベルを１上げる
-			player->SetMaxHP(player->GetMaxHP() + player->GetLV());		// HP上昇
-			player->SetMaxMP(player->GetMaxMP() + player->GetLV());		// MP上昇
-		}
-
 		// バトルから次のシーンを取得
 		NowScene = battle->GetNextScene();
 	}
@@ -393,6 +384,9 @@ void Manager::ChengeScene_GameOver() {
 
 	switch (NowScene) {
 	case eScene::S_Title://タイトル画面
+
+		// 
+
 		title = new Title();
 		break;
 
@@ -453,59 +447,99 @@ void Manager::Draw() {
 		break;
 
 	case eScene::S_Battle:// 戦闘画面
-		// コマンドの表示
-		if (turn&&count == 0)
+		switch (battle->GetStep())
 		{
-			battle->Draw(true);
-		}
-		else
-		{
+		case eStep::Start:
+			// 徐々に画面の表示する処理
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, battle->GetCount() * 3);
+			// 背景等
 			battle->Draw(false);
-		}
+			// 敵
+			enemy->aaaDraw();
+			// ログ
+			DrawFormatString(logX + 32, logY + 32, BLACK, " %s が現れた！", enemy->GetName().c_str());
+			// ブレンドモードの後処理
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			break;
 
-		// ログの表示
-		if (count != 0)
-		{
-			// 勝利時
-			if (enemy->GetHP() <= 0)
+		case eStep::Main:
+			// コマンドの表示
+			if (turn&&count == 0)
 			{
-				// バトルがメインステップの時のみログを表示
-				if (battle->GetStep() == eStep::Main)
-				{
-					DrawFormatString(0, 384, WHITE, "勝利\n %d の経験値を獲得！", enemy->GetEXP());
-				}
-			}
-			// 敗北時
-			else if (player->GetHP() <= 0)
-			{
-				// バトルがメインステップの時のみログを表示
-				if (battle->GetStep() == eStep::Main)
-				{
-					DrawFormatString(0, 384, WHITE, "敗北");
-				}
+				battle->Draw(true);
 			}
 			else
 			{
-				if (turn)
+				battle->Draw(false);
+			}
+
+			// ログの表示
+			if (count != 0)
+			{
+				// 勝利時
+				if (enemy->GetHP() <= 0)
 				{
-					DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", player->GetName().c_str(), enemy->GetName().c_str(), preHP - enemy->GetHP());
+					// １ページ目
+					if (count <= 160)
+					{
+						// 一段階目のログ
+						DrawFormatString(logX + 32, logY + 32, BLACK, " %s をsatsugaiした", enemy->GetName().c_str());
+						// 二段階目
+						if (count > 80)
+						{
+							DrawFormatString(logX + 32, logY + 64, BLACK, " %d の経験値を獲得！", enemy->GetEXP());
+						}
+					}
+					// ２ページ目
+					else {
+						// 一段階目のログ
+						DrawFormatString(logX + 32, logY + 32, BLACK, "レベルアップ！", enemy->GetEXP());
+						// 二段階目
+						if (count > 240)
+						{
+							DrawFormatString(logX + 32, logY + 64, BLACK, " %s は LV %d になった！", player->GetName().c_str(), player->GetLV());
+						}
+					}
+				}
+
+				// 敗北時
+				else if (player->GetHP() <= 0)
+				{
+					DrawFormatString(logX + 32, logY + 32, BLACK, "敗北");
+
 				}
 				else
 				{
-					DrawFormatString(0, 384, WHITE, " %s の攻撃！\n %s に %d ダメージ！", enemy->GetName().c_str(), player->GetName().c_str(), preHP - player->GetHP());
+					if (turn)
+					{
+						// 一段階目のログ
+						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の攻撃！", player->GetName().c_str());
+						// 二段階目
+						if (count > 80)
+						{
+							DrawFormatString(logX + 32, logY + 64, BLACK, " %s に %d ダメージ！", enemy->GetName().c_str(), preHP - enemy->GetHP());
+						}
+					}
+					else
+					{
+						// 一段階目のログ
+						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の攻撃！", enemy->GetName().c_str());
+						// 二段階目
+						if (count > 80)
+						{
+							DrawFormatString(logX + 32, logY + 64, BLACK, " %s に %d ダメージ！", player->GetName().c_str(), preHP - player->GetHP());
+						}
+					}
 				}
 			}
-		}
 
-		// メイン画面のみの描写
-		if (battle->GetStep() == eStep::Main)
-		{
-			// 敵の描写
-			if (turn)
+			// 生きていれば
+			if (enemy->GetHP() > 0)
 			{
-				if (battle->GetDamageFlag())
+				if (turn)
 				{
-					if (count % 5 != 0)
+					// ダメージ食らったとき
+					if (count < 80 || count % 5 == 0)
 					{
 						enemy->aaaDraw();
 					}
@@ -515,19 +549,43 @@ void Manager::Draw() {
 					enemy->aaaDraw();
 				}
 			}
-			else
-			{
-				enemy->aaaDraw();
-			}
 
 			// プレイヤーのステータス
-			DrawFormatString(0, 0, WHITE, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
+			if (turn)
+			{
+				DrawFormatString(statusX + 32, statusY + 32, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
+			}
+			else
+			{
+				// ダメージ食らったとき
+				if (count > 80)
+				{
+					DrawFormatString(statusX + 32 + GetRand(8), statusY + 32 + GetRand(8), RED, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
+				}
+				// 食らってないとき
+				else
+				{
+					DrawFormatString(statusX + 32, statusY + 32, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
+				}
 
-			// debug-------------------------------------------------------------------------------------
-			// 敵のステータス
-			DrawFormatString(300, 0, WHITE, "%s\nHP:%d\nMP:%d", enemy->GetName().c_str(), enemy->GetHP(), enemy->GetMP());
-			// -----------------------------------------------------------------------------------------
+
+				// debug-------------------------------------------------------------------------------------
+				// 敵のステータス
+				DrawFormatString(300, 0, WHITE, "%s\nHP:%d\nMP:%d", enemy->GetName().c_str(), enemy->GetHP(), enemy->GetMP());
+				// -----------------------------------------------------------------------------------------
+			}
+			break;
+
+		case eStep::End:
+			// 背景
+			battle->Draw(false);
+			break;
+
+		default:
+			// エラー
+			break;
 		}
+		
 		break;
 
 	case eScene::S_SafeArea:// 拠点画面
@@ -657,8 +715,29 @@ void Manager::BattleProcess()
 		}
 		else
 		{
+			// 金獲得
+			player->SetMoney(player->GetMoney() + enemy->GetMoney());
+
+			// 経験値の処理
+			player->SetEXP(player->GetEXP() + enemy->GetEXP());
+
+			// レベルアップの処理
+			if (player->GetLV() * 20 < player->GetEXP())
+			{
+				// 表示時間延長
+				logCount = 320;
+
+				player->SetEXP(player->GetEXP() - (player->GetLV() * 20));	// 経験値を0にする
+				player->SetLV(player->GetLV() + 1);							// レベルを１上げる
+				player->SetMaxHP(player->GetMaxHP() + player->GetLV());		// HP上昇
+				player->SetMaxMP(player->GetMaxMP() + player->GetLV());		// MP上昇
+				return;
+			}
+
 			// カウントリセット
 			count = 0;
+			// 表示時間リセット
+			logCount = 160;
 			// バトルのステップ進行
 			battle->SetStep(eStep::End);
 		}
@@ -722,10 +801,6 @@ void Manager::BattleProcess()
 					default:
 						break;
 					}
-
-					//ダメージ決定
-					player->SetATK(battle->GetDamageWidth());			// 選択した行動を反映する
-					enemy->SetHP(enemy->GetHP() - player->GetATK());	// ダメージ
 				}
 
 				// 演出中
@@ -733,6 +808,14 @@ void Manager::BattleProcess()
 				{
 					// カウントアップ
 					count++;
+
+					// 演出と同期してダメージ
+					if (count == 80)
+					{
+						//ダメージ決定
+						player->SetATK(battle->GetDamageWidth());			// 選択した行動を反映する
+						enemy->SetHP(enemy->GetHP() - player->GetATK());	// ダメージ
+					}
 				}
 				else
 				{
@@ -749,17 +832,18 @@ void Manager::BattleProcess()
 		// 相手のターン
 		else
 		{
-			// 演出中ではなければ
-			if (count == 0)
-			{
-				player->SetHP(player->GetHP() - enemy->GetATK());		// 攻撃力分だけダメージ
-			}
-
 			// 演出中
 			if (count < logCount)			// ログをXフレーム表示する
 			{
 				// カウントアップ
 				count++;
+
+				// 演出と同期してダメージ
+				if (count == 80)
+				{
+					enemy->AttackProcess();
+					player->SetHP(player->GetHP() - enemy->GetATK());		// 攻撃力分だけダメージ
+				}
 			}
 			else
 			{

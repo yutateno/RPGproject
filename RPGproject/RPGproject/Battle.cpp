@@ -7,7 +7,7 @@ Battle::Battle() {
 
 	// 演出関係
 	this->step = eStep::Start;			// 演出関係
-	this->startCount = 50;				// シーン開始時の演出時間
+	this->startCount = 80;				// シーン開始時の演出時間
 	this->endCount = 50;					// シーン終了時の演出時間
 	count = 0;							// (フレーム)時間のカウント
 
@@ -19,6 +19,10 @@ Battle::Battle() {
 	preCommand = command;			// 直前のコマンドを保存する
 	damageFlag = false;				// ダメージを与えたかどうか
 	damageWidth = 0;				//ダメージの振れ幅
+
+	// コマンドが乗ってる板
+	commandX = 8;
+	commandY = 320;
 
 	// ログ関係
 	textFlag = true;				// true:表示する
@@ -172,10 +176,12 @@ void Battle::Draw(bool flag) {
 	}
 }
 void Battle::Draw_Start() {
-	// debug---------------------------------------------------------------------------------------------------
-	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面 %d / %d", count, this->startCount);
-	// --------------------------------------------------------------------------------------------------------
+	// 徐々に画面の表示する処理
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, count * 3);
+	// 背景
+	DrawGraph(0, 0, Gr_Back, FALSE);
+	// ブレンドモードの後処理
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 void Battle::Draw_Main() {
 	// 背景
@@ -188,9 +194,9 @@ void Battle::Draw_Main() {
 		switch (command)
 		{
 		case NEUTRAL:	// 初期
-			DrawFormatString(0, 384, WHITE, "  攻撃");
-			DrawFormatString(0, 416, WHITE, "  魔法");
-			DrawFormatString(0, 448, WHITE, "  逃げる");
+			DrawFormatString(commandX + 32, commandY + 32, BLACK, "  攻撃");
+			DrawFormatString(commandX + 32, commandY + 64, BLACK, "  魔法");
+			DrawFormatString(commandX + 32, commandY + 96, BLACK, "  逃げる");
 			break;
 
 		case ATTACK:	// 攻撃メニュー
@@ -207,14 +213,16 @@ void Battle::Draw_Main() {
 		}
 
 		// カーソル
-		DrawFormatString(cursorX, 384 + (cursorY * 32), WHITE, "▲");
+		DrawFormatString(commandX + 32 + cursorX, commandY + 32 + (cursorY * 32), BLACK, "▲");
 	}
 }
 void Battle::Draw_End() {
-	// debug---------------------------------------------------------------------------------------------------
-	DrawStringToHandle(0, 0, "戦闘画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, this->endCount);
-	// --------------------------------------------------------------------------------------------------------
+	// 徐々に画面を暗くする処理
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (count * 5));
+	// 背景
+	DrawGraph(0, 0, Gr_Back, FALSE);
+	// ブレンドモードの後処理
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 // どの画面から戦闘画面に移行したか（戦闘終了時にその画面に戻る)
@@ -253,4 +261,8 @@ eStep Battle::GetStep()
 void Battle::SetNextScene(eScene nextScene)
 {
 	this->nextScene = nextScene;
+}
+int Battle::GetCount()
+{
+	return count;
 }

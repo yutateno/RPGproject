@@ -4,12 +4,24 @@ Enemy::Enemy()
 {
 	// デフォルトコンストラクタは基本的に呼ばれない
 	ID = 0;		// 0:テスト用
+
+	// メモリ確保
+	attack = new Attack();
+
+	// ゲッター用の変数
+	damage = 0;
 	
 	SearchStatus();		// IDからステータス取得
 }
 Enemy::Enemy(int ID)
 {
 	this->ID = ID;		// 0:テスト用
+
+	// メモリ確保
+	attack = new Attack();
+
+	// ゲッター用の変数
+	damage = 0;
 
 	SearchStatus();		// IDからステータス取得
 }
@@ -26,8 +38,10 @@ void Enemy::SearchStatus()
 		name = "default_chang!";
 		hp = 10;			// 体力
 		mp = 10;			// 魔力
-		attack = 1;			// 攻撃力
+		attack->power = 1;
+		attack->width = 0;
 		exp = 10;			// 経験値
+		money = 100;		// 金
 
 		graph = LoadGraph("img\\enemy.png");
 		break;
@@ -36,8 +50,10 @@ void Enemy::SearchStatus()
 		name = "mi!";
 		hp = 5;			// 体力
 		mp = 5;			// 魔力
-		attack = 2;		// 攻撃力
+		attack->power = 2;
+		attack->width = 0;
 		exp = 20;		// 経験値
+		money = 200;	// 金
 
 		graph = LoadGraph("img\\enemy.png");
 
@@ -49,13 +65,16 @@ void Enemy::SearchStatus()
 
 void Enemy::aaaDraw()
 {
-	DrawGraph(320, 240, graph, true);
+	DrawGraph(320 - 80, 240 - 80, graph, true);
 }
 
-int Enemy::AttackProcess()
+void Enemy::AttackProcess()
 {
+	// 初期化
+	damage = 0;
+
 	// 仮処理
-	return attack;
+	damage = attack->power + attack->width;
 }
 
 void Enemy::SetName(string name)
@@ -84,13 +103,17 @@ int Enemy::GetMP()
 }
 void Enemy::SetATK(int attack)
 {
-	this->attack = attack;
+	this->attack->power = attack;
 }
 int Enemy::GetATK()
 {
-	return attack;
+	return damage;
 }
 int Enemy::GetEXP()
 {
 	return exp;
+}
+int Enemy::GetMoney()
+{
+	return money;
 }

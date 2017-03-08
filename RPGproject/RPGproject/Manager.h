@@ -55,6 +55,8 @@ private:
 	int logCount;			// ログ表示時間
 	int preHP;				// 直前のHP。ログ用
 	bool lose;				// 先頭で敗北時に立つフラグ
+	int statusX, statusY;	// ステータスが乗っている板
+	int logX, logY;			// ログが乗ってる板
 public:
 	Manager();
 	~Manager();
