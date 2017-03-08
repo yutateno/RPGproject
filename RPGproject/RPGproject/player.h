@@ -39,6 +39,8 @@ private:
 	bool mItemFlag;			// アイテム画面を開いているかどうかのフラグ
 	bool mStatusFlag;		// ステータス画面を開いているかのフラグ
 
+	int money;			// お金
+
 	int graph;			// 画像
 
 public:
@@ -81,6 +83,8 @@ public:
 	void SetATK(int width);
 	int GetATK();
 	int GetID(int num);
+	void SetMoney(int money);
+	int GetMoney();
 	void SetDirection(Direction direction);
 	Direction GetDirection();
 };

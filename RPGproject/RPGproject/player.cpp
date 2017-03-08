@@ -24,6 +24,7 @@ Player::Player()
 		item[i] = new Item();
 	}
 	ID = 0;
+	money = 500;
 
 	attack = new Attack();
 	attack->power = 1;
@@ -85,7 +86,7 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 	if (menuFlag)
 	{
 		// プレイヤーのステータス
-		DrawFormatString(0, 384, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", name.c_str(), hp, maxHP, mp, maxMP, lv);
+		DrawFormatString(0, 384, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d\nMoney:%d", name.c_str(), hp, maxHP, mp, maxMP, lv, money);
 
 		// 項目
 		DrawFormatString(0, 0, BLACK, "　アイテム\n　ステータス");
@@ -103,7 +104,7 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 		}
 		else if (mStatusFlag)
 		{
-			DrawFormatString(160, 0, BLACK, "　%s\n　HP:%d/%d\n　MP:%d/%d\n　LV:%d\n", name.c_str(), hp, maxHP, mp, maxMP, lv);
+			DrawFormatString(160, 0, BLACK, "　%s\n　HP:%d/%d\n　MP:%d/%d\n　LV:%d\n　Money:%d\n", name.c_str(), hp, maxHP, mp, maxMP, lv, money);
 		}
 	}
 }
@@ -373,4 +374,14 @@ Direction Player::GetDirection()
 int Player::GetID(int num)
 {
 	return item[num]->GetID();
+}
+
+void Player::SetMoney(int money)
+{
+	this->money = money;
+}
+
+int Player::GetMoney()
+{
+	return money;
 }
