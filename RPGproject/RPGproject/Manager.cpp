@@ -4,11 +4,12 @@ Manager::Manager() {
 	// 移動全般
 	playerX = 0;		// 絶対座標
 	playerY = 0;		// 絶対座標
-	probability = 200;	// 敵とのエンカウント率
+	probability = 200;	// エンカウントする確率 : 1/probability
+	drop = 200;			// 敵がアイテムを落とす確率 : item/drop
 
 	// 戦闘関連
 	turn = true;		// true : プレイヤーのターン
-	logCount = 160;		// 演出時間
+	logCount = 120;		// 演出時間
 	count = 0;			// 演出用の(フレーム)時間カウント
 	preHP = 0;			// 直前のＨＰ
 	lose = false;		// 戦闘に敗北したか。false:してない
@@ -480,12 +481,12 @@ void Manager::Draw() {
 				if (enemy->GetHP() <= 0)
 				{
 					// １ページ目
-					if (count <= 160)
+					if (count <= 120)
 					{
 						// 一段階目のログ
 						DrawFormatString(logX + 32, logY + 32, BLACK, " %s をsatsugaiした", enemy->GetName().c_str());
 						// 二段階目
-						if (count > 80)
+						if (count > 60)
 						{
 							DrawFormatString(logX + 32, logY + 64, BLACK, " %d の経験値を獲得！", enemy->GetEXP());
 						}
@@ -495,7 +496,7 @@ void Manager::Draw() {
 						// 一段階目のログ
 						DrawFormatString(logX + 32, logY + 32, BLACK, "レベルアップ！", enemy->GetEXP());
 						// 二段階目
-						if (count > 240)
+						if (count > 180)
 						{
 							DrawFormatString(logX + 32, logY + 64, BLACK, " %s は LV %d になった！", player->GetName().c_str(), player->GetLV());
 						}
@@ -513,9 +514,9 @@ void Manager::Draw() {
 					if (turn)
 					{
 						// 一段階目のログ
-						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の攻撃！", player->GetName().c_str());
+						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の %s ！", player->GetName().c_str(), player->GetATKName().c_str());
 						// 二段階目
-						if (count > 80)
+						if (count > 60)
 						{
 							DrawFormatString(logX + 32, logY + 64, BLACK, " %s に %d ダメージ！", enemy->GetName().c_str(), preHP - enemy->GetHP());
 						}
@@ -523,9 +524,9 @@ void Manager::Draw() {
 					else
 					{
 						// 一段階目のログ
-						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の攻撃！", enemy->GetName().c_str());
+						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の %s ！", enemy->GetName().c_str(), enemy->GetATKName().c_str());
 						// 二段階目
-						if (count > 80)
+						if (count > 60)
 						{
 							DrawFormatString(logX + 32, logY + 64, BLACK, " %s に %d ダメージ！", player->GetName().c_str(), preHP - player->GetHP());
 						}
@@ -539,7 +540,7 @@ void Manager::Draw() {
 				if (turn)
 				{
 					// ダメージ食らったとき
-					if (count < 80 || count % 5 == 0)
+					if (count < 60 || count % 5 == 0)
 					{
 						enemy->aaaDraw();
 					}
@@ -558,7 +559,7 @@ void Manager::Draw() {
 			else
 			{
 				// ダメージ食らったとき
-				if (count > 80)
+				if (count > 60)
 				{
 					DrawFormatString(statusX + 32 + GetRand(8), statusY + 32 + GetRand(8), RED, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
 				}
@@ -721,11 +722,34 @@ void Manager::BattleProcess()
 			// 経験値の処理
 			player->SetEXP(player->GetEXP() + enemy->GetEXP());
 
+			// 確率でアイテム入手
+			int luck = GetRand(drop);
+			if (luck == 0)
+			{
+				// 世界樹のハ入手
+				player->BuyItem(5);
+			}
+			else if (luck < (4 + 1))
+			{
+				// けむりダマ入手
+				player->BuyItem(4);
+			}
+			else if (luck < (16 + 1))
+			{
+				// 清らかな水入手
+				player->BuyItem(3);
+			}
+			else if (luck < (64 + 1))
+			{
+				// やく(にたちそうな)くさ入手
+				player->BuyItem(2);
+			}
+
 			// レベルアップの処理
 			if (player->GetLV() * 20 < player->GetEXP())
 			{
 				// 表示時間延長
-				logCount = 320;
+				logCount = 240;
 
 				player->SetEXP(player->GetEXP() - (player->GetLV() * 20));	// 経験値を0にする
 				player->SetLV(player->GetLV() + 1);							// レベルを１上げる
@@ -737,7 +761,7 @@ void Manager::BattleProcess()
 			// カウントリセット
 			count = 0;
 			// 表示時間リセット
-			logCount = 160;
+			logCount = 120;
 			// バトルのステップ進行
 			battle->SetStep(eStep::End);
 		}
@@ -777,12 +801,14 @@ void Manager::BattleProcess()
 						break;
 
 					case ATTACK:
+						player->SetATKName("攻撃");
 						break;
 
 					case MAGIC:
 						// MP消費
 						if (player->GetMP() > 0)
 						{
+							player->SetATKName("魔法攻撃");
 							player->SetMP(player->GetMP() - 1);
 						}
 						// MPが足りない場合
@@ -810,7 +836,7 @@ void Manager::BattleProcess()
 					count++;
 
 					// 演出と同期してダメージ
-					if (count == 80)
+					if (count == 60)
 					{
 						//ダメージ決定
 						player->SetATK(battle->GetDamageWidth());			// 選択した行動を反映する
@@ -839,7 +865,7 @@ void Manager::BattleProcess()
 				count++;
 
 				// 演出と同期してダメージ
-				if (count == 80)
+				if (count == 60)
 				{
 					enemy->AttackProcess();
 					player->SetHP(player->GetHP() - enemy->GetATK());		// 攻撃力分だけダメージ
@@ -847,9 +873,6 @@ void Manager::BattleProcess()
 			}
 			else
 			{
-				// カウントリセット
-				count = 0;
-
 				count = 0;			// カウントを戻す
 				turn = true;		// プレイヤーにターンを渡す
 			}

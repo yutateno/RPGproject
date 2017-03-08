@@ -44,6 +44,8 @@ private:
 	int cursorX, cursorY;	// カーソルの座標
 	int listNum;			// メニューの項目がいくつあるか
 	bool mItemFlag;			// アイテム画面を開いているかどうかのフラグ
+	bool mItemUseFlag;		// アイテムを使ったかどうかのフラグ
+	string itemEffectText;	// アイテムの効果描写用
 	bool mStatusFlag;		// ステータス画面を開いているかのフラグ
 
 	int money;			// お金
@@ -89,6 +91,8 @@ public:
 	int GetMaxMP();
 	void SetATK(int width);
 	int GetATK();
+	void SetATKName(string name);
+	string GetATKName();
 	int GetID(int num);
 	void SetMoney(int money);
 	int GetMoney();

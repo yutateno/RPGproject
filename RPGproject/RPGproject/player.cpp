@@ -35,6 +35,8 @@ Player::Player()
 	cursorY = 0;
 	listNum = 0;
 	mItemFlag = false;
+	mItemUseFlag = false;
+	itemEffectText = "";
 	mStatusFlag = false;
 
 	// 画像読み込み
@@ -101,6 +103,17 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 			{
 				DrawFormatString(160, i * 16, BLACK, "・%s", item[i]->GetName().c_str());
 			}
+
+			// アイテム使用中であれば
+			if (mItemUseFlag)
+			{
+				DrawFormatString(32, 240, BLACK, "・%s", itemEffectText.c_str());
+			}
+			// アイテム使用中でなければ
+			else
+			{
+				DrawFormatString(32, 240, BLACK, "・%s", item[cursorY]->GetEffectText(false).c_str());
+			}
 		}
 		else if (mStatusFlag)
 		{
@@ -119,6 +132,7 @@ void Player::Process()
 			if (cursorX == 0)
 			{
 				mItemFlag = false;
+				mItemUseFlag = false;
 				mStatusFlag = false;
 				menuFlag = false;
 				listNum = 0;
@@ -126,6 +140,7 @@ void Player::Process()
 			else
 			{
 				mItemFlag = false;
+				mItemUseFlag = false;
 				mStatusFlag = false;
 			}
 		}
@@ -152,26 +167,35 @@ void Player::Process()
 void Player::Menu()
 {
 	// カーソルの移動
-	if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY > 0)
+	// アイテム使用中じゃなければ
+	if (!mItemUseFlag)
 	{
-		cursorY--;
-	}
-	else if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY < (listNum - 1))
-	{
-		cursorY++;
+		if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY > 0)
+		{
+			cursorY--;
+		}
+		else if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY < (listNum - 1))
+		{
+			cursorY++;
+		}
 	}
 
 	// 決定
 	if (KeyData::Get(KEY_INPUT_Z) == 1)
 	{
+		// 最初の画面
 		if (cursorX == 0)
 		{
+			// カーソルを右に
 			cursorX++;
+
+			// アイテムを選んだら
 			if (cursorY == 0)
 			{
 				listNum = itemMax;
 				mItemFlag = true;
 			}
+			// ステータスを選んだら
 			else if (cursorY == 1)
 			{
 				mStatusFlag = true;
@@ -182,19 +206,38 @@ void Player::Menu()
 				// エラー
 				name = "メニュー画面でのバグ";
 			}
+
+			// 一番上に戻す
+			cursorY = 0;
 		}
 		else if (cursorX == 1)
 		{
-			// ここにアイテムとかステータスのことを書く
+			// アイテム画面ならアイテム使用
+			if (mItemFlag)
+			{
+				// アイテムを使った後
+				if (mItemUseFlag)
+				{
+					mItemUseFlag = false;
+					// 一番上に戻す
+					cursorY = 0;
+				}
+				// アイテムを使う前
+				else
+				{
+					// 効果文を逃がす
+					itemEffectText = item[cursorY]->GetEffectText(true);
+					// アイテムを消す
+					SellItem(cursorY);
+					mItemUseFlag = true;
+				}
+			}
 		}
 		else
 		{
 			// エラー
 			name = "メニュー画面でのバグ";
 		}
-
-		// 一番上に戻す
-		cursorY = 0;
 	}
 }
 void Player::Move()
@@ -346,6 +389,14 @@ void Player::SetATK(int width)
 int Player::GetATK()
 {
 	return attack->power + GetRand(attack->width);
+}
+string Player::GetATKName()
+{
+	return attack->name;
+}
+void Player::SetATKName(string name)
+{
+	this->attack->name = name;
 }
 void Player::SetDirection(Direction direction)
 {

@@ -109,6 +109,14 @@ int Enemy::GetATK()
 {
 	return damage;
 }
+void Enemy::SetATKName(string name)
+{
+	this->attack->name = name;
+}
+string Enemy::GetATKName()
+{
+	return attack->name;
+}
 int Enemy::GetEXP()
 {
 	return exp;

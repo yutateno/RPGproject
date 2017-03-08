@@ -51,6 +51,8 @@ public:
 	int GetMP();
 	void SetATK(int attack);
 	int GetATK();
+	void SetATKName(string name);
+	string GetATKName();
 	int GetEXP();
 	int GetMoney();
 };

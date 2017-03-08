@@ -48,6 +48,7 @@ private:
 	int playerX;			// プレイヤーが動いたかどうかを判定する変数
 	int playerY;			// プレイヤーが動いたかどうかを判定する変数
 	int probability;		// エンカウントする確率 : 1/probability
+	int drop;				// 敵がアイテムを落とす確率 : item/drop
 
 	// 戦闘関連
 	bool turn;				// こちらのターンか相手のターンか

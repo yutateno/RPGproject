@@ -7,19 +7,23 @@ using std::string;
 class Item
 {
 private:
-	int ID;				// 管理番号
-	string name;		// 名前
-	int price;			// 値段
+	int ID;						// 管理番号
+	string name;				// 名前
+	int price;					// 値段
+	string effectText[2];		// 効果のテキスト
 
 public:
 	Item();
 	Item(int ID);
 	~Item();
 
-	string SearchName(int ID);		// 管理番号から名前を検索する関数
-	int SearchPrice(int ID);		// 管理番号から値段を検索する関数
+	string SearchName(int ID);			// 管理番号から名前を検索する関数
+	int SearchPrice(int ID);			// 管理番号から値段を検索する関数
+	string SearchEffectText(int ID, bool effected);	// 管理番号から効果を検索する関数
 
 	// ゲッターセッター
 	string GetName();
 	int GetID();
+	int GetPrice();
+	string GetEffectText(bool effected);
 };
