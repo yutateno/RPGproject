@@ -73,10 +73,11 @@ private:
 	int ID;					// ID
 	int item[9];			// アイテム
 	Item *itemm;
-	int itemPosition;			// アイテムの場所
+	int itemPosition;		// アイテムの場所
 
 	// 演出関係
-	int count;
+	int count;				// (フレーム)カウント
+	string lines;			// セリフ
 
 public:
 	SafeArea();
