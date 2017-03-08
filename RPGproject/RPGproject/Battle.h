@@ -54,4 +54,5 @@ public:
 	void SetStep(eStep step);
 	eStep GetStep();
 	void SetNextScene(eScene nextScene);
+	int GetCount();
 };

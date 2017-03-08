@@ -41,6 +41,7 @@ void Enemy::SearchStatus()
 		attack->power = 1;
 		attack->width = 0;
 		exp = 10;			// 経験値
+		money = 100;		// 金
 
 		graph = LoadGraph("img\\enemy.png");
 		break;
@@ -52,6 +53,7 @@ void Enemy::SearchStatus()
 		attack->power = 2;
 		attack->width = 0;
 		exp = 20;		// 経験値
+		money = 200;	// 金
 
 		graph = LoadGraph("img\\enemy.png");
 
@@ -110,4 +112,8 @@ int Enemy::GetATK()
 int Enemy::GetEXP()
 {
 	return exp;
+}
+int Enemy::GetMoney()
+{
+	return money;
 }

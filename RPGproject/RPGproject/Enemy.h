@@ -6,6 +6,8 @@
 
 using std::string;
 
+class Attack;
+
 class Enemy
 {
 private:
@@ -19,6 +21,7 @@ private:
 	Attack *attack;		// 攻撃クラス
 	int damage;			// ゲッター用の変数
 	int exp;			// 経験値
+	int money;			// かね
 
 	// 画像
 	int graph;			// 画像
@@ -43,4 +46,5 @@ public:
 	void SetATK(int attack);
 	int GetATK();
 	int GetEXP();
+	int GetMoney();
 };
