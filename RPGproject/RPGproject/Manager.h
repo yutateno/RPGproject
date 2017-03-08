@@ -52,6 +52,7 @@ private:
 	// 戦闘関連
 	bool turn;				// こちらのターンか相手のターンか
 	int count;				// ログを表示する時間
+	int logCount;			// ログ表示時間
 	int preHP;				// 直前のHP。ログ用
 	bool lose;				// 先頭で敗北時に立つフラグ
 public:
