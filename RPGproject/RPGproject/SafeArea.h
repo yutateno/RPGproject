@@ -91,7 +91,7 @@ public:
 
 	void Draw();		// 描画
 	void Draw_Start();	// 開始画面描画
-	void Draw_Main(int x, int y);	// メイン画面描画
+	void Draw_Main();	// メイン画面描画
 	void Draw_End();	// 終了画面描画
 
 	void MapData();			// マップデータ関連

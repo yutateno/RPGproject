@@ -25,7 +25,7 @@ SafeArea::SafeArea() {
 	// マップデータ読み込み
 	MapData();
 
-	// これなに？
+	// カメラ
 	x = 0;
 	y = 0;
 
@@ -39,6 +39,7 @@ SafeArea::SafeArea() {
 	shopflag = false;
 	buyflag = false;
 	sellflag = false;
+	innflag = false;
 
 	// カウント系
 	healcount = 0;
@@ -58,10 +59,7 @@ SafeArea::SafeArea() {
 	// 参照用アイテムと常に変動する値段
 	itemm = new Item();
 	price = 0;
-
-	// 初期化し忘れよくない
 	itemPosition = 0;
-	innflag = false;
 }
 SafeArea::~SafeArea() {
 	// 画像削除
@@ -171,7 +169,7 @@ void SafeArea::Draw() {
 		this->Draw_Start();
 		break;
 	case eStep::Main:	// メイン処理画面
-		this->Draw_Main(x, y);
+		this->Draw_Main();
 		break;
 	case eStep::End:	// 終了画面
 		this->Draw_End();
@@ -187,7 +185,7 @@ void SafeArea::Draw_Start() {
 	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面 %d / %d", count, startCount);
 }
 
-void SafeArea::Draw_Main(int x, int y) {
+void SafeArea::Draw_Main() {
 	// 背景
 	DrawGraph(0, 0, Gr_Back, false);
 
@@ -234,7 +232,7 @@ void SafeArea::Draw_Main(int x, int y) {
 			}
 
 			// 描写
-			DrawGraph(j * 32 - x, i * 32 - y, graph, true);
+			DrawGraph(j * 32, i * 32, graph, true);
 		}
 	}
 
@@ -329,12 +327,12 @@ void SafeArea::Draw_Main(int x, int y) {
 		}
 	}
 	// 売ったとき
-	if (shopmenu == SELL && shopcount == (shop - 1)) {
+	if (shopmenu == SELL && shopcount >= 0) {
 		// 無以外を売ったとき
 		// shopmY=9:配列外参照
 		if (shopmY != 9)
 		{
-			if (item[shopmY] != 0) {
+			if (price != 0) {
 				lines = "まいど～";
 			}
 			// 無を売るとき
@@ -348,8 +346,10 @@ void SafeArea::Draw_Main(int x, int y) {
 	// 話してるとき共通の処理
 	if (talkflag || shopflag)
 	{
-		// 所持金
-		DrawFormatString(320, 150, BLACK, "所持金：%d円", money);
+		if (!peopleflag) {
+			// 所持金
+			DrawFormatString(320, 150, BLACK, "所持金：%d円", money);
+		}
 
 		// 話してる相手のセリフ
 		DrawFormatString(320, 240, BLACK, " %s ", lines.c_str(), money);
