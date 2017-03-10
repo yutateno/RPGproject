@@ -17,8 +17,8 @@ SafeArea::SafeArea() {
 
 	// 演出関係
 	step = eStep::Start;
-	startCount = 50;
-	endCount = 50;
+	startCount = 30;
+	endCount = 30;
 	count = 0;
 	lines = "";
 
@@ -60,6 +60,15 @@ SafeArea::SafeArea() {
 	itemm = new Item();
 	price = 0;
 	itemPosition = 0;
+	itemMax = 9;
+
+	// UI
+	playerUI_x = 420;
+	playerUI_y = 420;
+	anotherUI_x = 55;
+	anotherUI_y = 50;
+	conUI_x = 150;
+	conUI_y = 150;
 }
 SafeArea::~SafeArea() {
 	// 画像削除
@@ -69,7 +78,6 @@ SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Murabito);
 	DeleteGraph(Gr_Shop);
 	DeleteGraph(Gr_Yado);
-
 	// 参照用アイテム削除
 	delete 	itemm;
 }
@@ -235,90 +243,113 @@ void SafeArea::Draw_Main() {
 			DrawGraph(j * 32, i * 32, graph, true);
 		}
 	}
+}
 
+void SafeArea::Draw_End() {
+	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
+	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, endCount);
+}
+
+void SafeArea::Draw_UI() {
 	// 回復店主
 	if (innflag == true && talkflag == true) {
-		DrawFormatString(320, 150, BLACK, "所持金：%d円", money);
-		DrawFormatString(320, 118, BLACK, "100円");
-		DrawFormatString(0, cursor * 0, BLACK, "泊まりますか？");
-		DrawFormatString(35, cursor * 1, BLACK, "休みます");
-		DrawFormatString(35, cursor * 2, BLACK, "やめときます");
-		DrawBox(0, (healY + 1) * cursor, 32, 32 + ((healY + 1) * cursor), BLUE, true);
+		// コマンドボックス
+		DrawBox(anotherUI_x - 5, anotherUI_y + (cursor * 0) - 5, anotherUI_x + 160, anotherUI_y + (cursor * 3) - 10, BLACK, true);
+		DrawBox(anotherUI_x - 5, anotherUI_y + (cursor * 0) - 5, anotherUI_x + 160, anotherUI_y + (cursor * 3) - 10, GREEN, false);
+		// 選択肢
+		DrawFormatString(anotherUI_x + 30, anotherUI_y + (cursor * 1), WHITE, "休みます　100円");
+		DrawFormatString(anotherUI_x + 30, anotherUI_y + (cursor * 2), WHITE, "やめときます");
+		DrawString(anotherUI_x + 5, anotherUI_y + (healY + 1) * cursor, "▼", RED);
+		DrawFormatString(anotherUI_x, anotherUI_y + (cursor * 0), WHITE, "泊まりますか？");
 	}
 	// 回復表示
 	if (healcount > 0) {
 		if (money > price) {
-			DrawFormatString(320, 240, BLACK, "回復しました。");
+			lines = "回復しました。";
 		}
 		else {
-			DrawFormatString(320, 240, BLACK, "出直して");
+			lines = "出直して";
 		}
 	}
 
 	// 村人のセリフ
-	if (peopleflag == true) {
-		lines = "ここは町です。";
+	if (peopleflag == true && talkflag == true) {
+		// コマンドボックス
+		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 200, conUI_y + 35, BLACK, true);
+		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 200, conUI_y + 35, GREEN, false);
+		// 選択肢
+		DrawFormatString(conUI_x, conUI_y, WHITE, "ここはミントスの町です。");
 	}
 
 	//買い物関連----------------------------------------------------
 	if (itemflag == true && shopflag == true) {
 		// 最初のメニュー
-		if (shopmenu == START) {
+		if (shopmenu == START || shopmenu == BUY || shopmenu == SELL) {
+			// コマンドボックス
+			DrawBox(anotherUI_x - 5, anotherUI_y + (cursor * 0) - 5, anotherUI_x + 150, anotherUI_y + (cursor * 4) - 10, BLACK, true);
+			DrawBox(anotherUI_x - 5, anotherUI_y + (cursor * 0) - 5, anotherUI_x + 150, anotherUI_y + (cursor * 4) - 10, GREEN, false);
 			// 選択肢
-			DrawFormatString(35, cursor * 0, BLACK, "買う");
-			DrawFormatString(35, cursor * 1, BLACK, "売る");
-			DrawFormatString(35, cursor * 2, BLACK, "やめる");
+			DrawFormatString(anotherUI_x + 30, anotherUI_y + (cursor * 1), WHITE, "買う");
+			DrawFormatString(anotherUI_x + 30, anotherUI_y + (cursor * 2), WHITE, "売る");
+			DrawFormatString(anotherUI_x + 30, anotherUI_y + (cursor * 3), WHITE, "やめる");
 
 			// カーソル
-			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
+			if (shopmenu == START) {
+				DrawString(anotherUI_x + 5, anotherUI_y + ((shopmY + 1) * cursor), "▼", RED);
+			}
 
 			// セリフ
-			lines = "いらっしゃーい";
+			DrawFormatString(anotherUI_x, anotherUI_y + (cursor * 0), WHITE, "いらっしゃーい");
 		}
 		// 買うときのメニュー
-		else if(shopmenu == BUY) {
+		if (shopmenu == BUY) {
+			// コマンドボックス
+			DrawBox(anotherUI_x + 45, anotherUI_y + (cursor * 0) + 45, anotherUI_x + 350, anotherUI_y + (cursor * 6) + 40, BLACK, true);
+			DrawBox(anotherUI_x + 45, anotherUI_y + (cursor * 0) + 45, anotherUI_x + 350, anotherUI_y + (cursor * 6) + 40, GREEN, false);
 			// やく(にたちそうな)くさ
-			DrawFormatString(35, cursor * 0, BLACK, " %s ", itemm->SearchName(2).c_str());
-			DrawFormatString(250, cursor * 0, BLACK, " %d ", itemm->SearchPrice(2));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 1) + 50, WHITE, "%s", itemm->SearchName(2).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 1) + 50, WHITE, "%d", itemm->SearchPrice(2));
 			// 清らかな水
-			DrawFormatString(35, cursor * 1, BLACK, " %s ", itemm->SearchName(3).c_str());
-			DrawFormatString(250, cursor * 1, BLACK, " %d ", itemm->SearchPrice(3));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 2) + 50, WHITE, "%s", itemm->SearchName(3).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 2) + 50, WHITE, "%d", itemm->SearchPrice(3));
 			// けむりダマ
-			DrawFormatString(35, cursor * 2, BLACK, " %s ", itemm->SearchName(4).c_str());
-			DrawFormatString(250, cursor * 2, BLACK, " %d ", itemm->SearchPrice(4));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 3) + 50, WHITE, "%s", itemm->SearchName(4).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 3) + 50, WHITE, "%d", itemm->SearchPrice(4));
 			// 世界樹のハ
-			DrawFormatString(35, cursor * 3, BLACK, " %s ", itemm->SearchName(5).c_str());
-			DrawFormatString(250, cursor * 3, BLACK, " %d ", itemm->SearchPrice(5));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 4) + 50, WHITE, "%s", itemm->SearchName(5).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 4) + 50, WHITE, "%d", itemm->SearchPrice(5));
 			// 戻る
-			DrawFormatString(35, cursor * 4, BLACK, "戻る");
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 5) + 50, WHITE, "戻る");
 
 			// カーソル
-			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
+			DrawString(anotherUI_x + 55, anotherUI_y + ((shopmY + 1) * cursor) + 50, "▼", RED);
 
 			// セリフ
-			lines = "何を買う？";
+			DrawFormatString(anotherUI_x + 50, anotherUI_y + (cursor * 0) + 50, WHITE, "何を買う？");
 		}
 		// 売るときのメニュー
-		else if (shopmenu == SELL) {
+		if (shopmenu == SELL) {
+			// ボックス
+			DrawBox(anotherUI_x + 45, anotherUI_y + (cursor * 0) + 45, anotherUI_x + 350, anotherUI_y + (cursor * 11) + 40, BLACK, true);
+			DrawBox(anotherUI_x + 45, anotherUI_y + (cursor * 0) + 45, anotherUI_x + 350, anotherUI_y + (cursor * 11) + 40, GREEN, false);
 			// 所持アイテム一覧
-			for (int i = 0; i < 9; i++)
-			{
-				DrawFormatString(35, cursor * i, BLACK, " %s ", itemm->SearchName(item[i]).c_str());
-				DrawFormatString(250, cursor * i, BLACK, " %d ", itemm->SearchPrice(item[i]));
+			for (int i = 0; i < itemMax; i++) {
+				DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * (i + 1)) + 50, WHITE, "%s", itemm->SearchName(item[i]).c_str());
+				DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * (i + 1)) + 50, WHITE, "%d", itemm->SearchPrice(item[i]));
 			}
 			// 戻る
-			DrawFormatString(35, cursor * 9, BLACK, "戻る");
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 10) + 50, WHITE, "戻る");
 
 			// カーソル
-			DrawBox(0, shopmY * cursor, 32, 32 + (shopmY * cursor), BLUE, true);
+			DrawString(anotherUI_x + 55, anotherUI_y + ((shopmY + 1) * cursor) + 50, "▼", RED);
 
 			// セリフ
-			lines = "何を売る？";
+			DrawFormatString(anotherUI_x + 50, anotherUI_y + (cursor * 0) + 50, WHITE, "何を売る？");
 		}
 	}
 	// 店主のセリフ
 	// 買ったとき
-	if (shopmenu == BUY && shopcount >= 0) {
+	if (shopmenu == BUY && shopcount > 0) {
 		if (money > price) {
 			lines = "まいど～";
 		}
@@ -327,7 +358,7 @@ void SafeArea::Draw_Main() {
 		}
 	}
 	// 売ったとき
-	if (shopmenu == SELL && shopcount >= 0) {
+	if (shopmenu == SELL && shopcount > 0) {
 		// 無以外を売ったとき
 		// shopmY=9:配列外参照
 		if (shopmY != 9)
@@ -344,25 +375,19 @@ void SafeArea::Draw_Main() {
 	//--------------------------------------------------------------
 
 	// 話してるとき共通の処理
-	if (talkflag || shopflag)
+	if ((talkflag || shopflag) && !peopleflag)
 	{
-		if (!peopleflag) {
-			// 所持金
-			DrawFormatString(320, 150, BLACK, "所持金：%d円", money);
-		}
-
-		// 話してる相手のセリフ
-		DrawFormatString(320, 240, BLACK, " %s ", lines.c_str(), money);
+		// 所持金
+		DrawBox(playerUI_x - 5, playerUI_y - 5, playerUI_x + 125, playerUI_y + 35, BLACK, true);
+		DrawBox(playerUI_x - 5, playerUI_y - 5, playerUI_x + 125, playerUI_y + 35, GREEN, false);
+		DrawFormatString(playerUI_x, playerUI_y, WHITE, "所持金：%d円", money);
 	}
-
-	// debug-------------------------------------------------
-	DrawFormatString(600, 450, BLACK, " %d ", innflag);
-	// --------------------------------------------------------
-}
-
-void SafeArea::Draw_End() {
-	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, endCount);
+	// 話してる相手のセリフ
+	if (((shopmenu == BUY || shopmenu == SELL) && shopcount > 0) || healcount > 0) {
+		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 115, conUI_y + 35, BLACK, true);
+		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 115, conUI_y + 35, GREEN, false);
+		DrawFormatString(conUI_x, conUI_y, WHITE, "%s", lines.c_str());
+	}
 }
 
 void SafeArea::MapData() {

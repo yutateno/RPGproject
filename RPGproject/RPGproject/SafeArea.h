@@ -74,10 +74,19 @@ private:
 	int item[9];			// アイテム
 	Item *itemm;
 	int itemPosition;		// アイテムの場所
+	int itemMax;			// アイテムの最大容量
 
 	// 演出関係
 	int count;				// (フレーム)カウント
 	string lines;			// セリフ
+
+	// UI関連
+	int playerUI_x;
+	int playerUI_y;
+	int anotherUI_x;
+	int anotherUI_y;
+	int conUI_x;
+	int conUI_y;
 
 public:
 	SafeArea();
@@ -98,6 +107,7 @@ public:
 	void HealProcess();		// 回復のプロセス
 	void PeopleProcess();	// 人とのプロセス
 	void ShopProcess();		// 買い物のプロセス
+	void Draw_UI();			// UIの描画
 
 	// プレイヤーがアイテムの購入に失敗した場合に呼ばれる関数
 	void Refund();
