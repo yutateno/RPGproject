@@ -597,6 +597,9 @@ void Manager::Draw() {
 		if (safeArea->GetStep() == eStep::Main) {
 			player->aaaDraw(safeArea->GetMapWidth(), safeArea->GetMapHeight());
 		}
+
+		safeArea->Draw_UI();
+		
 		break;
 
 	case eScene::S_Dungeon://ƒ_ƒ“ƒWƒ‡ƒ“‰æ–Ê
