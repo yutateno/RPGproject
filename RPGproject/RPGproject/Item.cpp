@@ -139,27 +139,3 @@ string Item::SearchEffectText(int ID, bool effected)
 	
 	return str;
 }
-
-string Item::GetName()
-{
-	return name;
-}
-int Item::GetID()
-{
-	return ID;
-}
-int Item::GetPrice()
-{
-	return price;
-}
-string Item::GetEffectText(bool effected)
-{
-	if (effected)
-	{
-		return effectText[1];
-	}
-	else
-	{
-		return effectText[0];
-	}
-}

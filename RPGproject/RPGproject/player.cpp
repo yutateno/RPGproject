@@ -101,7 +101,7 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 		{
 			for (int i = 0;i < itemMax;i++)
 			{
-				DrawFormatString(160, i * 16, BLACK, "・%s", item[i]->GetName().c_str());
+				DrawFormatString(160, i * 16, BLACK, "・%s", item[i]->name.c_str());
 			}
 
 			// アイテム使用中であれば
@@ -112,7 +112,7 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 			// アイテム使用中でなければ
 			else
 			{
-				DrawFormatString(32, 240, BLACK, "・%s", item[cursorY]->GetEffectText(false).c_str());
+				DrawFormatString(32, 240, BLACK, "・%s", item[cursorY]->effectText[0].c_str());
 			}
 		}
 		else if (mStatusFlag)
@@ -226,7 +226,7 @@ void Player::Menu()
 				else
 				{
 					// 効果文を逃がす
-					itemEffectText = item[cursorY]->GetEffectText(true);
+					itemEffectText = item[cursorY]->effectText[1];
 					// アイテムを消す
 					SellItem(cursorY);
 					mItemUseFlag = true;
@@ -287,7 +287,7 @@ bool Player::BuyItem(int ID)
 {
 	for (int i = 0; i < itemMax; i++)
 	{
-		if (item[i]->GetID() == 0) {
+		if (item[i]->ID == 0) {
 			delete item[i];
 			item[i] = new Item(ID);
 			// 購入成功
@@ -409,7 +409,7 @@ Direction Player::GetDirection()
 
 int Player::GetID(int num)
 {
-	return item[num]->GetID();
+	return item[num]->ID;
 }
 
 void Player::SetMoney(int money)

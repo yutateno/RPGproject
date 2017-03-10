@@ -57,7 +57,6 @@ SafeArea::SafeArea() {
 	}
 
 	// 参照用アイテムと常に変動する値段
-	itemm = new Item();
 	price = 0;
 	itemPosition = 0;
 	itemMax = 9;
@@ -78,8 +77,6 @@ SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Murabito);
 	DeleteGraph(Gr_Shop);
 	DeleteGraph(Gr_Yado);
-	// 参照用アイテム削除
-	delete 	itemm;
 }
 
 void SafeArea::UpDate() {
@@ -307,17 +304,17 @@ void SafeArea::Draw_UI() {
 			DrawBox(anotherUI_x + 45, anotherUI_y + (cursor * 0) + 45, anotherUI_x + 350, anotherUI_y + (cursor * 6) + 40, BLACK, true);
 			DrawBox(anotherUI_x + 45, anotherUI_y + (cursor * 0) + 45, anotherUI_x + 350, anotherUI_y + (cursor * 6) + 40, GREEN, false);
 			// やく(にたちそうな)くさ
-			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 1) + 50, WHITE, "%s", itemm->SearchName(2).c_str());
-			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 1) + 50, WHITE, "%d", itemm->SearchPrice(2));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 1) + 50, WHITE, "%s", Item::SearchName(2).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 1) + 50, WHITE, "%d", Item::SearchPrice(2));
 			// 清らかな水
-			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 2) + 50, WHITE, "%s", itemm->SearchName(3).c_str());
-			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 2) + 50, WHITE, "%d", itemm->SearchPrice(3));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 2) + 50, WHITE, "%s", Item::SearchName(3).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 2) + 50, WHITE, "%d", Item::SearchPrice(3));
 			// けむりダマ
-			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 3) + 50, WHITE, "%s", itemm->SearchName(4).c_str());
-			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 3) + 50, WHITE, "%d", itemm->SearchPrice(4));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 3) + 50, WHITE, "%s", Item::SearchName(4).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 3) + 50, WHITE, "%d", Item::SearchPrice(4));
 			// 世界樹のハ
-			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 4) + 50, WHITE, "%s", itemm->SearchName(5).c_str());
-			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 4) + 50, WHITE, "%d", itemm->SearchPrice(5));
+			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 4) + 50, WHITE, "%s", Item::SearchName(5).c_str());
+			DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * 4) + 50, WHITE, "%d", Item::SearchPrice(5));
 			// 戻る
 			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 5) + 50, WHITE, "戻る");
 
@@ -334,8 +331,8 @@ void SafeArea::Draw_UI() {
 			DrawBox(anotherUI_x + 45, anotherUI_y + (cursor * 0) + 45, anotherUI_x + 350, anotherUI_y + (cursor * 11) + 40, GREEN, false);
 			// 所持アイテム一覧
 			for (int i = 0; i < itemMax; i++) {
-				DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * (i + 1)) + 50, WHITE, "%s", itemm->SearchName(item[i]).c_str());
-				DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * (i + 1)) + 50, WHITE, "%d", itemm->SearchPrice(item[i]));
+				DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * (i + 1)) + 50, WHITE, "%s", Item::SearchName(item[i]).c_str());
+				DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * (i + 1)) + 50, WHITE, "%d", Item::SearchPrice(item[i]));
 			}
 			// 戻る
 			DrawFormatString(anotherUI_x + 80, anotherUI_y + (cursor * 10) + 50, WHITE, "戻る");
@@ -496,19 +493,19 @@ void SafeArea::ShopProcess() {
 				switch (shopmY)
 				{
 				case 0:		// やく(にたちそうな)くさ
-					price = itemm->SearchPrice(2);
+					price = Item::SearchPrice(2);
 					ID = 2;
 					break;
 				case 1:		// 清らかな水
-					price = itemm->SearchPrice(3);
+					price = Item::SearchPrice(3);
 					ID = 3;
 					break;
 				case 2:		// けむりダマ
-					price = itemm->SearchPrice(4);
+					price = Item::SearchPrice(4);
 					ID = 4;
 					break;
 				case 3:		// 世界樹のハ
-					price = itemm->SearchPrice(5);
+					price = Item::SearchPrice(5);
 					ID = 5;
 					break;
 
@@ -547,7 +544,7 @@ void SafeArea::ShopProcess() {
 				if (shopmY != 9)
 				{
 					// 値段とそのアイテムの保管場所を保存
-					price = itemm->SearchPrice(item[shopmY]);
+					price = Item::SearchPrice(item[shopmY]);
 					itemPosition = shopmY;
 
 					// Managerに処理させるフラグを立てる
@@ -630,7 +627,7 @@ void SafeArea::ShopProcess() {
 
 void SafeArea::Refund()
 {
-	money += itemm->SearchPrice(ID);
+	money += Item::SearchPrice(ID);
 }
 
 int SafeArea::GetMapData(int x, int y) {

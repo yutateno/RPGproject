@@ -13,8 +13,8 @@ Manager::Manager() {
 	count = 0;			// 演出用の(フレーム)時間カウント
 	preHP = 0;			// 直前のＨＰ
 	lose = false;		// 戦闘に敗北したか。false:してない
-	statusX = 8;		// コマンドが乗ってる板の座標
-	statusY = 8;		// コマンドが乗ってる板の座標
+	statusX = 16;		// コマンドが乗ってる板の座標
+	statusY = 16;		// コマンドが乗ってる板の座標
 	logX = 8;			// ログが乗ってる板の座標
 	logY = 320;			// ログが乗ってる板の座標
 
@@ -457,8 +457,14 @@ void Manager::Draw() {
 			battle->Draw(false);
 			// 敵
 			enemy->aaaDraw();
+
+			// ログ背景
+			DrawBox(logX, logY, logX + 600, logY + 150, BLACK, true);
+			DrawBox(logX, logY, logX + 600, logY + 150, WHITE, false);
+
 			// ログ
-			DrawFormatString(logX + 32, logY + 32, BLACK, " %s が現れた！", enemy->GetName().c_str());
+			DrawFormatString(logX + 32, logY + 32, WHITE, " %s が現れた！", enemy->GetName().c_str());
+
 			// ブレンドモードの後処理
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			break;
@@ -472,6 +478,9 @@ void Manager::Draw() {
 			else
 			{
 				battle->Draw(false);
+				// ログ背景
+				DrawBox(logX, logY, logX + 600, logY + 150, BLACK, true);
+				DrawBox(logX, logY, logX + 600, logY + 150, WHITE, false);
 			}
 
 			// ログの表示
@@ -484,21 +493,21 @@ void Manager::Draw() {
 					if (count <= 120)
 					{
 						// 一段階目のログ
-						DrawFormatString(logX + 32, logY + 32, BLACK, " %s をsatsugaiした", enemy->GetName().c_str());
+						DrawFormatString(logX + 32, logY + 32, WHITE, " %s を倒した！", enemy->GetName().c_str());
 						// 二段階目
 						if (count > 60)
 						{
-							DrawFormatString(logX + 32, logY + 64, BLACK, " %d の経験値を獲得！", enemy->GetEXP());
+							DrawFormatString(logX + 32, logY + 64, WHITE, " %d の経験値を獲得！", enemy->GetEXP());
 						}
 					}
 					// ２ページ目
 					else {
 						// 一段階目のログ
-						DrawFormatString(logX + 32, logY + 32, BLACK, "レベルアップ！", enemy->GetEXP());
+						DrawFormatString(logX + 32, logY + 32, WHITE, "レベルアップ！", enemy->GetEXP());
 						// 二段階目
 						if (count > 180)
 						{
-							DrawFormatString(logX + 32, logY + 64, BLACK, " %s は LV %d になった！", player->GetName().c_str(), player->GetLV());
+							DrawFormatString(logX + 32, logY + 64, WHITE, " %s は LV %d になった！", player->GetName().c_str(), player->GetLV());
 						}
 					}
 				}
@@ -506,7 +515,7 @@ void Manager::Draw() {
 				// 敗北時
 				else if (player->GetHP() <= 0)
 				{
-					DrawFormatString(logX + 32, logY + 32, BLACK, "敗北");
+					DrawFormatString(logX + 32, logY + 32, WHITE, "敗北");
 
 				}
 				else
@@ -514,21 +523,21 @@ void Manager::Draw() {
 					if (turn)
 					{
 						// 一段階目のログ
-						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の %s ！", player->GetName().c_str(), player->GetATKName().c_str());
+						DrawFormatString(logX + 32, logY + 32, WHITE, " %s の %s ！", player->GetName().c_str(), player->GetATKName().c_str());
 						// 二段階目
 						if (count > 60)
 						{
-							DrawFormatString(logX + 32, logY + 64, BLACK, " %s に %d ダメージ！", enemy->GetName().c_str(), preHP - enemy->GetHP());
+							DrawFormatString(logX + 32, logY + 64, WHITE, " %s に %d ダメージ！", enemy->GetName().c_str(), preHP - enemy->GetHP());
 						}
 					}
 					else
 					{
 						// 一段階目のログ
-						DrawFormatString(logX + 32, logY + 32, BLACK, " %s の %s ！", enemy->GetName().c_str(), enemy->GetATKName().c_str());
+						DrawFormatString(logX + 32, logY + 32, WHITE, " %s の %s ！", enemy->GetName().c_str(), enemy->GetATKName().c_str());
 						// 二段階目
 						if (count > 60)
 						{
-							DrawFormatString(logX + 32, logY + 64, BLACK, " %s に %d ダメージ！", player->GetName().c_str(), preHP - player->GetHP());
+							DrawFormatString(logX + 32, logY + 64, WHITE, " %s に %d ダメージ！", player->GetName().c_str(), preHP - player->GetHP());
 						}
 					}
 				}
@@ -552,28 +561,26 @@ void Manager::Draw() {
 			}
 
 			// プレイヤーのステータス
+			// ステータス背景
+			DrawBox(statusX, statusY, statusX + 120, statusY + 120, BLACK, true);
+			DrawBox(statusX, statusY, statusX + 120, statusY + 120, WHITE, false);
+
 			if (turn)
 			{
-				DrawFormatString(statusX + 32, statusY + 32, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
+				DrawFormatString(statusX + 24, statusY + 24, WHITE, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
 			}
 			else
 			{
 				// ダメージ食らったとき
 				if (count > 60)
 				{
-					DrawFormatString(statusX + 32 + GetRand(8), statusY + 32 + GetRand(8), RED, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
+					DrawFormatString(statusX + 24 + GetRand(8) - GetRand(8), statusY + 24 + GetRand(8) - GetRand(8), RED, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
 				}
 				// 食らってないとき
 				else
 				{
-					DrawFormatString(statusX + 32, statusY + 32, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
+					DrawFormatString(statusX + 24, statusY + 24, WHITE, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d", player->GetName().c_str(), player->GetHP(), player->GetMaxHP(), player->GetMP(), player->GetMaxMP(), player->GetLV());
 				}
-
-
-				// debug-------------------------------------------------------------------------------------
-				// 敵のステータス
-				DrawFormatString(300, 0, WHITE, "%s\nHP:%d\nMP:%d", enemy->GetName().c_str(), enemy->GetHP(), enemy->GetMP());
-				// -----------------------------------------------------------------------------------------
 			}
 			break;
 

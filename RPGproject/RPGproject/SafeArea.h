@@ -72,7 +72,6 @@ private:
 	// アイテム関連
 	int ID;					// ID
 	int item[9];			// アイテム
-	Item *itemm;
 	int itemPosition;		// アイテムの場所
 	int itemMax;			// アイテムの最大容量
 
