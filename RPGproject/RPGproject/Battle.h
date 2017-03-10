@@ -26,7 +26,8 @@ private:
 	int cursorX, cursorY;			// カーソルの相対座標
 
 	// 演出関係
-	int count;				// (フレーム)時間のカウント
+	int count;			// (フレーム)時間のカウント
+	bool logFlag;		// Managerのログ表示状態を取得	
 
 public:
 	Battle();
@@ -56,4 +57,5 @@ public:
 	eStep GetStep();
 	void SetNextScene(eScene nextScene);
 	int GetCount();
+	void SetLogFlag(bool logFlag);
 };

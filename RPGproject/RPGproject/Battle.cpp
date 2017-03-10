@@ -7,9 +7,10 @@ Battle::Battle() {
 
 	// 演出関係
 	this->step = eStep::Start;			// 演出関係
-	this->startCount = 80;				// シーン開始時の演出時間
-	this->endCount = 50;					// シーン終了時の演出時間
+	this->startCount = 60;				// シーン開始時の演出時間
+	this->endCount = 50;				// シーン終了時の演出時間
 	count = 0;							// (フレーム)時間のカウント
+	logFlag = false;					// Managerのログ表示状態
 
 	// 画像
 	Gr_Back = LoadGraph("img\\battle_background.png");		// 背景
@@ -39,10 +40,24 @@ void Battle::UpDate() {
 		this->UpDate_Start();
 		break;
 	case eStep::Main:	// メイン処理画面
-		this->UpDate_Main();
+		if (logFlag)
+		{
+			// ログ表示中は処理しない
+		}
+		else
+		{
+			UpDate_Main();
+		}
 		break;
 	case eStep::End:	// 終了画面
-		this->UpDate_End();
+		if (logFlag)
+		{
+			// ログ表示中は処理しない
+		}
+		else
+		{
+			UpDate_End();
+		}
 		break;
 	default:
 		this->endFlag = true;	// エラー終了
@@ -155,7 +170,7 @@ void Battle::Draw() {
 }
 void Battle::Draw_Start() {
 	// 徐々に画面の表示する処理
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, count * 3);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, count * 4);
 	// 背景
 	DrawGraph(0, 0, Gr_Back, FALSE);
 	// ブレンドモードの後処理
@@ -245,4 +260,8 @@ void Battle::SetNextScene(eScene nextScene)
 int Battle::GetCount()
 {
 	return count;
+}
+void Battle::SetLogFlag(bool logFlag)
+{
+	this->logFlag = logFlag;
 }

@@ -47,18 +47,18 @@ private:
 
 	int playerX;			// プレイヤーが動いたかどうかを判定する変数
 	int playerY;			// プレイヤーが動いたかどうかを判定する変数
+	bool playerDamageFlag;	// ダメージを受けているかどうか
+	bool enemyDamageFlag;	// ダメージを受けているかどうか
 	int probability;		// エンカウントする確率 : 1/probability
 	int drop;				// 敵がアイテムを落とす確率 : item/drop
 
 	// 戦闘関連
 	bool turn;				// こちらのターンか相手のターンか
-	int count;				// ログを表示する時間
-	int logCount;			// ログ表示時間
-	int preHP;				// 直前のHP。ログ用
-	eStep preStep;			// 直前のステップ
-	bool lose;				// 先頭で敗北時に立つフラグ
 	vector<string> log;		// ログ本体
-	int logNum;				// １ページに何行表示するか
+	int logLineNum;			// １ページに何行表示するか
+	int logCount;			// (フレーム)カウント
+	int logTime;			// 表示時間
+	int lineTime;			// 行の進む時間
 	int statusX, statusY;	// ステータスが乗っている板
 	int logX, logY;			// ログが乗ってる板
 public:

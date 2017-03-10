@@ -91,6 +91,8 @@ public:
 	int GetMaxMP();
 	void SetATK(int width);
 	int GetATK();
+	void SetPower(int power);
+	int GetPower();
 	void SetATKName(string name);
 	string GetATKName();
 	int GetID(int num);

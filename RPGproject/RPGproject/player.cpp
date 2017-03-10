@@ -390,6 +390,14 @@ int Player::GetATK()
 {
 	return attack->power + GetRand(attack->width);
 }
+void Player::SetPower(int power)
+{
+	attack->power = power;
+}
+int Player::GetPower()
+{
+	return attack->power;
+}
 string Player::GetATKName()
 {
 	return attack->name;
