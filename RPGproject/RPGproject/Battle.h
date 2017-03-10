@@ -25,9 +25,6 @@ private:
 	// カーソル関係
 	int cursorX, cursorY;			// カーソルの相対座標
 
-	// ログ関係
-	bool textFlag;					// テキストを表示するかどうかのフラグ
-
 	// 演出関係
 	int count;				// (フレーム)時間のカウント
 
@@ -41,9 +38,9 @@ public:
 	void UpDate_End();	// 終了画面アップデート
 
 	void Draw();			// 描画
-	void Draw(bool flag);	// 基本的にこっちが呼ばれる
 	void Draw_Start();		// 開始画面描画
 	void Draw_Main();		// メイン画面描画
+	void Draw_Command();	// コマンドだけに描写
 	void Draw_End();		// 終了画面描画
 	
 	// どの画面から戦闘画面に移行したか（戦闘終了時にその画面に戻る)

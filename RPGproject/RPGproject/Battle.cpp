@@ -24,9 +24,6 @@ Battle::Battle() {
 	commandX = 8;
 	commandY = 320;
 
-	// ログ関係
-	textFlag = true;				// true:表示する
-
 	// カーソル座標
 	cursorX = 0;		// 相対座標
 	cursorY = 0;		// 相対座標
@@ -156,25 +153,6 @@ void Battle::Draw() {
 		break;
 	}
 }
-void Battle::Draw(bool flag) {
-	// 進行状態を受け取り表示するかどうかを決める
-	textFlag = flag;
-
-	switch (this->step) {
-	case eStep::Start:	// 開始画面
-		this->Draw_Start();
-		break;
-	case eStep::Main:	// メイン処理画面
-		this->Draw_Main();
-		break;
-	case eStep::End:	// 終了画面
-		this->Draw_End();
-		break;
-	default:
-		this->endFlag = true;	// エラー終了
-		break;
-	}
-}
 void Battle::Draw_Start() {
 	// 徐々に画面の表示する処理
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, count * 3);
@@ -186,39 +164,37 @@ void Battle::Draw_Start() {
 void Battle::Draw_Main() {
 	// 背景
 	DrawGraph(0, 0, Gr_Back, true);
+}
+void Battle::Draw_Command()
+{
+	// コマンド背景
+	DrawBox(commandX, commandY, commandX + 150, commandY + 150, BLACK, true);
+	DrawBox(commandX, commandY, commandX + 150, commandY + 150, WHITE, false);
 
-	// コマンド表示がオンなら
-	if (textFlag)
+	// コマンド状態に応じて表示を変化
+	switch (command)
 	{
-		// コマンド背景
-		DrawBox(commandX, commandY, commandX + 150, commandY + 150, BLACK, true);
-		DrawBox(commandX, commandY, commandX + 150, commandY + 150, WHITE, false);
+	case NEUTRAL:	// 初期
+		DrawFormatString(commandX + 32, commandY + 32, WHITE, "  攻撃");
+		DrawFormatString(commandX + 32, commandY + 64, WHITE, "  魔法");
+		DrawFormatString(commandX + 32, commandY + 96, WHITE, "  逃げる");
+		break;
 
-		// コマンド状態に応じて表示を変化
-		switch (command)
-		{
-		case NEUTRAL:	// 初期
-			DrawFormatString(commandX + 32, commandY + 32, WHITE, "  攻撃");
-			DrawFormatString(commandX + 32, commandY + 64, WHITE, "  魔法");
-			DrawFormatString(commandX + 32, commandY + 96, WHITE, "  逃げる");
-			break;
+	case ATTACK:	// 攻撃メニュー
+		break;
 
-		case ATTACK:	// 攻撃メニュー
-			break;
+	case MAGIC:		// 魔法メニュー
+		break;
 
-		case MAGIC:		// 魔法メニュー
-			break;
+	case RUN_AWAY:	// 逃げる
+		break;
 
-		case RUN_AWAY:	// 逃げる
-			break;
-
-		default:		// 在り得ない。エラー
-			break;
-		}
-
-		// カーソル
-		DrawFormatString(commandX + 32 + cursorX, commandY + 32 + (cursorY * 32), WHITE, "▲");
+	default:		// 在り得ない。エラー
+		break;
 	}
+
+	// カーソル
+	DrawFormatString(commandX + 32 + cursorX, commandY + 32 + (cursorY * 32), WHITE, "▲");
 }
 void Battle::Draw_End() {
 	// 徐々に画面を暗くする処理

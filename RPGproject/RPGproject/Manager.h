@@ -55,7 +55,10 @@ private:
 	int count;				// ログを表示する時間
 	int logCount;			// ログ表示時間
 	int preHP;				// 直前のHP。ログ用
+	eStep preStep;			// 直前のステップ
 	bool lose;				// 先頭で敗北時に立つフラグ
+	vector<string> log;		// ログ本体
+	int logNum;				// １ページに何行表示するか
 	int statusX, statusY;	// ステータスが乗っている板
 	int logX, logY;			// ログが乗ってる板
 public:
@@ -71,9 +74,10 @@ public:
 	void Draw_Main() {}		// メイン画面描画
 	void Draw_End() {}		// 終了画面描画
 
-	// 可読性を考慮して長すぎる記述をUpDateから逃がすため作成
+	// 可読性を考慮して長すぎる記述を逃がすため作成
 	void FieldProcess();
 	void BattleProcess();
+	void BattleDraw();
 	void DungeonProcess();
 	void SafeAreaProcess();
 };
