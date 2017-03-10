@@ -190,13 +190,17 @@ void Battle::Draw_Main() {
 	// コマンド表示がオンなら
 	if (textFlag)
 	{
+		// コマンド背景
+		DrawBox(commandX, commandY, commandX + 150, commandY + 150, BLACK, true);
+		DrawBox(commandX, commandY, commandX + 150, commandY + 150, WHITE, false);
+
 		// コマンド状態に応じて表示を変化
 		switch (command)
 		{
 		case NEUTRAL:	// 初期
-			DrawFormatString(commandX + 32, commandY + 32, BLACK, "  攻撃");
-			DrawFormatString(commandX + 32, commandY + 64, BLACK, "  魔法");
-			DrawFormatString(commandX + 32, commandY + 96, BLACK, "  逃げる");
+			DrawFormatString(commandX + 32, commandY + 32, WHITE, "  攻撃");
+			DrawFormatString(commandX + 32, commandY + 64, WHITE, "  魔法");
+			DrawFormatString(commandX + 32, commandY + 96, WHITE, "  逃げる");
 			break;
 
 		case ATTACK:	// 攻撃メニュー
@@ -213,7 +217,7 @@ void Battle::Draw_Main() {
 		}
 
 		// カーソル
-		DrawFormatString(commandX + 32 + cursorX, commandY + 32 + (cursorY * 32), BLACK, "▲");
+		DrawFormatString(commandX + 32 + cursorX, commandY + 32 + (cursorY * 32), WHITE, "▲");
 	}
 }
 void Battle::Draw_End() {
