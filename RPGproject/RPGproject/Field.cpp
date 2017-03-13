@@ -241,43 +241,41 @@ void Field::Draw_End() {
 
 void Field::ReadMapData()
 {
-	ifs.open("mapdata.txt");
+	ifs.open("field\\mapdata.csv");
 	// マップデータ読み込み失敗
 	if (!ifs)
 	{
 		endFlag = true;
 	}
 
-	// マップをテキストから読み込むための仮置きの変数
+	// 仮置き
 	string str;
 	int count = 0;
-	int count2 = 0;
 
 	while (getline(ifs, str)) {
-		// 一行分のデータ
+		// 仮置き
 		string token;
 		istringstream stream(str);
 
 		// メモリ確保
 		mapdata.resize(count + 1);
 
-		//1行のうち、文字列とコンマを分割する
 		while (getline(stream, token, ',')) {
-			//すべて文字列として読み込まれるため
-			//数値は変換が必要
-			mapdata.at(count).push_back((int)stof(token)); //stof(string str) : stringをfloatに変換
-
-			// カウントアップ
-			count2++;
+			mapdata[count].push_back(stoi(token));
 		}
 		// カウントアップ
 		count++;
 	}
 }
 
-void Field::OpenTreasure(int num)
+int Field::OpenTreasure(int num)
 {
+	//仮置き
+	int itemID = treasure[num].GetItemID();
+
 	treasure[num].OpenProcess();
+
+	return itemID;
 }
 
 void Field::SetMapData(int x, int y, int data)

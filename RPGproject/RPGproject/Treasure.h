@@ -16,7 +16,8 @@ class Treasure
 {
 private:
 	// 画像
-	int Graph;
+	int closeGraph;
+	int openGraph;
 
 	// ステータス
 	int ID;			// 管理番号

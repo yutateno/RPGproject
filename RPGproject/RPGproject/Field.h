@@ -57,7 +57,7 @@ public:
 	void ReadMapData();	//マップデータをテキストファイルから読み込む関数
 
 	// 宝箱が開けられた時の処理
-	void OpenTreasure(int num);
+	int OpenTreasure(int num);
 
 	// ゲッターセッター
 	void SetMapData(int x, int y, int data);

@@ -7,7 +7,8 @@ Treasure::Treasure()
 Treasure::Treasure(int ID)
 {
 	// 画像
-	Graph = LoadGraph("treasure\\treasure.png");
+	closeGraph = LoadGraph("treasure\\treasure.png");
+	openGraph = LoadGraph("treasure\\treasure.png");
 
 	// ステータス
 	this->ID = ID;
@@ -71,6 +72,9 @@ void Treasure::Initialize()
 
 void Treasure::OpenProcess()
 {
+	// ----------------------------------------
+	// ファイル処理ここから
+
 	// 読み込みとそのチェック
 	ifstream ifs("origin\\treasure.csv");
 	if (!ifs)
@@ -92,7 +96,7 @@ void Treasure::OpenProcess()
 		ofs << str << endl;
 	}
 	getline(ifs, str);
-	ofs << ID << "," << 1 << "," << X << "," << Y << "," << itemID << "," << money << endl;
+	ofs << ID << "," << 1 << "," << X << "," << Y << "," << 0 << "," << 0 << endl;
 	while (getline(ifs, str))
 	{
 		ofs << str << endl;
@@ -108,6 +112,15 @@ void Treasure::OpenProcess()
 		treasure[i].clear();
 	}
 	str.clear();
+
+	// ファイル処理ここから
+	// ----------------------------------------
+	
+
+	// 内部処理
+	open = true;
+	itemID = 0;
+	money = 0;
 }
 
 void Treasure::Draw(int cameraX, int cameraY)
@@ -115,12 +128,12 @@ void Treasure::Draw(int cameraX, int cameraY)
 	// 空いていたら
 	if (open)
 	{
-		
+		DrawGraph(X - cameraX, Y - cameraY, openGraph, true);
 	}
 	// 空いていなかったら
 	else
 	{
-		DrawGraph(X - cameraX, Y - cameraY, Graph, true);
+		DrawGraph(X - cameraX, Y - cameraY, closeGraph, true);
 	}
 }
 

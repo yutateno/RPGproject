@@ -169,8 +169,8 @@ void Manager::ChengeScene_Title() {
 		field = new Field();
 
 		// プレイヤーの初期位置移動
-		player->SetX(320 - 16);
-		player->SetY(240 - 16);
+		player->SetX(64);
+		player->SetY(64);
 		break;
 
 	case eScene::S_End://ゲーム終了
@@ -283,8 +283,8 @@ void Manager::ChengeScene_SafeArea() {
 		field = new Field();
 
 		// プレイヤーの初期位置移動
-		player->SetX(320 - 16);
-		player->SetY(240 - 16);
+		player->SetX(8 * 32);
+		player->SetY(5 * 32);
 		break;
 
 	case eScene::S_Battle:// 戦闘画面
@@ -320,8 +320,8 @@ void Manager::ChengeScene_Dungeon() {
 		field = new Field();
 
 		// プレイヤーの初期位置移動
-		player->SetX(320 - 16);
-		player->SetY(240 - 16);
+		player->SetX(7 * 32);
+		player->SetY(9 * 32);
 		break;
 
 	case eScene::S_Battle:// 戦闘画面
@@ -548,7 +548,7 @@ void Manager::FieldProcess()
 				{
 					if (KeyData::Get(KEY_INPUT_Z) == 1)
 					{
-						field->OpenTreasure(n);
+						player->BuyItem(field->OpenTreasure(n));
 					}
 				}
 			}
