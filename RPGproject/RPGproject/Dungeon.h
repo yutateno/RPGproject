@@ -12,8 +12,10 @@
 // ダンジョン
 class Dungeon : public SuperScene {
 private:
-	int Gr_Back;	// 背景
-	int Gr_Wall;	// 壁
+	int Gr_Back;		// 背景
+	int Gr_Wall;		// 壁
+	int Gr_Treasure;	// 宝箱
+	int Gr_Open;		// 空いてる宝箱
 
 	// マップ
 	vector<vector<string>> map;
@@ -26,6 +28,13 @@ private:
 	bool fieldflag;			// フィールド画面へ行くかどうか
 	bool battleflag;		// 戦闘画面へ行くかどうか
 	bool bossflag;			// ボス戦闘へ行くかどうか
+
+	const int flame = 30;	// フレーム
+	int comment;			// 手に入れ表示
+	int treasureMax;		// 宝箱の数
+	int num;				// どの宝箱か
+	bool treasure[10];		// 宝箱開いてるかどうか
+	bool touchflag;			// 宝箱に触れているか
 
 public:
 	Dungeon();
@@ -41,6 +50,8 @@ public:
 	void Draw_Start();	// 開始画面描画
 	void Draw_Main(int x, int y);	// メイン画面描画
 	void Draw_End();	// 終了画面描画
+
+	void Draw_UI();		// UI
 
 	void MapData();
 
@@ -58,5 +69,11 @@ public:
 	bool GetBattle();
 	void SetBoss(bool flag);	//ボス戦闘に行くかどうか
 	bool GetBoss();
+	void SetNum(int num);
+	int GetNum();
+	void SetTreasure(int num, bool treasure);
+	bool GetTreasure(int num);
+	void SetTouch(bool flag);
+	bool GetTouch();
 	eStep GetStep();	// 今のステップ状況
 };

@@ -39,6 +39,12 @@ Player::Player()
 	itemEffectText = "";
 	mStatusFlag = false;
 
+	treasureMax = 10;
+	for (int j = 0; j < treasureMax; j++)
+	{
+		treasure[j] = false;
+	}
+
 	// ‰æ‘œ“Ç‚İ‚İ
 	graph = LoadGraph("img\\player.png");
 }
@@ -428,4 +434,14 @@ void Player::SetMoney(int money)
 int Player::GetMoney()
 {
 	return money;
+}
+
+void Player::SetTreasure(int num, bool treasure) 
+{
+	this->treasure[num] = treasure;
+}
+
+bool Player::GetTreasure(int num)
+{
+	return treasure[num];
 }
