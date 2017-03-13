@@ -35,6 +35,7 @@ private:
 	int num;				// どの宝箱か
 	bool treasure[10];		// 宝箱開いてるかどうか
 	bool touchflag;			// 宝箱に触れているか
+	bool openflag;			// 開けられたかどうか
 
 public:
 	Dungeon();
@@ -56,12 +57,12 @@ public:
 	void MapData();
 
 	// ゲッターセッター
-	int GetMapData(int x, int y);
-	int GetMapWidth();
-	int GetMapHeight();
-	void SetX(int x);
+	int GetMapData(int x, int y);	// マップの全体
+	int GetMapWidth();				// マップの横幅
+	int GetMapHeight();				// マップの縦幅
+	void SetX(int x);				// カメラのＸ座標
 	int GetX();
-	void SetY(int y);
+	void SetY(int y);				// カメラのＹ座標
 	int GetY();
 	void SetField(bool flag);	// 出口にいるかどうか
 	bool GetField();
@@ -69,11 +70,13 @@ public:
 	bool GetBattle();
 	void SetBoss(bool flag);	//ボス戦闘に行くかどうか
 	bool GetBoss();
-	void SetNum(int num);
+	void SetNum(int num);		// どの宝箱か
 	int GetNum();
-	void SetTreasure(int num, bool treasure);
+	void SetTreasure(int num, bool treasure);	// 宝箱
 	bool GetTreasure(int num);
-	void SetTouch(bool flag);
+	void SetTouch(bool flag);		// 触れたかどうか
 	bool GetTouch();
+	void SetOpen(bool flag);		// 開けたかどうか
+	bool GetOpen();
 	eStep GetStep();	// 今のステップ状況
 };

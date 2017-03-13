@@ -27,6 +27,7 @@ Dungeon::Dungeon() {
 		treasure[i] = false;
 	}
 	touchflag = false;
+	openflag = true;
 }
 
 Dungeon::~Dungeon() {
@@ -97,8 +98,9 @@ void Dungeon::UpDate_Main() {
 	// 宝箱をクリックした
 	if (touchflag == true) {
 		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			if (treasure[num] == false)
+			if (treasure[num] == false) {
 				comment = flame;
+			}
 		}
 	}
 	if (comment > 0) {
@@ -285,7 +287,12 @@ void Dungeon::Draw_UI() {
 	if (comment > 0) {
 		DrawBox(150 - 10, 150 - 10, 150 + 200, 150 + 35, BLACK, true);
 		DrawBox(150 - 10, 150 - 10, 150 + 200, 150 + 35, GREEN, false);
-		DrawFormatString(150, 150, WHITE, "世界樹のハを手に入れた！");
+		if (openflag == true) {
+			DrawFormatString(150, 150, WHITE, "世界樹のハを手に入れた！");
+		}
+		else {
+			DrawFormatString(150, 150, WHITE, "持ち物が満杯です。");
+		}
 	}
 }
 
@@ -375,6 +382,14 @@ void Dungeon::SetTouch(bool flag) {
 
 bool Dungeon::GetTouch() {
 	return touchflag;
+}
+
+void Dungeon::SetOpen(bool flag) {
+	openflag = flag;
+}
+
+bool Dungeon::GetOpen() {
+	return openflag;
 }
 
 eStep Dungeon::GetStep(){
