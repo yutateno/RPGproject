@@ -170,6 +170,7 @@
     <ClCompile Include="SafeArea.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Title.cpp" />
+    <ClCompile Include="Treasure.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Attack.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="SafeArea.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Title.h" />
+    <ClInclude Include="Treasure.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

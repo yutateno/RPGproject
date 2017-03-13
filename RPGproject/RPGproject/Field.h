@@ -5,10 +5,12 @@
 #include "Font.h"
 #include "Scene.h"
 
+#include "Treasure.h"
+
 #include <vector>
-#include<fstream>
-#include<iostream>
-#include<string>
+#include <fstream>
+#include <iostream>
+#include <string>
 #include <sstream>
 
 using namespace std;
@@ -32,6 +34,9 @@ private:
 
 	// 演出関係
 	int count;						// (フレーム)時間をカウントする
+
+	// 宝箱関係
+	vector<Treasure> treasure;
 
 public:
 	Field();

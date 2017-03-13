@@ -29,6 +29,13 @@ Field::Field() {
 	// カメラ関係
 	cameraX = 0;		// 一応の初期化
 	cameraY = 0;		// 一応の初期化
+
+	// 宝箱関係
+	// このマップは宝箱1~3を使用
+	for (int i = 1;i < (1 + 3);i++)
+	{
+		treasure.push_back(i);
+	}
 }
 Field::~Field() {
 	// 画像データ座駆除
@@ -166,6 +173,23 @@ void Field::Draw_Main() {
 			DrawGraph(j * 32 - cameraX, i * 32 - cameraY, mapchipForID, true);
 		}
 	}
+
+	// 宝箱
+	for (int i = 0, n = treasure.size();i < n;i++)
+	{
+		treasure[i].Draw(cameraX, cameraY);
+	}
+
+	// debug
+	for (int i = 0;i < treasure.size();i++)
+	{
+
+		DrawFormatString(0, i * 32, (0, 0, 200), "ID: %d\nopen: %d X: %d Y: %d itemID: %d money: %d"
+			,treasure[i].GetID(), treasure[i].GetOpen(), treasure[i].GetX(), treasure[i].GetY()
+			, treasure[i].GetItemID(), treasure[i].GetMoney());
+
+	}
+	//--
 }
 void Field::Draw_End() {
 	// 次のシーンによって処理を変える
