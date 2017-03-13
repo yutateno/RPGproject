@@ -509,7 +509,8 @@ void Manager::FieldProcess()
 		field->SetCameraY(player->GetY() - (240 - 16));
 	}
 
-	// マップとの当たり判定----------------------------------
+	// --------------------------------------------------
+	// マップとの当たり判定------------------------------
 	for (int i = 0;i < 2;i++)
 	{
 		for (int j = 0;j < 2;j++)
@@ -527,6 +528,33 @@ void Manager::FieldProcess()
 			}
 		}
 	}
+	// --------------------------------------------------
+	// --------------------------------------------------
+
+
+	// --------------------------------------------------
+	// 宝箱との当たり判定
+	for (int i = 0;i < 2;i++)
+	{
+		for (int j = 0;j < 2;j++)
+		{
+			for (int n = 0, m = field->GetTreasureNum();n < m;n++)
+			{
+				// 位置がかぶっていれば
+				if (field->GetTreasureX(n) < player->GetX() + (i * 31)
+					&& player->GetX() + (i * 31) < field->GetTreasureX(n) + 31
+					&& field->GetTreasureY(n) < player->GetY() + (j * 31)
+					&& player->GetY() + (j * 31) < field->GetTreasureY(n) + 31)
+				{
+					if (KeyData::Get(KEY_INPUT_Z) == 1)
+					{
+						field->OpenTreasure(n);
+					}
+				}
+			}
+		}
+	}
+	// --------------------------------------------------
 	// --------------------------------------------------
 }
 

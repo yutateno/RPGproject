@@ -56,6 +56,8 @@ public:
 
 	void ReadMapData();	//マップデータをテキストファイルから読み込む関数
 
+	// 宝箱が開けられた時の処理
+	void OpenTreasure(int num);
 
 	// ゲッターセッター
 	void SetMapData(int x, int y, int data);
@@ -68,4 +70,7 @@ public:
 	void SetCamera(int x, int y);
 	void SetCameraX(int x);
 	void SetCameraY(int y);
+	int GetTreasureNum();
+	int GetTreasureX(int num);
+	int GetTreasureY(int num);
 };

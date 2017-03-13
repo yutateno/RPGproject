@@ -110,19 +110,39 @@ void Field::UpDate_Main() {
 }
 void Field::UpDate_Main(int playerX, int playerY) {
 
-	// 2:街
-	if (mapdata[(int)(playerY / mapchipSize)][(int)(playerX / mapchipSize)] == 2)
+	for (int i = 0;i < 2;i++)
 	{
-		// 次のシーンを設定してステップ進行
-		nextScene = eScene::S_SafeArea;
-		step = eStep::End;
-	}
-	// 3:ダンジョン
-	else if (mapdata[(int)(playerY / mapchipSize)][(int)(playerX / mapchipSize)] == 3)
-	{
-		// 次のシーンを設定してステップ進行
-		nextScene = eScene::S_Dungeon;
-		step = eStep::End;
+		for (int j = 0;j < 2;j++)
+		{
+			switch (mapdata[(int)((playerY + (i * 31)) / mapchipSize)][(int)((playerX + (j * 31)) / mapchipSize)])
+			{
+			case 0:
+				// 特になし
+				break;
+
+			case 1:
+				// 壁。Managerで処理
+				break;
+
+			case 2:
+				// 2:街
+				// 次のシーンを設定してステップ進行
+				nextScene = eScene::S_SafeArea;
+				step = eStep::End;
+				break;
+
+			case 3:
+				// 3:ダンジョン
+				// 次のシーンを設定してステップ進行
+				nextScene = eScene::S_Dungeon;
+				step = eStep::End;
+				break;
+
+			default:
+				// エラー
+				break;
+			}
+		}
 	}
 }
 void Field::UpDate_End() {
@@ -179,17 +199,6 @@ void Field::Draw_Main() {
 	{
 		treasure[i].Draw(cameraX, cameraY);
 	}
-
-	// debug
-	for (int i = 0;i < treasure.size();i++)
-	{
-
-		DrawFormatString(0, i * 32, (0, 0, 200), "ID: %d\nopen: %d X: %d Y: %d itemID: %d money: %d"
-			,treasure[i].GetID(), treasure[i].GetOpen(), treasure[i].GetX(), treasure[i].GetY()
-			, treasure[i].GetItemID(), treasure[i].GetMoney());
-
-	}
-	//--
 }
 void Field::Draw_End() {
 	// 次のシーンによって処理を変える
@@ -266,6 +275,11 @@ void Field::ReadMapData()
 	}
 }
 
+void Field::OpenTreasure(int num)
+{
+	treasure[num].OpenProcess();
+}
+
 void Field::SetMapData(int x, int y, int data)
 {
 	mapdata[(int)(y / mapchipSize)][(int)(x / mapchipSize)] = data;
@@ -306,4 +320,16 @@ void Field::SetCameraX(int x)
 void Field::SetCameraY(int y)
 {
 	cameraY = y;
+}
+int Field::GetTreasureNum()
+{
+	return treasure.size();
+}
+int Field::GetTreasureX(int num)
+{
+	return treasure[num].GetX();
+}
+int Field::GetTreasureY(int num)
+{
+	return treasure[num].GetY();
 }

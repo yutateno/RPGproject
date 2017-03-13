@@ -15,6 +15,42 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	PadData::SetPadNum();
 	Manager *manager = new Manager();
 
+	// -----------------------------------------
+	// 初期化処理ここから
+
+	// 読み込みとそのチェック
+	ifstream ifs("origin\\treasure.csv");
+	if (!ifs)
+	{
+		return 0;
+	}
+
+	// 出力ファイル
+	ofstream ofs("treasure\\treasure.csv");
+
+	// 仮置き
+	string treasure[6];
+	string str;
+
+	while (getline(ifs, str))
+	{
+		ofs << str << endl;
+	}
+
+	// ファイルを閉じる
+	ifs.close();
+	ofs.close();
+
+	// 仮素材破棄
+	for (int i = 0;i < 5;i++)
+	{
+		treasure[i].clear();
+	}
+	str.clear();
+
+	// 初期化処理ここまで
+	// -----------------------------------------
+
 	while (ProcessMessage() != -1 && !manager->GetEndFlag() &&
 			KeyData::CheckEnd() && PadData::CheckEnd()) {//画面更新 & メッセージ処理 & 画面消去
 		ClearDrawScreen();

@@ -35,7 +35,7 @@ public:
 	void Initialize();
 
 	// •ó” ‚ªŠJ‚¯‚ç‚ê‚½‚Ìˆ—
-	void Opened();
+	void OpenProcess();
 
 	// •`Ê
 	void Draw(int cameraX, int cameraY);
