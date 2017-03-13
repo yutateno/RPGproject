@@ -52,6 +52,9 @@ private:
 
 	int graph;			// ‰æ‘œ
 
+	bool treasure[10];	// •ó” i‹ó‚¢‚Ä‚é‚©‚Ç‚¤‚©
+	int treasureMax;
+
 public:
 	Player();
 	~Player();
@@ -98,6 +101,8 @@ public:
 	int GetID(int num);
 	void SetMoney(int money);
 	int GetMoney();
+	void SetTreasure(int num, bool treasure);
+	bool GetTreasure(int num);
 	void SetDirection(Direction direction);
 	Direction GetDirection();
 };

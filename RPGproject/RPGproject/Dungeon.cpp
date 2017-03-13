@@ -10,17 +10,31 @@ Dungeon::Dungeon() {
 
 	Gr_Back = LoadGraph("Dungeon\\Dungeon_Back.png");
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
+	Gr_Treasure = LoadGraph("Dungeon\\Treasure.png");
+	Gr_Open = LoadGraph("Dungeon\\open.png");
 	MapData();
 
 	x = 0;
 	y = 0;
 	fieldflag = false;
 	battleflag = false;
+	bossflag = false;
+
+	comment = 0;
+	treasureMax = 10;
+	num = 0;
+	for (int i = 0; i < treasureMax; i++) {
+		treasure[i] = false;
+	}
+	touchflag = false;
+	openflag = true;
 }
 
 Dungeon::~Dungeon() {
 	DeleteGraph(Gr_Back);
 	DeleteGraph(Gr_Wall);
+	DeleteGraph(Gr_Treasure);
+	DeleteGraph(Gr_Open);
 }
 
 void Dungeon::UpDate() {
@@ -80,6 +94,17 @@ void Dungeon::UpDate_Main() {
 	if (KeyData::Get(KEY_INPUT_C) == 1) {
 		this->nextScene = eScene::S_GameClear;
 		this->step = eStep::End;
+	}
+	// 宝箱をクリックした
+	if (touchflag == true) {
+		if (KeyData::Get(KEY_INPUT_Z) == 1) {
+			if (treasure[num] == false) {
+				comment = flame;
+			}
+		}
+	}
+	if (comment > 0) {
+		comment--;
 	}
 }
 void Dungeon::UpDate_End() {
@@ -156,6 +181,93 @@ void Dungeon::Draw_Main(int x, int y) {
 				}
 				break;
 
+			case 4:
+				switch (stoi(map[i][j]) % 10) {
+				case 0:
+					if (treasure[0] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 1:
+					if (treasure[1] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 2:
+					if (treasure[2] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 3:
+					if (treasure[3] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 4:
+					if (treasure[4] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 5:
+					if (treasure[5] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 6:
+					if (treasure[6] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 7:
+					if (treasure[7] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 8:
+					if (treasure[8] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				case 9:
+					if (treasure[9] == false) {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
+					}
+					else {
+						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
+					}
+					break;
+				default:
+					break;
+				}
+				break;
+
 			default:
 				break;
 			}
@@ -169,6 +281,19 @@ void Dungeon::Draw_End() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 3));
 	DrawRotaGraph(320, 240, 1.0, endCount, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+void Dungeon::Draw_UI() {
+	if (comment > 0) {
+		DrawBox(150 - 10, 150 - 10, 150 + 200, 150 + 35, BLACK, true);
+		DrawBox(150 - 10, 150 - 10, 150 + 200, 150 + 35, GREEN, false);
+		if (openflag == true) {
+			DrawFormatString(150, 150, WHITE, "世界樹のハを手に入れた！");
+		}
+		else {
+			DrawFormatString(150, 150, WHITE, "持ち物が満杯です。");
+		}
+	}
 }
 
 void Dungeon::MapData() {
@@ -233,6 +358,38 @@ void Dungeon::SetBoss(bool flag) {
 
 bool Dungeon::GetBoss() {
 	return bossflag;
+}
+
+void Dungeon::SetNum(int num) {
+	this->num = num;
+}
+
+int Dungeon::GetNum() {
+	return num;
+}
+
+void Dungeon::SetTreasure(int num, bool treasure) {
+	this->treasure[num] = treasure;
+}
+
+bool Dungeon::GetTreasure(int num) {
+	return treasure[num];
+}
+
+void Dungeon::SetTouch(bool flag) {
+	touchflag = flag;
+}
+
+bool Dungeon::GetTouch() {
+	return touchflag;
+}
+
+void Dungeon::SetOpen(bool flag) {
+	openflag = flag;
+}
+
+bool Dungeon::GetOpen() {
+	return openflag;
 }
 
 eStep Dungeon::GetStep(){

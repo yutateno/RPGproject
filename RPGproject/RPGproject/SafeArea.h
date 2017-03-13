@@ -80,11 +80,11 @@ private:
 	string lines;			// セリフ
 
 	// UI関連
-	int playerUI_x;
+	int playerUI_x;			// 所持金など
 	int playerUI_y;
-	int anotherUI_x;
+	int anotherUI_x;		// ショップ画面など
 	int anotherUI_y;
-	int conUI_x;
+	int conUI_x;			// まいどあり～とか
 	int conUI_y;
 
 public:
@@ -112,12 +112,12 @@ public:
 	void Refund();
 
 	// ゲッターセッター
-	int GetMapData(int x, int y);
-	int GetMapWidth();
-	int GetMapHeight();
-	void SetX(int x);
+	int GetMapData(int x, int y);	// マップ全体
+	int GetMapWidth();				// マップの横幅
+	int GetMapHeight();				// マップの縦幅
+	void SetX(int x);				// カメラのＸ座標
 	int GetX();
-	void SetY(int y);
+	void SetY(int y);				// カメラのＹ座標
 	int GetY();
 	void SetField(bool flag);	// 出口にいるかどうか
 	bool GetField();

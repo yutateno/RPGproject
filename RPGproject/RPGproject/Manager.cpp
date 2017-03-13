@@ -440,7 +440,9 @@ void Manager::Draw() {
 		//マップチップの当たり判定
 		if (dungeon->GetStep() == eStep::Main) {
 			player->aaaDraw(dungeon->GetMapWidth(), dungeon->GetMapHeight());
+			dungeon->Draw_UI();
 		}
+
 		break;
 
 	case eScene::S_GameOver://ゲームオーバー画面
@@ -827,6 +829,11 @@ void Manager::BattleDraw()
 void Manager::DungeonProcess() {
 	this->dungeon->UpDate(player->GetX(), player->GetY());
 
+	// 宝箱
+	for (int i = 0; i < 10; i++) {
+		dungeon->SetTreasure(i, player->GetTreasure(i));
+	}
+
 	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
 	playerX = player->GetX();
 	playerY = player->GetY();
@@ -854,6 +861,66 @@ void Manager::DungeonProcess() {
 				player->MoveReset();
 				dungeon->SetBoss(true);
 				break;
+			case 40:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(0);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 41:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(1);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 42:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(2);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 43:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(3);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 44:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(4);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 45:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(5);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 46:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(6);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 47:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(7);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 48:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(8);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
+			case 49:
+				player->MoveReset();
+				dungeon->SetTouch(true);
+				dungeon->SetNum(9);
+				dungeon->SetTreasure(dungeon->GetNum(), player->GetTreasure(dungeon->GetNum()));
+				break;
 			default:
 				// 基本的に来ない
 				break;
@@ -862,15 +929,45 @@ void Manager::DungeonProcess() {
 	}
 
 	// ボスに触れたら
-	if (dungeon->GetBoss() == true && player->GetmenuFlag() == false) {
+	if (dungeon->GetBoss() == true) {
 		// 動いたらキャンセル
 		if (playerY != player->GetY() || playerX != player->GetX()) {
+			dungeon->SetBoss(false);
+		}
+		// メニュー画面を開いたら
+		else if (player->GetmenuFlag() == true) {
 			dungeon->SetBoss(false);
 		}
 		// そのままなら戦闘
 		else {
 			if (KeyData::Get(KEY_INPUT_Z) == 1) {
 				dungeon->SetBattle(true);
+			}
+		}
+	}
+
+	// 宝箱に触れたら
+	if (dungeon->GetTouch() == true) {
+		// 動いたらキャンセル
+		if (playerY != player->GetY() || playerX != player->GetX()) {
+			dungeon->SetTouch(false);
+		}
+		// メニュー画面を開いたら
+		else if (player->GetmenuFlag() == true) {
+			dungeon->SetTouch(false);
+		}
+		// そのままなら
+		else {
+			if (KeyData::Get(KEY_INPUT_Z) == 1) {
+				if (dungeon->GetTreasure(dungeon->GetNum()) == false) {
+					if (player->BuyItem(5) == true) {
+						dungeon->SetOpen(true);
+						player->SetTreasure(dungeon->GetNum(), true);
+					}
+					else {
+						dungeon->SetOpen(false);
+					}
+				}
 			}
 		}
 	}
