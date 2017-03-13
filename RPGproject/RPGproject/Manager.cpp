@@ -543,7 +543,7 @@ void Manager::BattleProcess()
 		if (log.size() == 0)
 		{
 			// ログ入力
-			log.push_back(enemy->GetName() + " が襲いかかってきた！");battle->UpDate();
+			log.push_back(enemy->GetName() + " が襲いかかってきた！");
 		}
 		break;
 
@@ -591,7 +591,7 @@ void Manager::BattleProcess()
 			else if (player->GetHP() <= 0)
 			{
 				// ログ入力
-				log.push_back("あなたは死んでしまった・・・");battle->UpDate();
+				log.push_back("あなたは死んでしまった・・・");
 
 				// ゲームオーバー画面へ
 				battle->SetNextScene(eScene::S_GameOver);
