@@ -7,8 +7,8 @@ Treasure::Treasure()
 Treasure::Treasure(int ID)
 {
 	// 画像
-	closeGraph = LoadGraph("treasure\\treasure.png");
-	openGraph = LoadGraph("treasure\\treasure.png");
+	closeGraph = LoadGraph("treasure\\open.png");
+	openGraph = LoadGraph("treasure\\close.png");
 
 	// ステータス
 	this->ID = ID;
@@ -76,42 +76,47 @@ void Treasure::OpenProcess()
 	// ファイル処理ここから
 
 	// 読み込みとそのチェック
-	ifstream ifs("origin\\treasure.csv");
+	ifstream ifs("treasure\\treasure.csv");
 	if (!ifs)
 	{
 		return;
 	}
 
-	// 出力ファイル
-	ofstream ofs("treasure\\treasure.csv");
-
 	// 仮置き
-	string treasure[6];
 	string str;
+	int i = 0;
+	vector<string> treasure;
 
-	// ファイル置き換え
-	for (int i = 0;i < ID;i++)
-	{
-		getline(ifs, str);
-		ofs << str << endl;
-	}
-	getline(ifs, str);
-	ofs << ID << "," << 1 << "," << X << "," << Y << "," << 0 << "," << 0 << endl;
 	while (getline(ifs, str))
 	{
-		ofs << str << endl;
+		treasure.push_back(str);
 	}
+
+	// メモリ開放
+	str.clear();
 
 	// ファイルを閉じる
 	ifs.close();
-	ofs.close();
 
-	// 仮素材破棄
-	for (int i = 0;i < 5;i++)
+	// 出力ファイル
+	ofstream ofs("treasure\\treasure.csv");
+
+	// ファイル置き換え
+	for (i = 0;i < ID;i++)
 	{
-		treasure[i].clear();
+		ofs << treasure[i] << endl;
 	}
-	str.clear();
+	i++;
+	ofs << ID << "," << 1 << "," << X << "," << Y << "," << itemID << "," << money << endl;
+	for (;i < treasure.size();i++)
+	{
+		ofs << treasure[i] << endl;
+	}
+
+	treasure.clear();
+
+	// ファイルを閉じる
+	ofs.close();
 
 	// ファイル処理ここから
 	// ----------------------------------------
