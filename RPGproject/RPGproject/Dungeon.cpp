@@ -10,8 +10,6 @@ Dungeon::Dungeon() {
 
 	Gr_Back = LoadGraph("Dungeon\\Dungeon_Back.png");
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
-	Gr_Treasure = LoadGraph("Dungeon\\Treasure.png");
-	Gr_Open = LoadGraph("Dungeon\\open.png");
 	MapData();
 
 	x = 0;
@@ -20,21 +18,20 @@ Dungeon::Dungeon() {
 	battleflag = false;
 	bossflag = false;
 
-	comment = 0;
-	treasureMax = 10;
-	num = 0;
-	for (int i = 0; i < treasureMax; i++) {
-		treasure[i] = false;
+	// このマップは宝箱4~6を使用
+	for (int i = 4; i <= 6; i++)
+	{
+		treasure.push_back(i);
 	}
-	touchflag = false;
-	openflag = true;
+	openflag = false;
+	treasureflag = false;
+	conUI_x = 150;
+	conUI_y = 150;
 }
 
 Dungeon::~Dungeon() {
 	DeleteGraph(Gr_Back);
 	DeleteGraph(Gr_Wall);
-	DeleteGraph(Gr_Treasure);
-	DeleteGraph(Gr_Open);
 }
 
 void Dungeon::UpDate() {
@@ -95,13 +92,10 @@ void Dungeon::UpDate_Main() {
 		this->nextScene = eScene::S_GameClear;
 		this->step = eStep::End;
 	}
-	// 宝箱をクリックした
-	if (touchflag == true) {
-		if (KeyData::Get(KEY_INPUT_Z) == 1) {
-			if (treasure[num] == false) {
-				comment = flame;
-			}
-		}
+	// なんか宝箱にいじったら
+	if (treasureflag == true) {
+		comment = flame;
+		treasureflag = false;
 	}
 	if (comment > 0) {
 		comment--;
@@ -119,7 +113,7 @@ void Dungeon::Draw() {
 		Draw_Start();
 		break;
 	case eStep::Main:	// メイン処理画面
-		Draw_Main(GetX(), GetY());
+		Draw_Main(x, y);
 		break;
 	case eStep::End:	// 終了画面
 		Draw_End();
@@ -181,97 +175,15 @@ void Dungeon::Draw_Main(int x, int y) {
 				}
 				break;
 
-			case 4:
-				switch (stoi(map[i][j]) % 10) {
-				case 0:
-					if (treasure[0] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 1:
-					if (treasure[1] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 2:
-					if (treasure[2] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 3:
-					if (treasure[3] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 4:
-					if (treasure[4] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 5:
-					if (treasure[5] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 6:
-					if (treasure[6] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 7:
-					if (treasure[7] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 8:
-					if (treasure[8] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				case 9:
-					if (treasure[9] == false) {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Treasure, TRUE);
-					}
-					else {
-						DrawGraph(j * 32 - x - 32, i * 32 - y - 32, Gr_Open, TRUE);
-					}
-					break;
-				default:
-					break;
-				}
-				break;
-
 			default:
 				break;
 			}
 		}
+	}
+
+	// 宝箱
+	for (int i = 0, n = (int)treasure.size(); i < n; i++) {
+		treasure[i].Draw(x + 32, y + 32);
 	}
 
 	DrawFormatString(320, 400, WHITE, "Cキーでゲームクリア画面へ");
@@ -285,13 +197,13 @@ void Dungeon::Draw_End() {
 
 void Dungeon::Draw_UI() {
 	if (comment > 0) {
-		DrawBox(150 - 10, 150 - 10, 150 + 200, 150 + 35, BLACK, true);
-		DrawBox(150 - 10, 150 - 10, 150 + 200, 150 + 35, GREEN, false);
+		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 200, conUI_y + 35, BLACK, true);
+		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 200, conUI_y + 35, GREEN, false);
 		if (openflag == true) {
-			DrawFormatString(150, 150, WHITE, "世界樹のハを手に入れた！");
+			DrawFormatString(conUI_x, conUI_y, WHITE, "なんか手に入れた！");
 		}
 		else {
-			DrawFormatString(150, 150, WHITE, "持ち物が満杯です。");
+			DrawFormatString(conUI_x, conUI_y, WHITE, "持ち物が満杯のようだ");
 		}
 	}
 }
@@ -307,6 +219,15 @@ void Dungeon::MapData() {
 		read_count++;	// 次の行に
 	}
 	read_file.close();
+}
+
+int Dungeon::OpenTreasure(int num) {
+	//仮置き
+	int itemID = treasure[num].GetItemID();
+
+	treasure[num].OpenProcess();
+
+	return itemID;
 }
 
 int Dungeon::GetMapData(int x, int y) {
@@ -360,28 +281,17 @@ bool Dungeon::GetBoss() {
 	return bossflag;
 }
 
-void Dungeon::SetNum(int num) {
-	this->num = num;
+int Dungeon::GetTreasureNum() {
+	int n = (int)treasure.size();
+	return n;
 }
 
-int Dungeon::GetNum() {
-	return num;
+int Dungeon::GetTreasureX(int num) {
+	return treasure[num].GetX();
 }
 
-void Dungeon::SetTreasure(int num, bool treasure) {
-	this->treasure[num] = treasure;
-}
-
-bool Dungeon::GetTreasure(int num) {
-	return treasure[num];
-}
-
-void Dungeon::SetTouch(bool flag) {
-	touchflag = flag;
-}
-
-bool Dungeon::GetTouch() {
-	return touchflag;
+int Dungeon::GetTreasureY(int num) {
+	return treasure[num].GetY();
 }
 
 void Dungeon::SetOpen(bool flag) {
@@ -390,6 +300,14 @@ void Dungeon::SetOpen(bool flag) {
 
 bool Dungeon::GetOpen() {
 	return openflag;
+}
+
+void Dungeon::SetTreasure(bool flag) {
+	treasureflag = flag;
+}
+
+bool Dungeon::GetTreasure() {
+	return treasureflag;
 }
 
 eStep Dungeon::GetStep(){

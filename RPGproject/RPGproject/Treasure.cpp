@@ -7,8 +7,8 @@ Treasure::Treasure()
 Treasure::Treasure(int ID)
 {
 	// 画像
-	closeGraph = LoadGraph("treasure\\open.png");
-	openGraph = LoadGraph("treasure\\close.png");
+	closeGraph = LoadGraph("treasure\\closetreasure.png");
+	openGraph = LoadGraph("treasure\\opentreasure.png");
 
 	// ステータス
 	this->ID = ID;
@@ -108,7 +108,7 @@ void Treasure::OpenProcess()
 	}
 	i++;
 	ofs << ID << "," << 1 << "," << X << "," << Y << "," << itemID << "," << money << endl;
-	for (;i < treasure.size();i++)
+	for (int n = (int)treasure.size(); i < n; i++)
 	{
 		ofs << treasure[i] << endl;
 	}

@@ -4,6 +4,9 @@
 #include "Input.h"
 #include "Font.h"
 #include "Scene.h"
+
+#include "Treasure.h"
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -14,8 +17,6 @@ class Dungeon : public SuperScene {
 private:
 	int Gr_Back;		// 背景
 	int Gr_Wall;		// 壁
-	int Gr_Treasure;	// 宝箱
-	int Gr_Open;		// 空いてる宝箱
 
 	// マップ
 	vector<vector<string>> map;
@@ -29,13 +30,13 @@ private:
 	bool battleflag;		// 戦闘画面へ行くかどうか
 	bool bossflag;			// ボス戦闘へ行くかどうか
 
-	const int flame = 30;	// フレーム
-	int comment;			// 手に入れ表示
-	int treasureMax;		// 宝箱の数
-	int num;				// どの宝箱か
-	bool treasure[10];		// 宝箱開いてるかどうか
-	bool touchflag;			// 宝箱に触れているか
-	bool openflag;			// 開けられたかどうか
+	vector<Treasure> treasure;	// 宝箱
+	bool openflag;				// 開けたかどうか
+	bool treasureflag;			// 宝箱になんかしたら
+	int comment;				// なんか反応の会話
+	const int flame = 20;		// フレーム
+	int conUI_x;				// コメントの表示位置
+	int conUI_y;
 
 public:
 	Dungeon();
@@ -52,9 +53,11 @@ public:
 	void Draw_Main(int x, int y);	// メイン画面描画
 	void Draw_End();	// 終了画面描画
 
-	void Draw_UI();		// UI
+	void Draw_UI();		// UIの描画
 
 	void MapData();
+
+	int OpenTreasure(int num);	// 宝箱が開けられた時の処理
 
 	// ゲッターセッター
 	int GetMapData(int x, int y);	// マップの全体
@@ -70,13 +73,12 @@ public:
 	bool GetBattle();
 	void SetBoss(bool flag);	//ボス戦闘に行くかどうか
 	bool GetBoss();
-	void SetNum(int num);		// どの宝箱か
-	int GetNum();
-	void SetTreasure(int num, bool treasure);	// 宝箱
-	bool GetTreasure(int num);
-	void SetTouch(bool flag);		// 触れたかどうか
-	bool GetTouch();
-	void SetOpen(bool flag);		// 開けたかどうか
+	int GetTreasureNum();			// 宝箱の番号
+	int GetTreasureX(int num);		// ある宝箱のＸ座標
+	int GetTreasureY(int num);		// ある宝箱のＹ座標
+	void SetOpen(bool flag);	// 開けたかどうか
 	bool GetOpen();
+	void SetTreasure(bool flag);	// 宝箱に反応したかどうか
+	bool GetTreasure();
 	eStep GetStep();	// 今のステップ状況
 };
