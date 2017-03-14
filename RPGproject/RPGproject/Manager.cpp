@@ -908,11 +908,12 @@ void Manager::DungeonProcess() {
 					if (KeyData::Get(KEY_INPUT_Z) == 1) {
 						// •ó” ‚É”½‰ž‚µ‚½‚ç
 						dungeon->SetTreasure(true);
-						// ”ƒ‚¦‚½‚ç
-						if (player->BuyItem(dungeon->OpenTreasure(k))) {
+						// 0‚ª”ƒ‚¦‚½‚ç‚¿‚á‚ñ‚Æ”ƒ‚í‚¹‚é
+						if (player->BuyItem(0)) {
+							player->BuyItem(dungeon->OpenTreasure(k));
 							dungeon->SetOpen(true);
 						}
-						// ”ƒ‚¦‚È‚©‚Á‚½‚ç
+						// 0‚ª”ƒ‚¦‚È‚©‚Á‚½‚ç
 						else {
 							dungeon->SetOpen(false);
 						}
