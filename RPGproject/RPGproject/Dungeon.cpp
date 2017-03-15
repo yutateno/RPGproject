@@ -197,13 +197,12 @@ void Dungeon::Draw_End() {
 
 void Dungeon::Draw_UI() {
 	if (comment > 0) {
-		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 200, conUI_y + 35, BLACK, true);
-		DrawBox(conUI_x - 10, conUI_y - 10, conUI_x + 200, conUI_y + 35, GREEN, false);
+		Textbox::Draw(conUI_x, conUI_y, 200, 35, "");
 		if (openflag == true) {
-			DrawFormatString(conUI_x, conUI_y, WHITE, "‚È‚ñ‚©è‚É“ü‚ê‚½I");
+			Textbox::Draw(conUI_x, conUI_y, "‚È‚ñ‚©è‚É“ü‚ê‚½I");
 		}
 		else {
-			DrawFormatString(conUI_x, conUI_y, WHITE, "‚¿•¨‚ª–”t‚Ì‚æ‚¤‚¾");
+			Textbox::Draw(conUI_x, conUI_y, "‚¿•¨‚ª–”t‚Ì‚æ‚¤‚¾");
 		}
 	}
 }
