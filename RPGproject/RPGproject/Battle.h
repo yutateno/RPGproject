@@ -5,6 +5,8 @@
 #include "Font.h"
 #include "Scene.h"
 
+#include "Textbox.h"
+
 // コマンド状態
 enum Command { NEUTRAL, ATTACK, MAGIC, RUN_AWAY };
 
@@ -19,11 +21,14 @@ private:
 	bool damageFlag;		// ダメージを与える処理をおこなうかどうかのフラグ
 	int damageWidth;		// ダメージのブレ幅
 
-	// コマンドが乗ってる板
+	// テキストボックス
+	// コマンド
 	int commandX, commandY;			// 絶対座標
+	int commandWidth, commandHeight;	// 幅、高さ
+	int commandChoiseNum;			// 項目の数
 
 	// カーソル関係
-	int cursorX, cursorY;			// カーソルの相対座標
+	int cursorX, cursorY;			// X:絶対座標、Y:相対座標
 
 	// 演出関係
 	int count;			// (フレーム)時間のカウント

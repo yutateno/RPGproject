@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Font.h"
 #include "Scene.h"
+#include "Textbox.h"
 
 #include "Title.h"
 #include "player.h"
@@ -50,17 +51,21 @@ private:
 	bool playerDamageFlag;	// ダメージを受けているかどうか
 	bool enemyDamageFlag;	// ダメージを受けているかどうか
 	int probability;		// エンカウントする確率 : 1/probability
-	int drop;				// 敵がアイテムを落とす確率 : item/drop
 
 	// 戦闘関連
 	bool turn;				// こちらのターンか相手のターンか
-	vector<string> log;		// ログ本体
-	int logLineNum;			// １ページに何行表示するか
 	int logCount;			// (フレーム)カウント
 	int logTime;			// 表示時間
-	int lineTime;			// 行の進む時間
-	int statusX, statusY;	// ステータスが乗っている板
-	int logX, logY;			// ログが乗ってる板
+	int preHP;				// 直前のHP
+	int damage;				// 表示用
+
+	// テキストボックス
+	// ステータス
+	int statusWidth, statusHeight;	// 幅、高さ
+	int statusX, statusY;	// 座標
+	// ログ
+	int logX, logY;					// 座標
+	int logWidth, logHeight;		// 幅、高さ
 public:
 	Manager();
 	~Manager();

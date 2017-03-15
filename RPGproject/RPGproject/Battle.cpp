@@ -21,11 +21,14 @@ Battle::Battle() {
 	damageFlag = false;				// ダメージを与えたかどうか
 	damageWidth = 0;				//ダメージの振れ幅
 
-	// コマンドが乗ってる板
-	commandX = 8;
-	commandY = 320;
-
-	// カーソル座標
+	// テキストボックス
+	// コマンド
+	commandWidth = 112;				// 幅
+	commandHeight = 96;				// 高さ
+	commandX = 0;					// 座標
+	commandY = 480 - commandHeight;	// 座標
+	commandChoiseNum = 3;
+	// カーソル
 	cursorX = 0;		// 相対座標
 	cursorY = 0;		// 相対座標
 }
@@ -182,34 +185,10 @@ void Battle::Draw_Main() {
 }
 void Battle::Draw_Command()
 {
-	// コマンド背景
-	DrawBox(commandX, commandY, commandX + 150, commandY + 150, BLACK, true);
-	DrawBox(commandX, commandY, commandX + 150, commandY + 150, WHITE, false);
-
-	// コマンド状態に応じて表示を変化
-	switch (command)
-	{
-	case NEUTRAL:	// 初期
-		DrawFormatString(commandX + 32, commandY + 32, WHITE, "  攻撃");
-		DrawFormatString(commandX + 32, commandY + 64, WHITE, "  魔法");
-		DrawFormatString(commandX + 32, commandY + 96, WHITE, "  逃げる");
-		break;
-
-	case ATTACK:	// 攻撃メニュー
-		break;
-
-	case MAGIC:		// 魔法メニュー
-		break;
-
-	case RUN_AWAY:	// 逃げる
-		break;
-
-	default:		// 在り得ない。エラー
-		break;
-	}
-
+	// コマンド
+	Textbox::Draw(commandX, commandY, commandWidth, commandHeight, "　攻撃\n　魔法\n　逃げる");
 	// カーソル
-	DrawFormatString(commandX + 32 + cursorX, commandY + 32 + (cursorY * 32), WHITE, "▲");
+	DrawFormatString(commandX + cursorX + 8, commandY + (cursorY * 16) + 8, WHITE, "▲");
 }
 void Battle::Draw_End() {
 	// 徐々に画面を暗くする処理
@@ -227,6 +206,9 @@ void Battle::SetReturnScene(eScene scene) {
 
 void Battle::SetCommand(Command command)
 {
+	// カーソルをもとの位置に戻す
+	cursorY = 0;
+
 	this->command = command;
 }
 Command Battle::GetCommand()

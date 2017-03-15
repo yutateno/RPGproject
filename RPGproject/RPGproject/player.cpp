@@ -47,7 +47,7 @@ Player::Player()
 	// アイテム画面
 	itemFlag = false;		// アイテム画面を開いているかどうか
 	itemUseFlag = false;	// アイテムを使っているかどうか
-	itemWidth = 192;		// 高さ
+	itemWidth = 224;		// 高さ
 	itemHeight = 176;		// 幅
 	itemX = menuX + menuWidth;			// 座標
 	itemY = 0;				// 座標
@@ -123,8 +123,6 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 			"MP:" + std::to_string(mp) + " / " + std::to_string(maxMP) + "\n" +
 			"LV:" + std::to_string(lv));
 
-		// カーソル
-		DrawFormatString(8 + cursorX, 8 + cursorY * 16, WHITE, "▼");
 		// アイテム画面
 		if (itemFlag)
 		{
