@@ -169,6 +169,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="SafeArea.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Textbox.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="Treasure.cpp" />
   </ItemGroup>
@@ -187,6 +188,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="SafeArea.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Textbox.h" />
     <ClInclude Include="Title.h" />
     <ClInclude Include="Treasure.h" />
   </ItemGroup>

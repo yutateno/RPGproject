@@ -8,6 +8,7 @@
 
 #include "Item.h"
 #include "Attack.h"
+#include "Textbox.h"
 
 #include <string>
 
@@ -40,13 +41,30 @@ private:
 
 	Attack* attack;			// 攻撃クラス
 
-	bool menuFlag;			// メニュー画面を開いているかどうかのフラグ
-	int cursorX, cursorY;	// カーソルの座標
-	int listNum;			// メニューの項目がいくつあるか
-	bool mItemFlag;			// アイテム画面を開いているかどうかのフラグ
-	bool mItemUseFlag;		// アイテムを使ったかどうかのフラグ
-	string itemEffectText;	// アイテムの効果描写用
-	bool mStatusFlag;		// ステータス画面を開いているかのフラグ
+	// メニュー関係
+	int ChoiseNum;					// 項目の数
+	// メニュー
+	bool menuFlag;					// メニュー画面を開いているかどうか
+	int menuX, menuY;				// 座標
+	int menuWidth, menuHeight;		// 幅、高さ
+	int menuChoiceNum;				// 項目の数
+	// ステータス
+	int statusX, statusY;			// 座標
+	int statusWidth, statusHeight;	// 幅、高さ
+	// アイテム画面
+	bool itemFlag;					// アイテム画面を開いているかどうか
+	bool itemUseFlag;				// アイテムを使っているかどうか
+	int itemX, itemY;				// 座標
+	int itemWidth, itemHeight;		// 幅、高さ
+	int itemChoiseNum;				// 項目の数
+	// 説明枠
+	int descriptionX, descriptionY;	// 座標
+	int descriptionWidth, descriptionHeight;	// 幅、高さ
+	// ログ
+	int logX, logY;					// 座標
+	int logWidth, logHeight;		// 幅、高さ
+	// カーソル
+	int cursorX, cursorY;			// X:絶対座標、Y:相対座標
 
 	int money;			// お金
 
@@ -62,6 +80,7 @@ public:
 	void Process();			// ほかの処理を内包する関数
 
 	void Menu();			// メニュー
+	void CloseMenu();		// メニューを閉じる処理
 	void Move();			// 移動
 	void MoveReset();		// 直前の動きをリセット
 

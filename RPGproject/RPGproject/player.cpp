@@ -30,15 +30,42 @@ Player::Player()
 	attack->power = 1;
 	attack->width = 0;
 
-	menuFlag = false;
-	cursorX = 0;
-	cursorY = 0;
-	listNum = 0;
-	mItemFlag = false;
-	mItemUseFlag = false;
-	itemEffectText = "";
-	mStatusFlag = false;
-
+	// メニュー関係
+	ChoiseNum = 0;			// 項目の数
+	// メニュー
+	menuFlag = false;		// メニューを開いているかどうか
+	menuWidth = 96;			// 高さ
+	menuHeight = 48;		// 幅
+	menuX = 0;				// 座標
+	menuY = 0;				// 座標
+	menuChoiceNum = 2;		// 項目の数
+	// ステータス
+	statusWidth = 112;		// ステータスの幅
+	statusHeight = 96;		// ステータスの高さ
+	statusX = 0;			// ステータスの座標
+	statusY = 480 - statusHeight;		// ステータスの座標
+	// アイテム画面
+	itemFlag = false;		// アイテム画面を開いているかどうか
+	itemUseFlag = false;	// アイテムを使っているかどうか
+	itemWidth = 192;		// 高さ
+	itemHeight = 176;		// 幅
+	itemX = menuX + menuWidth;			// 座標
+	itemY = 0;				// 座標
+	itemChoiseNum = 10;
+	// 説明枠
+	descriptionWidth = 320;	// 幅
+	descriptionHeight = 32;	// 高さ
+	descriptionX = itemX;	// 座標
+	descriptionY = itemY + itemHeight;	// 座標
+	// ログ
+	logX = statusX + statusWidth;		// 座標
+	logWidth = 640 - logX;	// 幅
+	logHeight = 96;			// 高さ
+	logY = 480 - logHeight;	// 座標
+	// カーソル
+	cursorX = 0;			// 相対座標
+	cursorY = 0;			// 相対座標
+	
 	// 画像読み込み
 	graph = LoadGraph("img\\player.png");
 }
@@ -81,44 +108,51 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 	{
 		drawY = 240 - 16;
 	}
-	DrawGraph(drawX, drawY, graph, true);		// プレイヤー本体
-
+	// プレイヤー本体
+	DrawGraph(drawX, drawY, graph, true);
 
 	// メニュー画面
 	if (menuFlag)
 	{
-		// プレイヤーのステータス
-		DrawFormatString(0, 384, BLACK, "%s\nHP:%d/%d\nMP:%d/%d\nLV:%d\nMoney:%d", name.c_str(), hp, maxHP, mp, maxMP, lv, money);
-
-		// 項目
-		DrawFormatString(0, 0, BLACK, "　アイテム\n　ステータス");
+		// メニュー
+		Textbox::Draw(menuX, menuY, menuWidth, menuHeight, "　アイテム\n　もどる");
+		// ステータス
+		Textbox::Draw(statusX, statusY, statusWidth, statusHeight,
+			name + "\n" +
+			"HP:" + std::to_string(hp) + " / " + std::to_string(maxHP) + "\n" +
+			"MP:" + std::to_string(mp) + " / " + std::to_string(maxMP) + "\n" +
+			"LV:" + std::to_string(lv));
 
 		// カーソル
-		DrawFormatString(cursorX * 160, cursorY * 16, BLACK, "▲");
-
+		DrawFormatString(8 + cursorX, 8 + cursorY * 16, WHITE, "▼");
 		// アイテム画面
-		if (mItemFlag)
+		if (itemFlag)
 		{
-			for (int i = 0;i < itemMax;i++)
+			// 背景
+			Textbox::Draw(itemX, itemY, itemWidth, itemHeight, "");
+			// 文字
+			for (int i = 0, n = itemMax;i < n;i++)
 			{
-				DrawFormatString(160, i * 16, BLACK, "・%s", item[i]->name.c_str());
+				Textbox::Draw(itemX, itemY + (i * 16), "　" + item[i]->name);
 			}
+			Textbox::Draw(itemX, itemY + (itemChoiseNum - 1) * 16, "　もどる");
+			// 説明
+			if (cursorY < itemMax)
+			{
+				Textbox::Draw(descriptionX, descriptionY, descriptionWidth, descriptionHeight, item[cursorY]->effectText[0]);
+			}
+		}
+		// ログ
+		if (itemUseFlag)
+		{
+			Textbox::Draw(logX, logY, logWidth, logHeight, item[cursorY]->effectText[1]);
+		}
+	}
 
-			// アイテム使用中であれば
-			if (mItemUseFlag)
-			{
-				DrawFormatString(32, 240, BLACK, "・%s", itemEffectText.c_str());
-			}
-			// アイテム使用中でなければ
-			else
-			{
-				DrawFormatString(32, 240, BLACK, "・%s", item[cursorY]->effectText[0].c_str());
-			}
-		}
-		else if (mStatusFlag)
-		{
-			DrawFormatString(160, 0, BLACK, "　%s\n　HP:%d/%d\n　MP:%d/%d\n　LV:%d\n　Money:%d\n", name.c_str(), hp, maxHP, mp, maxMP, lv, money);
-		}
+	if (menuFlag)
+	{
+		// カーソル
+		DrawFormatString(8 + cursorX, 8 + cursorY * 16, WHITE, "▼");
 	}
 }
 
@@ -127,38 +161,31 @@ void Player::Process()
 	// メニュー開閉
 	if (KeyData::Get(KEY_INPUT_Q) == 1)
 	{
+		// メニューが既に開いている
 		if (menuFlag)
 		{
-			if (cursorX == 0)
-			{
-				mItemFlag = false;
-				mItemUseFlag = false;
-				mStatusFlag = false;
-				menuFlag = false;
-				listNum = 0;
-			}
-			else
-			{
-				mItemFlag = false;
-				mItemUseFlag = false;
-				mStatusFlag = false;
-			}
+			// メニューを閉じる
+			CloseMenu();
 		}
+		// メニューを開いていない
 		else
 		{
-			menuFlag = true;
-			listNum = 2;
-		}
+			// 項目数更新
+			ChoiseNum = menuChoiceNum;
 
-		cursorX = 0;
-		cursorY = 0;
+			// メニューを開く
+			menuFlag = true;
+		}
 	}
 
-	if (menuFlag) // メニューを開いているかどうかで処理を分ける
+	// メニューを開いているかどうかで処理を分ける
+	// メニューを開いているとき
+	if (menuFlag)
 	{
 		Menu();		// メニュー画面
 	}
-	else          // メニューを開いてないとき
+	// メニューを開いてないとき
+	else
 	{
 		Move();		// 移動
 	}
@@ -167,14 +194,19 @@ void Player::Process()
 void Player::Menu()
 {
 	// カーソルの移動
-	// アイテム使用中じゃなければ
-	if (!mItemUseFlag)
+	// アイテム処理中
+	if (itemUseFlag)
 	{
-		if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY > 0)
+
+	}
+	// 処理してないとき
+	else
+	{
+		if (KeyData::Get(KEY_INPUT_UP) == 1 && cursorY != 0)
 		{
 			cursorY--;
 		}
-		else if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY < (listNum - 1))
+		else if (KeyData::Get(KEY_INPUT_DOWN) == 1 && cursorY < (ChoiseNum - 1))
 		{
 			cursorY++;
 		}
@@ -183,62 +215,72 @@ void Player::Menu()
 	// 決定
 	if (KeyData::Get(KEY_INPUT_Z) == 1)
 	{
-		// 最初の画面
-		if (cursorX == 0)
+		if (itemUseFlag)
 		{
-			// カーソルを右に
-			cursorX++;
-
-			// アイテムを選んだら
-			if (cursorY == 0)
+			// アイテム使用
+			SellItem(cursorY);
+			// ログを閉じる
+			itemUseFlag = false;
+		}
+		else if (itemFlag)
+		{
+			// アイテム選択時
+			if (cursorY < itemMax)
 			{
-				listNum = itemMax;
-				mItemFlag = true;
+				// ログを開く
+				itemUseFlag = true;
 			}
-			// ステータスを選んだら
-			else if (cursorY == 1)
-			{
-				mStatusFlag = true;
-				listNum = 0;
-			}
+			// [もどる]選択時
 			else
 			{
-				// エラー
-				name = "メニュー画面でのバグ";
+				// カーソル移動
+				cursorX = 0;
+				cursorY = 0;
+				// 項目の数
+				ChoiseNum = menuChoiceNum;
+				// アイテム画面を閉じる
+				itemFlag = false;
 			}
-
-			// 一番上に戻す
-			cursorY = 0;
 		}
-		else if (cursorX == 1)
+		else if (menuFlag)
 		{
-			// アイテム画面ならアイテム使用
-			if (mItemFlag)
+			switch (cursorY)
 			{
-				// アイテムを使った後
-				if (mItemUseFlag)
-				{
-					mItemUseFlag = false;
-					// 一番上に戻す
-					cursorY = 0;
-				}
-				// アイテムを使う前
-				else
-				{
-					// 効果文を逃がす
-					itemEffectText = item[cursorY]->effectText[1];
-					// アイテムを消す
-					SellItem(cursorY);
-					mItemUseFlag = true;
-				}
+			case 0:		// メニュー画面
+				// カーソル移動
+				cursorX = itemX;
+				// 項目の数
+				ChoiseNum = itemChoiseNum;
+				// アイテム画面を開く
+				itemFlag = true;
+				break;
+
+			case 1:
+				// メニューを閉じる
+				CloseMenu();
+				break;
+
+			default:
+				// エラー
+				break;
 			}
-		}
-		else
-		{
-			// エラー
-			name = "メニュー画面でのバグ";
 		}
 	}
+}
+void Player::CloseMenu()
+{
+	// 初期化
+	// カーソル
+	cursorX = 0;			// 相対座標
+	cursorY = 0;			// 相対座標
+	// 項目の数
+	ChoiseNum = 0;
+
+	// アイテム画面を閉じる
+	itemFlag = false;
+
+	// メニューを閉じる
+	menuFlag = false;
 }
 void Player::Move()
 {
