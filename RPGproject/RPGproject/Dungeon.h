@@ -33,8 +33,10 @@ private:
 	vector<Treasure> treasure;	// 宝箱
 	bool openflag;				// 開けたかどうか
 	bool treasureflag;			// 宝箱になんかしたら
+	string treasurename;		// 宝箱の名前
+
 	int comment;				// なんか反応の会話
-	const int flame = 20;		// フレーム
+	const int flame = 30;		// フレーム
 	int conUI_x;				// コメントの表示位置
 	int conUI_y;
 	int conUI_height;

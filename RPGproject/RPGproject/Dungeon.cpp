@@ -27,9 +27,10 @@ Dungeon::Dungeon() {
 	treasureflag = false;
 	conUI_x = 150;
 	conUI_y = 150;
-	conUI_width = 200;
+	conUI_width = 220;
 	conUI_height = 35;
 	str = "";
+	treasurename = "";
 }
 
 Dungeon::~Dungeon() {
@@ -212,8 +213,15 @@ void Dungeon::Dungeon_Map() {
 
 void Dungeon::Draw_UI() {
 	if (comment > 0) {
+		conUI_width = 220;
 		if (openflag == true) {
-			str = "‚È‚ñ‚©è‚É“ü‚ê‚½I";
+			if (treasurename == "–³") {
+				conUI_width = 130;
+				str = "Šù‚É‹ó‚¢‚Ä‚Ü‚·";
+			}
+			else {
+				str = treasurename + "‚ğè‚É“ü‚ê‚½I";
+			}
 		}
 		else {
 			str = "‚¿•¨‚ª–”t‚Ì‚æ‚¤‚¾";
@@ -239,6 +247,7 @@ int Dungeon::OpenTreasure(int num) {
 	//‰¼’u‚«
 	int itemID = treasure[num].GetItemID();
 
+	treasurename = treasure[num].GetName();
 	treasure[num].OpenProcess();
 
 	return itemID;

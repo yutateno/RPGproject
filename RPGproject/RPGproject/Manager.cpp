@@ -1027,10 +1027,10 @@ void Manager::DungeonProcess() {
 			for (int k = 0, m = dungeon->GetTreasureNum(); k < m; k++)
 			{
 				// ‚Ô‚Â‚©‚Á‚Ä‚¢‚½‚ç
-				if (dungeon->GetTreasureX(k) < player->GetX() + (i * 31)			// ¶
-					&& player->GetX() + (i * 31) < dungeon->GetTreasureX(k) + 32	// ‰E
-					&& dungeon->GetTreasureY(k) < player->GetY() + (j * 31)			// ã
-					&& player->GetY() + (j * 31) < dungeon->GetTreasureY(k) + 32) {	// ‰º
+				if (dungeon->GetTreasureX(k) < player->GetX() + (i * 32)			// ¶
+					&& player->GetX() + (i * 32) < dungeon->GetTreasureX(k) + 32	// ‰E
+					&& dungeon->GetTreasureY(k) < player->GetY() + (j * 32)			// ã
+					&& player->GetY() + (j * 32) < dungeon->GetTreasureY(k) + 32) {	// ‰º
 					// ŠÑ’Ê‚³‚¹‚È‚¢
 					player->MoveReset();
 					// Z‚ð‰Ÿ‚µ‚½‚ç
