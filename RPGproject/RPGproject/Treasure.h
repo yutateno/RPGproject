@@ -4,6 +4,8 @@
 #include "Scene.h"
 #include "Input.h"
 
+#include "Item.h"
+
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -48,4 +50,5 @@ public:
 	int GetY();
 	int GetItemID();
 	int GetMoney();
+	string GetName();
 };

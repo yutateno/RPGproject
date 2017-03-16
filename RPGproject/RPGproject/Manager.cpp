@@ -422,6 +422,7 @@ void Manager::Draw() {
 		break;
 
 	case eScene::S_Field:// フィールド画面
+		// 背景とマップチップ
 		field->Draw();
 
 		// フィールドのステップがメインならプレイヤーを描写
@@ -429,6 +430,8 @@ void Manager::Draw() {
 		{
 			player->aaaDraw(field->GetMapWidth(), field->GetMapHeight());
 		}
+
+
 		break;
 
 	case eScene::S_Battle:// 戦闘画面
@@ -473,103 +476,126 @@ void Manager::Draw() {
 
 void Manager::FieldProcess()
 {
-	// このシーンのプロセス
-	this->field->UpDate(player->GetX(), player->GetY());
-
-	// プレイヤーが動いたかどうかを判断するために直前の座標を保存
-	playerX = player->GetX();
-	playerY = player->GetY();
-
-	// フィールドのメインプロセスが動いてる間プレイヤーのプロセスを呼び出す
-	if (field->GetStep() == eStep::Main)
+	// ログ表示中かどうか
+	// 表示中
+	if (field->GetTreasureFlag())
 	{
-		player->Process();
-	}
-
-	// 敵とのエンカウント
-	if (player->GetX() != playerX || player->GetY() != playerY)
-	{
-		if (GetRand(probability) == 0)
+		if (KeyData::Get(KEY_INPUT_Z) == 1)
 		{
-			field->SetNextScene(eScene::S_Battle);
-			field->SetStep(eStep::End);
+			field->SetTreasureFlag(false);
 		}
 	}
+	// 表示してないとき
+	else
+	{
+		// このシーンのプロセス
+		this->field->UpDate(player->GetX(), player->GetY());
 
-	// カメラの位置をプレイヤーの座標から計算して代入
-	if (player->GetX() < (320 - 16))		// 左端
-	{
-		field->SetCameraX(0);
-	}
-	else if (player->GetX() > ((field->GetMapWidth() - 1) * 32) - (320 - 16))		// 右端
-	{
-		field->SetCameraX((field->GetMapWidth() * 32) - 640);
-	}
-	else		// それ以外
-	{
-		field->SetCameraX(player->GetX() - (320 - 16));
-	}
+		// プレイヤーが動いたかどうかを判断するために直前の座標を保存
+		playerX = player->GetX();
+		playerY = player->GetY();
 
-	if (player->GetY() < (240 - 16))		// 上端
-	{
-		field->SetCameraY(0);
-	}
-	else if (player->GetY() > ((field->GetMapHeight() - 1) * 32) - (240 - 16))		// 下端
-	{
-		field->SetCameraY((field->GetMapHeight() * 32) - 480);
-	}
-	else		// それ以外
-	{
-		field->SetCameraY(player->GetY() - (240 - 16));
-	}
-
-	// --------------------------------------------------
-	// マップとの当たり判定------------------------------
-	for (int i = 0;i < 2;i++)
-	{
-		for (int j = 0;j < 2;j++)
+		// フィールドのメインプロセスが動いてる間プレイヤーのプロセスを呼び出す
+		if (field->GetStep() == eStep::Main)
 		{
-			switch (field->GetMapData(player->GetX() + (i * (32 - 1)), player->GetY() + (j * (32 - 1))))
+			player->Process();
+		}
+
+		// 敵とのエンカウント
+		if (player->GetX() != playerX || player->GetY() != playerY)
+		{
+			if (GetRand(probability) == 0)
 			{
-			case 0:			// 無
-				break;
-			case 1:			// 壁
-				player->MoveReset();		// プレイヤーの座標を直前のものに戻す
-				break;
-			default:
-				// 基本的に来ない
-				break;
+				field->SetNextScene(eScene::S_Battle);
+				field->SetStep(eStep::End);
 			}
 		}
-	}
-	// --------------------------------------------------
-	// --------------------------------------------------
 
-
-	// --------------------------------------------------
-	// 宝箱との当たり判定
-	for (int i = 0;i < 2;i++)
-	{
-		for (int j = 0;j < 2;j++)
+		// カメラの位置をプレイヤーの座標から計算して代入
+		if (player->GetX() < (320 - 16))		// 左端
 		{
-			for (int n = 0, m = field->GetTreasureNum();n < m;n++)
+			field->SetCameraX(0);
+		}
+		else if (player->GetX() > ((field->GetMapWidth() - 1) * 32) - (320 - 16))		// 右端
+		{
+			field->SetCameraX((field->GetMapWidth() * 32) - 640);
+		}
+		else		// それ以外
+		{
+			field->SetCameraX(player->GetX() - (320 - 16));
+		}
+
+		if (player->GetY() < (240 - 16))		// 上端
+		{
+			field->SetCameraY(0);
+		}
+		else if (player->GetY() > ((field->GetMapHeight() - 1) * 32) - (240 - 16))		// 下端
+		{
+			field->SetCameraY((field->GetMapHeight() * 32) - 480);
+		}
+		else		// それ以外
+		{
+			field->SetCameraY(player->GetY() - (240 - 16));
+		}
+
+		// --------------------------------------------------
+		// マップとの当たり判定------------------------------
+		for (int i = 0;i < 2;i++)
+		{
+			for (int j = 0;j < 2;j++)
 			{
-				// 位置がかぶっていれば
-				if (field->GetTreasureX(n) < player->GetX() + (i * 31)
-					&& player->GetX() + (i * 31) < field->GetTreasureX(n) + 31
-					&& field->GetTreasureY(n) < player->GetY() + (j * 31)
-					&& player->GetY() + (j * 31) < field->GetTreasureY(n) + 31)
+				switch (field->GetMapData(player->GetX() + (i * (32 - 1)), player->GetY() + (j * (32 - 1))))
 				{
-					if (KeyData::Get(KEY_INPUT_Z) == 1)
+				case 0:			// 無
+					break;
+				case 1:			// 壁
+					player->MoveReset();		// プレイヤーの座標を直前のものに戻す
+					break;
+				default:
+					// 基本的に来ない
+					break;
+				}
+			}
+		}
+		// --------------------------------------------------
+		// --------------------------------------------------
+
+
+		// --------------------------------------------------
+		// 宝箱との当たり判定
+		for (int i = 0;i < 2;i++)
+		{
+			for (int j = 0;j < 2;j++)
+			{
+				for (int n = 0, m = field->GetTreasureNum();n < m;n++)
+				{
+					// 位置がかぶっていれば
+					if (field->GetTreasureX(n) < (player->GetSpeed() + 1) + player->GetX() + (i * (32 - ((player->GetSpeed() + 1) * 2)))
+						&& (player->GetSpeed() + 1) + player->GetX() + (i * (32 - ((player->GetSpeed() + 1) * 2))) < field->GetTreasureX(n) + 32
+						&& field->GetTreasureY(n) < (player->GetSpeed() + 1) + player->GetY() + (j * (32 - ((player->GetSpeed() + 1) * 2)))
+						&& (player->GetSpeed() + 1) + player->GetY() + (j * (32 - ((player->GetSpeed() + 1) * 2))) < field->GetTreasureY(n) + 32)
 					{
-						player->BuyItem(field->OpenTreasure(n));
+						// 通り抜け禁止
+						player->MoveReset();
+					}
+					// 位置がかぶっていれば
+					if (field->GetTreasureX(n) < player->GetX() + (i * 32)
+						&& player->GetX() + (i * 32) < field->GetTreasureX(n) + 32
+						&& field->GetTreasureY(n) < player->GetY() + (j * 32)
+						&& player->GetY() + (j * 32) < field->GetTreasureY(n) + 32)
+					{
+						// アイテムに空きがあれば
+						if (KeyData::Get(KEY_INPUT_Z) == 1 && player->BuyItem(0))
+						{
+							player->BuyItem(field->OpenTreasure(n));
+						}
 					}
 				}
 			}
 		}
+		// --------------------------------------------------
+		// --------------------------------------------------
 	}
-	// --------------------------------------------------
-	// --------------------------------------------------
 }
 
 void Manager::BattleProcess()
@@ -585,44 +611,70 @@ void Manager::BattleProcess()
 		// 戦闘勝利
 		if (enemy->GetHP() <= 0)
 		{
-			// 戦闘報酬
-			player->SetEXP(player->GetEXP() + enemy->GetEXP());				// 経験値
-			player->SetMoney(player->GetMoney() + enemy->GetMoney());		// お金
-
-																			// レベルアップ
-			if (player->GetEXP() > player->GetLV() * 20)
+			if (logCount < logTime)
 			{
-				// 繰越分を与える
-				player->SetEXP(player->GetEXP() - player->GetLV() * 20);
-				// レベルを上げる
-				player->SetLV(player->GetLV() + 1);
-				// ステータス上昇
-				player->SetMaxHP(player->GetMaxHP() + player->GetLV());
-				player->SetMaxMP(player->GetMaxMP() + player->GetLV());
-				player->SetPower(player->GetPower() + player->GetLV());
-
-				/*
-				// ログ入力
-				log.push_back("レベルアップ！");
-				log.push_back(player->GetName() + " は LV" + to_string(player->GetLV()) + " になった！");
-				log.push_back("ステータスが上がった！");
-				*/
+				// カウント
+				logCount++;
 			}
+			else
+			{
+				// 初期化
+				logCount = 0;
+				logTime = 0;
+				// フラグを折る
+				battle->SetDamageFlag(false);
 
-			// 表示時間
-			logTime = 180;
+				// 戦闘報酬
+				player->SetEXP(player->GetEXP() + enemy->GetEXP());				// 経験値
+				player->SetMoney(player->GetMoney() + enemy->GetMoney());		// お金
 
-			// バトルのステップ進行
-			battle->SetStep(eStep::End);
+																				// 表示時間
+				logTime = 180;
+
+				// レベルアップ
+				if (player->GetEXP() > player->GetLV() * 20)
+				{
+					logTime += 180;
+					// 繰越分を与える
+					player->SetEXP(player->GetEXP() - player->GetLV() * 20);
+					// レベルを上げる
+					player->SetLV(player->GetLV() + 1);
+					// ステータス上昇
+					player->SetMaxHP(player->GetMaxHP() + player->GetLV());
+					player->SetMaxMP(player->GetMaxMP() + player->GetLV());
+					player->SetPower(player->GetPower() + player->GetLV());
+				}
+
+				// バトルのステップ進行
+				battle->SetStep(eStep::End);
+			}
 		}
 		// 戦闘敗北
 		else if (player->GetHP() <= 0)
 		{
-			// ゲームオーバー画面へ
-			battle->SetNextScene(eScene::S_GameOver);
+			// ログ出力
+			if (logCount > 0)
+			{
+				if (logCount < logTime)
+				{
+					// カウント
+					logCount++;
+				}
+				else
+				{
+					// 初期化
+					logCount = 0;
+					logTime = 0;
+					// フラグを折る
+					battle->SetDamageFlag(false);
 
-			// バトルのステップ進行
-			battle->SetStep(eStep::End);
+					// ゲームオーバー画面へ
+					battle->SetNextScene(eScene::S_GameOver);
+
+					// バトルのステップ進行
+					battle->SetStep(eStep::End);
+				}
+			}
 		}
 		else
 		{
@@ -754,7 +806,6 @@ void Manager::BattleProcess()
 		{
 			battle->UpDate();
 		}
-		
 		break;
 
 	default:
@@ -764,54 +815,79 @@ void Manager::BattleProcess()
 }
 void Manager::BattleDraw()
 {
-	// 背景
-	battle->Draw();
-
 	// ステップによって表示を分ける
 	switch (battle->GetStep())
 	{
 	case eStep::Start:
 		// 徐々に画面の表示する処理
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, battle->GetCount() * 3);
+		// 背景
+		battle->Draw();
 		// 敵
 		enemy->aaaDraw();
 		// ブレンドモードの後処理
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		// ログ
-		Textbox::Draw(logX, logY, logWidth, logHeight, enemy->GetName() + " があらわれた！");
-		break;
-
-	case eStep::Main:
-		// コマンド
-		battle->Draw_Command();
-
 		// ステータス
 		Textbox::Draw(statusX, statusY, statusWidth, statusHeight,
 			player->GetName() + "\n" +
 			"HP:" + std::to_string(player->GetHP()) + " / " + std::to_string(player->GetMaxHP()) + "\n" +
 			"MP:" + std::to_string(player->GetMP()) + " / " + std::to_string(player->GetMaxMP()) + "\n" +
 			"LV:" + std::to_string(player->GetLV()));
+		// コマンド
+		battle->Draw_Command();
+		// ログ
+		Textbox::Draw(logX, logY, logWidth, logHeight, "");
 
-		// 敵
-		enemy->aaaDraw();
+		// ログ
+		Textbox::Draw(logX, logY, enemy->GetName() + " があらわれた！");
+		break;
+
+	case eStep::Main:
+		// 背景
+		battle->Draw();
+		// ステータス
+		Textbox::Draw(statusX, statusY, statusWidth, statusHeight,
+			player->GetName() + "\n" +
+			"HP:" + std::to_string(player->GetHP()) + " / " + std::to_string(player->GetMaxHP()) + "\n" +
+			"MP:" + std::to_string(player->GetMP()) + " / " + std::to_string(player->GetMaxMP()) + "\n" +
+			"LV:" + std::to_string(player->GetLV()));
+		// コマンド
+		battle->Draw_Command();
+		// ログ
+		Textbox::Draw(logX, logY, logWidth, logHeight, "");
+
+		// ダメージ演出
+		if (logCount > 60)
+		{
+			if (logCount % 5 == 0)
+			{
+				// 敵
+				enemy->aaaDraw();
+			}
+		}
+		else
+		{
+			// 敵
+			enemy->aaaDraw();
+		}
 
 		// ダメージ表示
 		if (battle->GetDamageFlag())
 		{
 			// ログ
-			Textbox::Draw(logX, logY, logWidth, logHeight, player->GetName() + " の攻撃！");
+			Textbox::Draw(logX, logY, player->GetName() + " の " + player->GetATKName() + " !");
 			if (logCount > 60)
 			{
-				Textbox::Draw(logX, logY + 17, enemy->GetName() + " に" + to_string(preHP - damage) + " のダメージ！");
+				Textbox::Draw(logX, logY + 16, enemy->GetName() + " に " + to_string(preHP - damage) + " のダメージ！");
 			}
 		}
 		if (!turn)
 		{
 			// ログ
-			Textbox::Draw(logX, logY, logWidth, logHeight, enemy->GetName() + " の攻撃！");
+			Textbox::Draw(logX, logY, enemy->GetName() + " の " + enemy->GetATKName() + " !");
 			if (logCount > 60)
 			{
-				Textbox::Draw(logX, logY + 17, player->GetName() + " に" + to_string(preHP - damage) + " のダメージ！");
+				Textbox::Draw(logX, logY + 16, player->GetName() + " に" + to_string(preHP - damage) + " のダメージ！");
 			}
 		}
 		break;
@@ -820,22 +896,83 @@ void Manager::BattleDraw()
 		// 勝利
 		if (enemy->GetHP() <= 0)
 		{
+			// 背景
+			battle->Draw();
+
+			// 徐々に画面の表示する処理
+			if (logCount < 60)
+			{
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - logCount * ((int)255 / 60));
+			}
+			else
+			{
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
+			}
+			// 敵
+			enemy->aaaDraw();
+			// ブレンドモードの後処理
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+			// ステータス
+			Textbox::Draw(statusX, statusY, statusWidth, statusHeight,
+				player->GetName() + "\n" +
+				"HP:" + std::to_string(player->GetHP()) + " / " + std::to_string(player->GetMaxHP()) + "\n" +
+				"MP:" + std::to_string(player->GetMP()) + " / " + std::to_string(player->GetMaxMP()) + "\n" +
+				"LV:" + std::to_string(player->GetLV()));
+			// コマンド
+			battle->Draw_Command();
 			// ログ
-			Textbox::Draw(logX, logY, logWidth, logHeight,enemy->GetName() + " を倒した！");
+			Textbox::Draw(logX, logY, logWidth, logHeight, "");
+
+			// ログ
+			Textbox::Draw(logX, logY,enemy->GetName() + " を倒した！");
 			if (logCount > 60)
 			{
-				Textbox::Draw(logX, logY + 17, to_string(enemy->GetEXP()) + " の経験値を獲得！");
+				Textbox::Draw(logX, logY + 16, to_string(enemy->GetEXP()) + " の経験値を獲得！");
 			}
 			if (logCount > 120)
 			{
-				Textbox::Draw(logX, logY + 34, to_string(enemy->GetMoney()) + " ゴールドを手に入れた！");
+				Textbox::Draw(logX, logY + 32, to_string(enemy->GetMoney()) + " ゴールドを手に入れた！");
+			}
+			// レベルアップ
+			if (logCount > 180)
+			{
+				Textbox::Draw(logX, logY, logWidth, logHeight, "レベルアップ！");
+			}
+			if (logCount > 240)
+			{
+				Textbox::Draw(logX, logY + 16, player->GetName() + " は LV" + to_string(player->GetLV()) + " になった！");
+			}
+			if (logCount > 300)
+			{
+				Textbox::Draw(logX, logY + 32, "ステータスが上がった！");
 			}
 		}
 		// 敗北
 		else if (player->GetHP() <= 0)
 		{
+			// 徐々に画面の表示する処理
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - battle->GetCount() * 3);
+			// 背景
+			battle->Draw();
+			// 敵
+			enemy->aaaDraw();
+			// ブレンドモードの後処理
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+			// ステータス
+			Textbox::Draw(statusX, statusY, statusWidth, statusHeight,
+				player->GetName() + "\n" +
+				"HP:" + std::to_string(player->GetHP()) + " / " + std::to_string(player->GetMaxHP()) + "\n" +
+				"MP:" + std::to_string(player->GetMP()) + " / " + std::to_string(player->GetMaxMP()) + "\n" +
+				"LV:" + std::to_string(player->GetLV()));
+			// コマンド
+			battle->Draw_Command();
 			// ログ
-			Textbox::Draw(logX, logY, logWidth, logHeight, "あなたは死んでしまった・・・");
+			Textbox::Draw(logX, logY, logWidth, logHeight, "");
+
+			// ログ
+			Textbox::Draw(logX, logY, "あなたは死んでしまった・・・");
 		}
 		break;
 
@@ -843,23 +980,6 @@ void Manager::BattleDraw()
 		// エラー
 		break;
 	}
-
-	// ------------------------------------------------------------------------
-	// ログここから
-
-	// コマンド選択中なら表示しない
-	if (battle->GetStep() == eStep::Main && turn)
-	{
-		
-	}
-	// 演出中なら表示
-	else
-	{
-		
-	}
-
-	// ログここまで
-	// ------------------------------------------------------------------------
 }
 
 void Manager::DungeonProcess() {
