@@ -166,3 +166,7 @@ int Treasure::GetMoney()
 {
 	return money;
 }
+string Treasure::GetName()
+{
+	return Item::SearchName(itemID);
+}

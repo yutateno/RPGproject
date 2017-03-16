@@ -36,6 +36,15 @@ Field::Field() {
 	{
 		treasure.push_back(i);
 	}
+	treasureFlag = false;	// 宝箱を開けた時のログ表示用
+	treasureName = "";		// 手に入れたアイテムの名前
+
+	// テキストボックス
+	// ログ
+	logX = 112;				// 座標
+	logWidth = 640 - logX;	// 幅
+	logHeight = 96;			// 高さ
+	logY = 480 - logHeight;	// 座標
 }
 Field::~Field() {
 	// 画像データ座駆除
@@ -199,6 +208,13 @@ void Field::Draw_Main() {
 	{
 		treasure[i].Draw(cameraX, cameraY);
 	}
+
+	// ログ
+	// 宝箱
+	if (treasureFlag)
+	{
+		Textbox::Draw(logX, logY, logWidth, logHeight, treasureName + " を手に入れた！");
+	}
 }
 void Field::Draw_End() {
 	// 次のシーンによって処理を変える
@@ -273,6 +289,11 @@ int Field::OpenTreasure(int num)
 	//仮置き
 	int itemID = treasure[num].GetItemID();
 
+	// ログ表示処理
+	treasureFlag = true;
+	treasureName = treasure[num].GetName();
+
+	// データ入力処理
 	treasure[num].OpenProcess();
 
 	return itemID;
@@ -330,4 +351,12 @@ int Field::GetTreasureX(int num)
 int Field::GetTreasureY(int num)
 {
 	return treasure[num].GetY();
+}
+void Field::SetTreasureFlag(bool flag)
+{
+	treasureFlag = flag;
+}
+bool Field::GetTreasureFlag()
+{
+	return treasureFlag;
 }

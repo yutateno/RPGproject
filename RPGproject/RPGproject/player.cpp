@@ -454,18 +454,19 @@ Direction Player::GetDirection()
 {
 	return direction;
 }
-
 int Player::GetID(int num)
 {
 	return item[num]->ID;
 }
-
 void Player::SetMoney(int money)
 {
 	this->money = money;
 }
-
 int Player::GetMoney()
 {
 	return money;
+}
+int Player::GetSpeed()
+{
+	return speed;
 }

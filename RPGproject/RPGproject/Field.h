@@ -36,7 +36,14 @@ private:
 	int count;						// (フレーム)時間をカウントする
 
 	// 宝箱関係
-	vector<Treasure> treasure;
+	vector<Treasure> treasure;		// 宝箱本体
+	bool treasureFlag;				// 宝箱をとった時のログ表示用
+	string treasureName;			// 手に入れたアイテムの名前
+
+	// テキストボックス
+	// ログ
+	int logX, logY;					// 座標
+	int logWidth, logHeight;		// 幅、高さ
 
 public:
 	Field();
@@ -73,4 +80,6 @@ public:
 	int GetTreasureNum();
 	int GetTreasureX(int num);
 	int GetTreasureY(int num);
+	void SetTreasureFlag(bool flag);
+	bool GetTreasureFlag();
 };

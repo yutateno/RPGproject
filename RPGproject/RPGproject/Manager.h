@@ -48,8 +48,6 @@ private:
 
 	int playerX;			// プレイヤーが動いたかどうかを判定する変数
 	int playerY;			// プレイヤーが動いたかどうかを判定する変数
-	bool playerDamageFlag;	// ダメージを受けているかどうか
-	bool enemyDamageFlag;	// ダメージを受けているかどうか
 	int probability;		// エンカウントする確率 : 1/probability
 
 	// 戦闘関連
@@ -58,6 +56,8 @@ private:
 	int logTime;			// 表示時間
 	int preHP;				// 直前のHP
 	int damage;				// 表示用
+	bool playerDamageFlag;	// ダメージを受けているかどうか
+	bool enemyDamageFlag;	// ダメージを受けているかどうか
 
 	// テキストボックス
 	// ステータス

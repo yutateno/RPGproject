@@ -119,4 +119,5 @@ public:
 	int GetMoney();
 	void SetDirection(Direction direction);
 	Direction GetDirection();
+	int GetSpeed();
 };
