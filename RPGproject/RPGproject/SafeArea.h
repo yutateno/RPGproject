@@ -80,12 +80,25 @@ private:
 	string lines;			// セリフ
 
 	// UI関連
-	int playerUI_x;			// 所持金など
+	int playerUI_x;			// 所持金のＵＩ
 	int playerUI_y;
-	int anotherUI_x;		// ショップ画面など
-	int anotherUI_y;
-	int conUI_x;			// まいどあり～とか
+	int playerUI_height;
+	int playerUI_width;
+
+	int shopUI_x;			// ショップ画面のＵＩ
+	int shopUI_y;
+	int shopUI_width;
+	int shopUI_second;		// 買う売るの追加Ｘ，Ｙ
+	int shopUI_se_width;	// 買う売るの横幅 
+	
+	int healUI_x;			// 宿でのＵＩ
+	int healUI_y;
+	int healUI_width;
+	
+	int conUI_x;			// 会話のＵＩ
 	int conUI_y;
+	int conUI_height;
+	int conUI_width;
 
 public:
 	SafeArea();
@@ -107,6 +120,7 @@ public:
 	void PeopleProcess();	// 人とのプロセス
 	void ShopProcess();		// 買い物のプロセス
 	void Draw_UI();			// UIの描画
+	void SafeArea_Map();
 
 	// プレイヤーがアイテムの購入に失敗した場合に呼ばれる関数
 	void Refund();

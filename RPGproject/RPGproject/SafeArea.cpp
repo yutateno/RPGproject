@@ -61,13 +61,26 @@ SafeArea::SafeArea() {
 	itemPosition = 0;
 	itemMax = 9;
 
-	// UI
+	// UI(プレイヤー.所持金など
 	playerUI_x = 420;
 	playerUI_y = 420;
-	anotherUI_x = 55;
-	anotherUI_y = 50;
+	playerUI_height = 35;
+	playerUI_width = 135;
+	
+	shopUI_x = 55;
+	shopUI_y = 50;
+	shopUI_width = 150;
+	shopUI_second = 40;
+	shopUI_se_width = 320;
+
+	healUI_x = 55;
+	healUI_y = 50;
+	healUI_width = 180;
+	
 	conUI_x = 140;
 	conUI_y = 140;
+	conUI_width = 125;
+	conUI_height = 35;
 }
 SafeArea::~SafeArea() {
 	// 画像削除
@@ -191,6 +204,16 @@ void SafeArea::Draw_Start() {
 }
 
 void SafeArea::Draw_Main() {
+	SafeArea_Map();
+}
+
+void SafeArea::Draw_End() {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (count * 5));
+	SafeArea_Map();
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+void SafeArea::SafeArea_Map() {
 	// 背景
 	DrawGraph(0, 0, Gr_Back, false);
 
@@ -242,23 +265,83 @@ void SafeArea::Draw_Main() {
 	}
 }
 
-void SafeArea::Draw_End() {
-	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "終了画面 %d / %d", count, endCount);
-}
-
 void SafeArea::Draw_UI() {
-	// 回復店主
+	// 回復関連-----------------------------------------------------
 	if (innflag == true && talkflag == true) {
 		// コマンドボックス
-		Textbox::Draw(anotherUI_x - 8, anotherUI_y - 8, 180, (cursor * 3) + 10, "泊まりますか？");
-		
-		// 選択肢
-		Textbox::Draw(anotherUI_x + 22, anotherUI_y + (cursor * 1), "休み　　100円");
-		Textbox::Draw(anotherUI_x + 22, anotherUI_y + (cursor * 2), "やめる");
+		Textbox::Draw(healUI_x, healUI_y, healUI_width, (cursor * 3) + 10, "泊まりますか？\n\n　　休む　　100円\n\n　　やめる");
 
 		// カーソル
-		DrawString(anotherUI_x + 5, anotherUI_y + (healY + 1) * cursor, "▼", RED);
+		DrawString(healUI_x + 13, healUI_y + ((healY + 1) * cursor) + 13, "▼", RED);
+	}
+	//--------------------------------------------------------------
+
+	//買い物関連----------------------------------------------------
+	if (itemflag == true && shopflag == true) {
+		// 最初のメニュー
+		if (shopmenu == START || shopmenu == BUY || shopmenu == SELL) {
+			// コマンドボックス
+			Textbox::Draw(shopUI_x, shopUI_y, shopUI_width, (cursor * 5) - 10, "いらっしゃーい\n\n　　買う\n\n　　売る\n\n　　やめる");
+
+			// カーソル
+			if (shopmenu == START) {
+				DrawString(shopUI_x + 10, shopUI_y + ((shopmY + 1) * cursor) + 15, "▼", RED);
+			}
+		}
+		// 買うときのメニュー
+		if (shopmenu == BUY) {
+			// コマンドボックス
+			Textbox::Draw(shopUI_x + shopUI_second, shopUI_y + shopUI_second, shopUI_se_width, (cursor * 5) + 40, "何を買う？");
+			
+			// もの
+			for (int i = 2; i <= 5; i++) {
+				Textbox::Draw(shopUI_x + shopUI_second + 38, shopUI_y + (cursor * (i - 1)) + shopUI_second + 2, Item::SearchName(i));
+				Textbox::Draw(shopUI_x + shopUI_second + 266, shopUI_y + (cursor*(i - 1)) + shopUI_second + 2, std::to_string(Item::SearchPrice(i)));
+			}
+
+			// 戻る
+			Textbox::Draw(shopUI_x + shopUI_second + 38, shopUI_y + (cursor * 5) + shopUI_second + 2, "戻る");
+
+			// カーソル
+			DrawString(shopUI_x + shopUI_second + 15, shopUI_y + ((shopmY + 1) * cursor) + shopUI_second + 10, "▼", RED);
+		}
+		// 売るときのメニュー
+		if (shopmenu == SELL) {
+			// ボックス
+			Textbox::Draw(shopUI_x + shopUI_second, shopUI_y + shopUI_second, shopUI_se_width, (cursor * 10) + 40, "何を売る？");
+			
+			// 所持アイテム一覧
+			for (int i = 0; i < itemMax; i++) {
+				Textbox::Draw(shopUI_x + shopUI_second + 38, shopUI_y + (cursor * (i + 1)) + shopUI_second + 2, Item::SearchName(item[i]));
+				Textbox::Draw(shopUI_x + shopUI_second + 266, shopUI_y + (cursor * (i + 1)) + shopUI_second + 2, std::to_string(Item::SearchPrice(item[i])));
+			}
+			
+			// 戻る
+			Textbox::Draw(shopUI_x + shopUI_second + 38, shopUI_y + (cursor * 10) + shopUI_second + 2, "戻る");
+			
+			// カーソル
+			DrawString(shopUI_x + shopUI_second + 15, shopUI_y + ((shopmY + 1) * cursor) + shopUI_second + 10, "▼", RED);
+		}
+	}
+	//--------------------------------------------------------------
+
+	// お金のUI-----------------------------------------------------
+	// 話してるとき共通の処理
+	if ((talkflag || shopflag) && !peopleflag)
+	{
+		// 所持金
+		Textbox::Draw(playerUI_x, playerUI_y, playerUI_width, playerUI_height, "所持金："+std::to_string(money)+"円");
+	}
+	//--------------------------------------------------------------
+
+	//AIの会話のUI--------------------------------------------------
+	// 村人のセリフ
+	if (peopleflag == true && talkflag == true) {
+		Textbox::Draw(conUI_x, conUI_y, conUI_width + 85, conUI_height, "ここはミントスの町です。");
+	}
+	// 話してる相手のセリフ
+	if (((shopmenu == BUY || shopmenu == SELL) && shopcount > 0) || healcount > 0) {
+		Textbox::Draw(conUI_x, conUI_y, conUI_width, conUI_height, lines);
 	}
 	// 回復表示
 	if (healcount > 0) {
@@ -267,64 +350,6 @@ void SafeArea::Draw_UI() {
 		}
 		else {
 			lines = "出直して";
-		}
-	}
-
-	// 村人のセリフ
-	if (peopleflag == true && talkflag == true) {
-		Textbox::Draw(conUI_x, conUI_y, 210, 35, "ここはミントスの町です。");
-	}
-
-	//買い物関連----------------------------------------------------
-	if (itemflag == true && shopflag == true) {
-		// 最初のメニュー
-		if (shopmenu == START || shopmenu == BUY || shopmenu == SELL) {
-			// コマンドボックス
-			Textbox::Draw(anotherUI_x - 16, anotherUI_y - 16, 140, (cursor * 5) - 10, "いらっしゃーい");
-			
-			// 選択肢
-			Textbox::Draw(anotherUI_x + 22, anotherUI_y + (cursor * 1) - 8, "買う");
-			Textbox::Draw(anotherUI_x + 22, anotherUI_y + (cursor * 2) - 8, "売る");
-			Textbox::Draw(anotherUI_x + 22, anotherUI_y + (cursor * 3) - 8, "やめる");
-
-			// カーソル
-			if (shopmenu == START) {
-				DrawString(anotherUI_x + 5, anotherUI_y + ((shopmY + 1) * cursor), "▼", RED);
-			}
-		}
-		// 買うときのメニュー
-		if (shopmenu == BUY) {
-			// コマンドボックス
-			Textbox::Draw(anotherUI_x + 34, anotherUI_y + 34, 320, (cursor * 5) + 40, "何を買う？");
-			
-			// もの
-			for (int i = 2; i <= 5; i++) {
-				Textbox::Draw(anotherUI_x + 72, anotherUI_y + (cursor * (i - 1)) + 42, Item::SearchName(i));
-				DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * (i - 1)) + 50, WHITE, "%d", Item::SearchPrice(i));
-			}
-
-			// 戻る
-			Textbox::Draw(anotherUI_x + 72, anotherUI_y + (cursor * 5) + 42, "戻る");
-
-			// カーソル
-			DrawString(anotherUI_x + 55, anotherUI_y + ((shopmY + 1) * cursor) + 50, "▼", RED);
-		}
-		// 売るときのメニュー
-		if (shopmenu == SELL) {
-			// ボックス
-			Textbox::Draw(anotherUI_x + 34, anotherUI_y + 34, 310, (cursor * 10) + 40, "何を売る？");
-			
-			// 所持アイテム一覧
-			for (int i = 0; i < itemMax; i++) {
-				Textbox::Draw(anotherUI_x + 72, anotherUI_y + (cursor * (i + 1)) + 42, Item::SearchName(item[i]));
-				DrawFormatString(anotherUI_x + 300, anotherUI_y + (cursor * (i + 1)) + 50, WHITE, "%d", Item::SearchPrice(item[i]));
-			}
-			
-			// 戻る
-			Textbox::Draw(anotherUI_x + 72, anotherUI_y + (cursor * 10) + 42, "戻る");
-			
-			// カーソル
-			DrawString(anotherUI_x + 55, anotherUI_y + ((shopmY + 1) * cursor) + 50, "▼", RED);
 		}
 	}
 	// 店主のセリフ
@@ -353,18 +378,6 @@ void SafeArea::Draw_UI() {
 		}
 	}
 	//--------------------------------------------------------------
-
-	// 話してるとき共通の処理
-	if ((talkflag || shopflag) && !peopleflag)
-	{
-		// 所持金
-		Textbox::Draw(playerUI_x, playerUI_y, 135, 35, "");
-		DrawFormatString(playerUI_x + 8, playerUI_y + 8, WHITE, "所持金：%d円", money);
-	}
-	// 話してる相手のセリフ
-	if (((shopmenu == BUY || shopmenu == SELL) && shopcount > 0) || healcount > 0) {
-		Textbox::Draw(conUI_x, conUI_y, 125, 35, lines);
-	}
 }
 
 void SafeArea::MapData() {

@@ -27,6 +27,9 @@ Dungeon::Dungeon() {
 	treasureflag = false;
 	conUI_x = 150;
 	conUI_y = 150;
+	conUI_width = 200;
+	conUI_height = 35;
+	str = "";
 }
 
 Dungeon::~Dungeon() {
@@ -135,9 +138,29 @@ void Dungeon::Draw_Main(int x, int y) {
 	DrawGraph(0, 0, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+	Dungeon_Map();
+	
+	DrawFormatString(320, 400, WHITE, "Cキーでゲームクリア画面へ");
+}
+
+void Dungeon::Draw_End() {
+	if (fieldflag == true) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 3));
+		DrawGraph(0, 0, Gr_Back, FALSE);
+		Dungeon_Map();
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+	else {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 3));
+		DrawRotaGraph(320, 240, 1.0, endCount, Gr_Back, FALSE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+}
+
+void Dungeon::Dungeon_Map() {
 	for (int i = 0, n = (int)map.size(); i < n; i++) {
 		for (int j = 0, m = (int)map[i].size(); j < m; j++) {
-				//stoi で文字を数値に変換
+			//stoi で文字を数値に変換
 			switch ((int)(stoi(map[i][j]) * 0.1)) {
 			case 0:	//00
 				break;
@@ -185,25 +208,17 @@ void Dungeon::Draw_Main(int x, int y) {
 	for (int i = 0, n = (int)treasure.size(); i < n; i++) {
 		treasure[i].Draw(x + 32, y + 32);
 	}
-
-	DrawFormatString(320, 400, WHITE, "Cキーでゲームクリア画面へ");
-}
-
-void Dungeon::Draw_End() {
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (endCount * 3));
-	DrawRotaGraph(320, 240, 1.0, endCount, Gr_Back, FALSE);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void Dungeon::Draw_UI() {
 	if (comment > 0) {
-		Textbox::Draw(conUI_x, conUI_y, 200, 35, "");
 		if (openflag == true) {
-			Textbox::Draw(conUI_x, conUI_y, "なんか手に入れた！");
+			str = "なんか手に入れた！";
 		}
 		else {
-			Textbox::Draw(conUI_x, conUI_y, "持ち物が満杯のようだ");
+			str = "持ち物が満杯のようだ";
 		}
+		Textbox::Draw(conUI_x, conUI_y, conUI_width, conUI_height, str);
 	}
 }
 

@@ -37,6 +37,9 @@ private:
 	const int flame = 20;		// フレーム
 	int conUI_x;				// コメントの表示位置
 	int conUI_y;
+	int conUI_height;
+	int conUI_width;
+	string str;
 
 public:
 	Dungeon();
@@ -54,6 +57,7 @@ public:
 	void Draw_End();	// 終了画面描画
 
 	void Draw_UI();		// UIの描画
+	void Dungeon_Map();	// マップ全体
 
 	void MapData();
 
