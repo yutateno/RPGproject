@@ -654,10 +654,6 @@ void SafeArea::SetField(bool flag) {
 	fieldflag = flag;
 }
 
-bool SafeArea::GetField() {
-	return fieldflag;
-}
-
 void SafeArea::SetPeople(bool flag) {
 	peopleflag = flag;
 }
@@ -674,10 +670,6 @@ bool SafeArea::GetItem() {
 	return itemflag;
 }
 
-void SafeArea::SetShop(bool flag) {
-	shopflag = flag;
-}
-
 bool SafeArea::GetShop(){
 	return shopflag;
 }
@@ -688,10 +680,6 @@ void SafeArea::SetHeal(bool flag) {
 
 bool SafeArea::GetHeal() {
 	return healflag;
-}
-
-void SafeArea::SetTalk(bool flag) {
-	talkflag = flag;
 }
 
 bool SafeArea::GetTalk() {
@@ -720,10 +708,6 @@ void SafeArea::SetInn(bool flag) {
 
 bool SafeArea::GetInn() {
 	return innflag;
-}
-
-void SafeArea::SetID(int ID) {
-	this->ID = ID;
 }
 
 int SafeArea::GetID() {

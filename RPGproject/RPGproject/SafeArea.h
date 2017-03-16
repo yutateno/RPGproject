@@ -134,25 +134,21 @@ public:
 	void SetY(int y);				// カメラのＹ座標
 	int GetY();
 	void SetField(bool flag);	// 出口にいるかどうか
-	bool GetField();
 	void SetPeople(bool flag);	// 一般人に触れたら
 	bool GetPeople();
 	void SetItem(bool flag);	// 道具屋に触れたら
 	bool GetItem();
-	void SetShop(bool flag);	// ショップ画面
-	bool GetShop();	
+	bool GetShop();				// ショップ画面	
 	void SetHeal(bool flag);	// 回復するかどうか
 	bool GetHeal();
 	void SetInn(bool flag);		// 宿の店主に触れたかどうか
 	bool GetInn();
-	void SetTalk(bool flag);	// 会話中かどうか
-	bool GetTalk();
+	bool GetTalk();				// 会話中かどうか
 	void SetBuy(bool flag);		// 買ったかどうか
 	bool GetBuy();
 	void SetSell(bool flag);	// 売ったかどうか
 	bool GetSell();
-	void SetID(int ID);			// アイテムのＩＤ
-	int GetID();
+	int GetID();				// アイテムのＩＤ
 	void SetItemPosition(int itemPosition);		// アイテムの位置
 	int GetItemPosition();
 	void SetnumID(int num, int ID);

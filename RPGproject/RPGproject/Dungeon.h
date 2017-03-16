@@ -33,7 +33,8 @@ private:
 	vector<Treasure> treasure;	// 宝箱
 	bool openflag;				// 開けたかどうか
 	bool treasureflag;			// 宝箱になんかしたら
-	string treasurename;		// 宝箱の名前
+	string treasurename;		// 宝箱の中の名前
+	int treasuremoney;			// 宝箱の中の金
 
 	int comment;				// なんか反応の会話
 	const int flame = 30;		// フレーム
@@ -86,5 +87,7 @@ public:
 	bool GetOpen();
 	void SetTreasure(bool flag);	// 宝箱に反応したかどうか
 	bool GetTreasure();
+	void SetTreasureMoney(int money);	// 宝箱からお金を得たか
+	int GetTreasureMoney();
 	eStep GetStep();	// 今のステップ状況
 };

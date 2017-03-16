@@ -31,6 +31,7 @@ Dungeon::Dungeon() {
 	conUI_height = 35;
 	str = "";
 	treasurename = "";
+	treasuremoney = 0;
 }
 
 Dungeon::~Dungeon() {
@@ -215,12 +216,15 @@ void Dungeon::Draw_UI() {
 	if (comment > 0) {
 		conUI_width = 220;
 		if (openflag == true) {
-			if (treasurename == "–³") {
-				conUI_width = 130;
-				str = "Šù‚É‹ó‚¢‚Ä‚Ü‚·";
+			if (treasuremoney != 0) {
+				str = std::to_string(treasuremoney) + "‰~‚ğè‚É“ü‚ê‚½I";
+			}
+			else if(treasurename != "–³") {
+				str = treasurename + "‚ğè‚É“ü‚ê‚½I";
 			}
 			else {
-				str = treasurename + "‚ğè‚É“ü‚ê‚½I";
+				conUI_width = 130;
+				str = "Šù‚É‹ó‚¢‚Ä‚Ü‚·";
 			}
 		}
 		else {
@@ -248,6 +252,7 @@ int Dungeon::OpenTreasure(int num) {
 	int itemID = treasure[num].GetItemID();
 
 	treasurename = treasure[num].GetName();
+	treasuremoney = treasure[num].GetMoney();
 	treasure[num].OpenProcess();
 
 	return itemID;
@@ -331,6 +336,14 @@ void Dungeon::SetTreasure(bool flag) {
 
 bool Dungeon::GetTreasure() {
 	return treasureflag;
+}
+
+void Dungeon::SetTreasureMoney(int money) {
+	treasuremoney = money;
+}
+
+int Dungeon::GetTreasureMoney() {
+	return treasuremoney;
 }
 
 eStep Dungeon::GetStep(){

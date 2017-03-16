@@ -121,7 +121,7 @@ void Player::aaaDraw(int mapwidth, int mapheight)
 			name + "\n" +
 			"HP:" + std::to_string(hp) + " / " + std::to_string(maxHP) + "\n" +
 			"MP:" + std::to_string(mp) + " / " + std::to_string(maxMP) + "\n" +
-			"LV:" + std::to_string(lv));
+			"LV:" + std::to_string(lv) + "\n" + "Š‹à:" + std::to_string(this->money) + "‰~");
 
 		// ƒAƒCƒeƒ€‰æ–Ê
 		if (itemFlag)

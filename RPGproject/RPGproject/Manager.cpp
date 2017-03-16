@@ -1042,10 +1042,17 @@ void Manager::DungeonProcess() {
 							player->BuyItem(dungeon->OpenTreasure(k));
 							dungeon->SetOpen(true);
 						}
-						// 0‚ª”ƒ‚¦‚È‚©‚Á‚½‚ç
+						// ‚¨‹à‚ª“¾‚ê‚½‚ç
+						else if (dungeon->GetTreasureMoney() != 0) {
+							dungeon->OpenTreasure(k);
+							dungeon->SetOpen(true);
+						}
+						// 0‚ª”ƒ‚¦‚È‚¢‚¤‚¦‚É‚¨‹à‚ª“¾‚ê‚È‚©‚Á‚½‚ç
 						else {
 							dungeon->SetOpen(false);
 						}
+						// ‚¨‹à‚ğ“ü‚ê‚é
+						player->SetMoney(player->GetMoney() + dungeon->GetTreasureMoney());
 					}
 				}
 			}
