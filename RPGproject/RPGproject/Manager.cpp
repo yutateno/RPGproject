@@ -306,7 +306,7 @@ void Manager::ChengeScene_SafeArea() {
 		battle = new Battle();
 
 		// 敵生成
-		enemy = new Enemy();
+		enemy = new Enemy(2);
 
 		// 拠点画面から移行したことを保存
 		battle->SetReturnScene(eScene::S_SafeArea);
@@ -343,7 +343,13 @@ void Manager::ChengeScene_Dungeon() {
 		battle = new Battle();
 
 		// 敵生成
-		enemy = new Enemy();
+		// ボス
+		if (dungeon->GetBattle() == true) {
+			enemy = new Enemy(3);
+		}
+		else {
+			enemy = new Enemy((int)GetRand(1));
+		}
 
 		// ダンジョン画面から移行したことを保存
 		this->battle->SetReturnScene(eScene::S_Dungeon);

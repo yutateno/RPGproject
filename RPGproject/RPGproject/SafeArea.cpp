@@ -45,6 +45,7 @@ SafeArea::SafeArea() {
 	// カウント系
 	healcount = 0;
 	shopcount = 0;
+	battlecount = 0;
 
 	// UI管理関係
 	shopmenu = START;
@@ -142,6 +143,12 @@ void SafeArea::UpDate_Main() {
 	// 特定の場所行ったらフィールド画面へ
 	if (fieldflag == true) {
 		nextScene = eScene::S_Field;
+		step = eStep::End;
+	}
+
+	// ボスチップに当たったら戦闘画面
+	if (battlecount > 10) {
+		nextScene = eScene::S_Battle;
 		step = eStep::End;
 	}
 
@@ -465,6 +472,9 @@ void SafeArea::PeopleProcess() {
 
 void SafeArea::ShopProcess() {
 	if (KeyData::Get(KEY_INPUT_Z) == 1) {
+		if (successflag == false && shopmenu == BUY) {
+			battlecount++;
+		}
 		// 既に話しかけている場合
 		if (shopflag == true) {
 			switch (shopmenu)
@@ -511,6 +521,7 @@ void SafeArea::ShopProcess() {
 				case 4:		// 戻るボタン
 					price = 0;
 					ID = 0;
+					battlecount = 0;
 
 					// 初期化
 					shopmenu = START;

@@ -56,6 +56,31 @@ void Enemy::SearchStatus()
 		money = 200;	// 金
 
 		graph = LoadGraph("img\\enemy.png");
+		break;
+
+	case 2:
+		name = "店主";
+		hp = 50;
+		mp = 50;
+		attack->power = 50;
+		attack->width = 0;
+		exp = 1;
+		money = 0;
+
+		graph = LoadGraph("img\\enemy.png");
+		break;
+
+	case 3:
+		name = "ボス";
+		hp = 25;
+		mp = 25;
+		attack->power = 5;
+		attack->width = 0;
+		exp = 100;
+		money = 1000;
+
+		graph = LoadGraph("img\\enemy.png");
+		break;
 
 	default:
 		// エラー

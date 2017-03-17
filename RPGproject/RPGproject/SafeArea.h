@@ -65,6 +65,7 @@ private:
 	bool buyflag;			// 買ったかどうか
 	bool sellflag;			// 売ったかどうか
 	bool successflag;		// 買えた
+	int battlecount;		// 店主をうざくさせすぎたら
 
 	// 擬似プレイヤー要素
 	int price;				// 値段
