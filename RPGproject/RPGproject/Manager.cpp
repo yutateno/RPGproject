@@ -634,7 +634,7 @@ void Manager::BattleProcess()
 				player->SetEXP(player->GetEXP() + enemy->GetEXP());				// 経験値
 				player->SetMoney(player->GetMoney() + enemy->GetMoney());		// お金
 
-																				// 表示時間
+				// 表示時間
 				logTime = 180;
 
 				// レベルアップ
@@ -863,7 +863,7 @@ void Manager::BattleDraw()
 		Textbox::Draw(logX, logY, logWidth, logHeight, "");
 
 		// ダメージ演出
-		if (logCount > 60)
+		if (logCount > 60 && turn)
 		{
 			if (logCount % 5 == 0)
 			{

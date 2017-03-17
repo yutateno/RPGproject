@@ -40,8 +40,8 @@ Player::Player()
 	menuY = 0;				// 座標
 	menuChoiceNum = 2;		// 項目の数
 	// ステータス
-	statusWidth = 112;		// ステータスの幅
-	statusHeight = 96;		// ステータスの高さ
+	statusWidth = 128;		// ステータスの幅
+	statusHeight = 112;		// ステータスの高さ
 	statusX = 0;			// ステータスの座標
 	statusY = 480 - statusHeight;		// ステータスの座標
 	// アイテム画面
