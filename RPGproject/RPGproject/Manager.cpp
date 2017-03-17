@@ -258,6 +258,7 @@ void Manager::ChengeScene_Battle() {
 
 	case eScene::S_SafeArea:// ‹’“_‰æ–Ê
 		safeArea = new SafeArea();
+		safeArea->SetMoney(player->GetMoney());
 		break;
 
 	case eScene::S_Dungeon://ƒ_ƒ“ƒWƒ‡ƒ“‰æ–Ê
