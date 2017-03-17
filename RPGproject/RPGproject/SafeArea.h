@@ -34,6 +34,7 @@ private:
 	int Gr_Murabito;	// 村人
 	int Gr_Shop;		// 店
 	int Gr_Yado;		// 宿
+	int Gr_Start;		// 「町」
 	int graph;			// 描写用
 
 	// マップ関連

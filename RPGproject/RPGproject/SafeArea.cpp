@@ -13,11 +13,12 @@ SafeArea::SafeArea() {
 	Gr_Murabito = LoadGraph("img\\murabito.png");
 	Gr_Shop = LoadGraph("img\\shop.png");
 	Gr_Yado = LoadGraph("img\\yado.png");
+	Gr_Start = LoadGraph("img\\machi.png");
 	graph = 0;
 
 	// 演出関係
 	step = eStep::Start;
-	startCount = 30;
+	startCount = 100;
 	endCount = 30;
 	count = 0;
 	lines = "";
@@ -92,6 +93,7 @@ SafeArea::~SafeArea() {
 	DeleteGraph(Gr_Murabito);
 	DeleteGraph(Gr_Shop);
 	DeleteGraph(Gr_Yado);
+	DeleteGraph(Gr_Start);
 }
 
 void SafeArea::UpDate() {
@@ -207,8 +209,21 @@ void SafeArea::Draw() {
 }
 
 void SafeArea::Draw_Start() {
-	DrawStringToHandle(0, 0, "拠点画面", WHITE, Font::Get(eFont::SELECT));
-	DrawFormatStringToHandle(0, 100, WHITE, Font::Get(eFont::SELECT), "開始画面 %d / %d", count, startCount);
+	if (count < 25) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, count * 10);
+		DrawGraph(0, 0, Gr_Start, false);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+	else if (count < 50) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 250 - ((count - 25) * 10));
+		DrawGraph(0, 0, Gr_Start, false);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+	else {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (count - 50) * 5);
+		SafeArea_Map();
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 }
 
 void SafeArea::Draw_Main() {
