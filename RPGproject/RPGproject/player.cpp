@@ -187,6 +187,9 @@ void Player::Process()
 	{
 		Move();		// 移動
 	}
+
+	// アイテムのソート
+	ItemSort();
 }
 
 void Player::Menu()
@@ -217,6 +220,7 @@ void Player::Menu()
 		{
 			// アイテム使用
 			SellItem(cursorY);
+
 			// ログを閉じる
 			itemUseFlag = false;
 		}
@@ -327,7 +331,8 @@ bool Player::BuyItem(int ID)
 {
 	for (int i = 0; i < itemMax; i++)
 	{
-		if (item[i]->ID == 0) {
+		if (item[i]->ID == 0) 
+		{
 			delete item[i];
 			item[i] = new Item(ID);
 			// 購入成功
@@ -343,6 +348,20 @@ void Player::SellItem(int num)
 {
 	delete item[num];
 	item[num] = new Item(0);
+}
+
+void Player::ItemSort()
+{
+	for (int i = 0; i < itemMax - 1; i++)
+	{
+		if (item[i]->ID == 0)
+		{
+			delete item[i];
+			item[i] = new Item(item[i + 1]->ID);
+			delete item[i + 1];
+			item[i + 1] = new Item(0);
+		}
+	}
 }
 
 bool Player::GetmenuFlag()

@@ -88,6 +88,7 @@ public:
 
 	bool BuyItem(int ID);
 	void SellItem(int num);
+	void ItemSort();
 
 	// ゲッターセッターたち
 	void SetName(string name);

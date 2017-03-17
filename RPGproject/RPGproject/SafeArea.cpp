@@ -40,6 +40,7 @@ SafeArea::SafeArea() {
 	buyflag = false;
 	sellflag = false;
 	innflag = false;
+	successflag = false;
 
 	// カウント系
 	healcount = 0;
@@ -356,7 +357,12 @@ void SafeArea::Draw_UI() {
 	// 買ったとき
 	if (shopmenu == BUY && shopcount > 0) {
 		if (money > price) {
-			lines = "まいど～";
+			if (successflag == false) {
+				lines = "満杯です";
+			}
+			else {
+				lines = "まいど～";
+			}
 		}
 		else {
 			lines = "出直して";
@@ -521,11 +527,13 @@ void SafeArea::ShopProcess() {
 				if (money >= price) {
 					// Managerに処理させるフラグを立てる
 					buyflag = true;
-					// 所持金をマイナスする
-					money -= price;
+					if (successflag == true) {
+						// 所持金をマイナスする
+						money -= price;
+					}
 				}
 				else {
-					// 所持金不足
+					// 所持金不足および持ち物満杯
 				}
 
 				// セリフ表示時間更新
@@ -616,11 +624,6 @@ void SafeArea::ShopProcess() {
 			}
 		}
 	}
-}
-
-void SafeArea::Refund()
-{
-	money += Item::SearchPrice(ID);
 }
 
 int SafeArea::GetMapData(int x, int y) {
@@ -732,6 +735,10 @@ void SafeArea::SetMoney(int money) {
 
 int SafeArea::GetMoney() {
 	return money;
+}
+
+void SafeArea::SetSuccess(bool flag) {
+	successflag = flag;
 }
 
 eStep SafeArea::GetStep() {

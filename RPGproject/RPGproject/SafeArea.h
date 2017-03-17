@@ -64,6 +64,7 @@ private:
 	int shopmY;				// ショップ画面でのカーソル
 	bool buyflag;			// 買ったかどうか
 	bool sellflag;			// 売ったかどうか
+	bool successflag;		// 買えた
 
 	// 擬似プレイヤー要素
 	int price;				// 値段
@@ -122,9 +123,6 @@ public:
 	void Draw_UI();			// UIの描画
 	void SafeArea_Map();
 
-	// プレイヤーがアイテムの購入に失敗した場合に呼ばれる関数
-	void Refund();
-
 	// ゲッターセッター
 	int GetMapData(int x, int y);	// マップ全体
 	int GetMapWidth();				// マップの横幅
@@ -154,5 +152,6 @@ public:
 	void SetnumID(int num, int ID);
 	void SetMoney(int money);	// お金
 	int GetMoney();
+	void SetSuccess(bool flag);	// ちゃんと買えたか
 	eStep GetStep();	// 今のステップ状況
 };

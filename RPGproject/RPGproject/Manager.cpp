@@ -1121,6 +1121,9 @@ void Manager::SafeAreaProcess() {
 	// ƒvƒŒƒCƒ„[‚Ì‚¨‹à‚Ì“®‚«‚ð’ÇÕ‚µ‚Ä”½‰f
 	player->SetMoney(safeArea->GetMoney());
 
+	// ƒVƒ‡ƒbƒv‚Ì”„‚é‰æ–Ê‚Å‚àƒ\[ƒg‚³‚¹‚½‚¢‚Ì‚Å
+	player->ItemSort();
+
 	// ƒvƒŒƒCƒ„[‚ª“®‚¢‚½‚©‚Ç‚¤‚©‚ð”»’f‚·‚é‚½‚ß‚É’¼‘O‚ÌÀ•W‚ð•Û‘¶
 	playerX = player->GetX();
 	playerY = player->GetY();
@@ -1245,14 +1248,14 @@ void Manager::SafeAreaProcess() {
 		else {
 			// ”ƒ‚Á‚½‚Æ‚«
 			if (safeArea->GetBuy() == true) {
-				if (player->BuyItem(safeArea->GetID()))
-				{
-					// w“ü¬Œ÷
+				// w“ü¬Œ÷
+				if (player->BuyItem(0)) {
+					safeArea->SetSuccess(true);
+					player->BuyItem(safeArea->GetID());
 				}
-				else
-				{
-					// w“üŽ¸”s
-					safeArea->Refund();
+				// w“üŽ¸”s
+				else {
+					safeArea->SetSuccess(false);
 				}
 				safeArea->SetBuy(false);
 			}
