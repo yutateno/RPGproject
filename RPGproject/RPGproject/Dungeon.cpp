@@ -10,6 +10,7 @@ Dungeon::Dungeon() {
 
 	Gr_Back = LoadGraph("Dungeon\\Dungeon_Back.png");
 	Gr_Wall = LoadGraph("Dungeon\\wall.png");
+	Gr_Start = LoadGraph("img\\dungeon.png");
 	MapData();
 
 	x = 0;
@@ -32,11 +33,16 @@ Dungeon::Dungeon() {
 	str = "";
 	treasurename = "";
 	treasuremoney = 0;
+
+	graphcount = 0;
+	graphflame = 60;
+	kari = 0;
 }
 
 Dungeon::~Dungeon() {
 	DeleteGraph(Gr_Back);
 	DeleteGraph(Gr_Wall);
+	DeleteGraph(Gr_Start);
 }
 
 void Dungeon::UpDate() {
@@ -81,7 +87,18 @@ void Dungeon::UpDate_Start() {
 }
 
 void Dungeon::UpDate_Main() {
+	if (graphcount < graphflame) {
+		graphcount++;
+	}
+	if (graphcount < 20) {
+		kari = graphcount * 12;
+	}
+	else if (graphcount < 40) {
 
+	}
+	else {
+		kari = 240 - ((graphcount - 40) * 12);
+	}
 	// ボスチップに当たったら戦闘画面
 	if (battleflag == true) {
 		this->nextScene = eScene::S_Battle;
@@ -139,8 +156,13 @@ void Dungeon::Draw_Main(int x, int y) {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
 	DrawGraph(0, 0, Gr_Back, FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
 	Dungeon_Map();
+
+	if (graphcount < graphflame) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kari);
+		DrawGraph(50, 250, Gr_Start, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 	
 	DrawFormatString(320, 400, WHITE, "Cキーでゲームクリア画面へ");
 }

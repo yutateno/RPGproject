@@ -81,6 +81,9 @@ private:
 	// 演出関係
 	int count;				// (フレーム)カウント
 	string lines;			// セリフ
+	int graphcount;			// 始まりの左下の画像の表示カウント
+	int graphflame;			// 始まりの左下の画像の表示フレーム
+	int kari;				// 仮変数
 
 	// UI関連
 	int playerUI_x;			// 所持金のＵＩ

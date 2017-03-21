@@ -18,10 +18,13 @@ SafeArea::SafeArea() {
 
 	// 演出関係
 	step = eStep::Start;
-	startCount = 100;
+	startCount = 30;
 	endCount = 30;
 	count = 0;
 	lines = "";
+	graphcount = 0;
+	graphflame = 60;
+	kari = 0;
 
 	// マップデータ読み込み
 	MapData();
@@ -142,6 +145,20 @@ void SafeArea::UpDate_Start() {
 }
 
 void SafeArea::UpDate_Main() {
+	if (graphcount < graphflame) {
+		graphcount++;
+	}
+	
+	if (graphcount < 20) {
+		kari = graphcount * 12;
+	}
+	else if (graphcount < 40) {
+
+	}
+	else {
+		kari = 240 - ((graphcount - 40) * 12);
+	}
+
 	// 特定の場所行ったらフィールド画面へ
 	if (fieldflag == true) {
 		nextScene = eScene::S_Field;
@@ -209,29 +226,23 @@ void SafeArea::Draw() {
 }
 
 void SafeArea::Draw_Start() {
-	if (count < 25) {
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, count * 10);
-		DrawGraph(0, 0, Gr_Start, false);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-	else if (count < 50) {
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 250 - ((count - 25) * 10));
-		DrawGraph(0, 0, Gr_Start, false);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-	else {
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (count - 50) * 5);
-		SafeArea_Map();
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, count * 8);
+	SafeArea_Map();
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void SafeArea::Draw_Main() {
 	SafeArea_Map();
+
+	if (graphcount < graphflame) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kari);
+		DrawGraph(50, 350, Gr_Start, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 }
 
 void SafeArea::Draw_End() {
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150 - (count * 5));
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 240 - (count * 8));
 	SafeArea_Map();
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }

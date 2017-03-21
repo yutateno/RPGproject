@@ -17,6 +17,7 @@ class Dungeon : public SuperScene {
 private:
 	int Gr_Back;		// 背景
 	int Gr_Wall;		// 壁
+	int Gr_Start;
 
 	// マップ
 	vector<vector<string>> map;
@@ -43,6 +44,11 @@ private:
 	int conUI_height;
 	int conUI_width;
 	string str;
+
+	// 演出
+	int graphcount;
+	int graphflame;
+	int kari;
 
 public:
 	Dungeon();
